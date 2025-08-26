@@ -1,23 +1,36 @@
-PuzzlePals — React Native (Expo) Jigsaw Puzzles for Kids
+# PuzzlePals - React Native Expo Jigsaw Puzzle App
 
-A delightful, kid-friendly jigsaw puzzle app built with React Native + Expo. Designed for tiny hands: big tiles, gentle snapping, celebratory animations, and zero missing pieces. Optimized for children with age-appropriate difficulty levels and engaging, safe gameplay. This README is written to be Copilot-friendly—it specifies architecture, components, types, and acceptance criteria so Copilot can scaffold the app quickly.
+PuzzlePals is a delightful, kid-friendly jigsaw puzzle app built with React Native + Expo. Designed for tiny hands: big tiles, gentle snapping, celebratory animations, and zero missing pieces. Optimized for children with age-appropriate difficulty levels and engaging, safe gameplay.
 
-Tech stack: Expo (React Native + TypeScript), Zustand for state, React Navigation, Reanimated for smooth drag & drop, React Query for async, Jest + Testing Library.
-Monetization ready with ad-supported free version and $9.99 premium upgrade, localization (i18n), analytics hooks, and parental gate included.
+This README provides comprehensive specifications for implementing the app from scratch. The repository currently contains only this specification document - the entire app needs to be built following the detailed architecture and requirements provided below.
 
-Goals (for Copilot)
+## Tech Stack
 
-Build a jigsaw engine that turns images into N×M tiles with snap-to-target placement and win detection.
+- **React Native + Expo SDK 53** - Cross-platform mobile development
+- **TypeScript** (strict mode) - Type safety and better development experience  
+- **Zustand** - Lightweight state management
+- **React Navigation or Expo Router** - App navigation
+- **Reanimated 3 + Gesture Handler** - Smooth animations and drag & drop
+- **React Query** - Async state management
+- **Jest + Testing Library** - Testing framework
+- **ESLint + Prettier** - Code quality and formatting
 
-Kid-safe UX: large hit areas, haptic feedback, confetti on completion, no timers by default.
+## Key Features
 
-Modular design for adding new puzzle packs (animals, vehicles, space).
+- **Jigsaw Engine**: Converts images into N×M grid tiles with snap-to-target placement and win detection
+- **Kid-Safe UX**: Large hit areas, haptic feedback, confetti on completion, no timers by default
+- **Multiple Difficulties**: 2×2, 3×3, 4×4, 6×6 grids for ages 3-10+
+- **Modular Design**: Easy to add new puzzle packs (animals, vehicles, space)
+- **Offline-First**: Assets bundled; future remote packs possible
+- **Monetization Ready**: Ad-supported free version + $9.99 premium upgrade
+- **Accessibility**: VoiceOver support, large controls, reduced motion mode
+- **Localization**: i18n support with RTL mirroring
+- **Parental Controls**: Math gate for settings and purchases
 
-Offline-first: assets bundled; future remote packs possible.
+## Game Features
 
-Features
-
-Jigsaws: 4, 9, 16, 25, 36 pieces designed for ages 3-10+ (2×2 → 6×6 grids).
+### Puzzle Mechanics
+- **Grid-based Puzzles**: 4, 9, 16, 25, 36 pieces (2×2 → 6×6 grids) designed for ages 3-10+
 
 Snapping: piece snaps when within threshold; supports “magnet” easing.
 
@@ -33,68 +46,115 @@ Localization: i18n with pluralization; RTL-safe.
 
 Parental gate: math gate for settings/purchases.
 
-Project Structure
-apps/puzzlepals/
-├─ app/
-│  ├─ _layout.tsx                  # Root navigation layout (Expo Router) or use React Navigation
-│  ├─ index.tsx                    # Home screen (packs, continue button)
-│  ├─ play/[puzzleId].tsx          # Play screen with canvas
-│  ├─ settings.tsx                 # Parent settings (difficulty, sound, language)
-│  ├─ rewards.tsx                  # Sticker book / badges
-│  └─ store/                       # Zustand stores (game, settings)
-├─ src/
-│  ├─ components/
-│  │  ├─ PuzzleCanvas.tsx          # Renders board, pieces, ghost image, drag logic
-│  │  ├─ Piece.tsx                 # Single draggable piece
-│  │  ├─ HUD.tsx                   # Top bar: hint, reset, pause
-│  │  ├─ PackCard.tsx              # Pack tile in home
-│  │  └─ ParentalGate.tsx
-│  ├─ engine/
-│  │  ├─ jigsaw.ts                 # Slicing, shuffling, snapping logic
-│  │  └─ geometry.ts               # Rect math, thresholds, positions
-│  ├─ hooks/
-│  │  ├─ usePieceDrag.ts           # Reanimated gesture logic
-│  │  └─ useHaptics.ts
-│  ├─ i18n/
-│  │  ├─ index.ts                  # i18next setup
-│  │  ├─ en.json
-│  │  └─ zh.json
-│  ├─ theme/
-│  │  └─ index.ts                  # Colors, spacing, typography
-│  ├─ types/
-│  │  └─ index.ts
-│  ├─ utils/
-│  │  ├─ device.ts                 # Layout helpers (safe area, size)
-│  │  └─ sound.ts                  # Expo AV helpers
-│  └─ services/
-│     ├─ analytics.ts              # noop wrappers to plug Amplitude/GA later
-│     ├─ storage.ts                # MMKV/AsyncStorage for progress
-│     └─ monetization.ts           # IAP/Ads placeholders
-├─ assets/
-│  ├─ packs/animals/*.jpg
-│  ├─ packs/vehicles/*.jpg
-│  ├─ fonts/
-│  └─ sfx/
-├─ package.json
-├─ app.json / expo.json
-└─ README.md
+## Project Structure
 
+The recommended project structure after implementation:
 
-If you prefer React Navigation over Expo Router, swap app/ routing for src/navigation/* and an App.tsx entrypoint. The rest stays the same.
+```
+├── app/                             # Expo Router screens
+│   ├── _layout.tsx                  # Root navigation layout 
+│   ├── index.tsx                    # Home screen (puzzle packs)
+│   ├── play/[puzzleId].tsx          # Play screen with puzzle canvas
+│   ├── settings.tsx                 # Settings with parental gate
+│   ├── rewards.tsx                  # Sticker rewards
+│   └── store/                       # Zustand stores (game, settings)
+├── src/
+│   ├── components/                  # Reusable UI components
+│   │   ├── PuzzleCanvas.tsx         # Main game canvas with drag logic
+│   │   ├── Piece.tsx                # Individual puzzle piece component
+│   │   ├── HUD.tsx                  # Game controls (hint, reset, pause)
+│   │   ├── PackCard.tsx             # Puzzle pack tiles
+│   │   └── ParentalGate.tsx         # Math-based parental control
+│   ├── engine/                      # Puzzle game logic
+│   │   ├── jigsaw.ts                # Core puzzle algorithms
+│   │   └── geometry.ts              # Rectangle math, snap detection
+│   ├── hooks/                       # Custom React hooks
+│   │   ├── usePieceDrag.ts          # Reanimated gesture handling
+│   │   └── useHaptics.ts            # Haptic feedback integration
+│   ├── stores/                      # Zustand state management
+│   │   ├── game.ts                  # Game state (current puzzle)
+│   │   └── settings.ts              # App settings (sound, difficulty)
+│   ├── services/                    # External services
+│   │   ├── storage.ts               # Progress persistence (MMKV)
+│   │   ├── analytics.ts             # Event tracking (placeholder)
+│   │   └── monetization.ts          # IAP/ads (placeholder)
+│   ├── i18n/                        # Internationalization
+│   │   ├── index.ts                 # i18next configuration
+│   │   ├── en.json                  # English translations
+│   │   └── zh.json                  # Chinese translations
+│   ├── theme/                       # Design system
+│   │   └── index.ts                 # Colors, spacing, typography
+│   ├── types/                       # TypeScript definitions
+│   │   └── index.ts                 # Core types (Puzzle, Piece, Board)
+│   └── utils/                       # Helper functions
+│       ├── device.ts                # Screen size, safe area helpers
+│       └── sound.ts                 # Audio playback (expo-av)
+├── assets/                          # Static assets
+│   ├── packs/                       # Puzzle images by theme
+│   │   ├── animals/*.jpg            # Animal puzzle images
+│   │   └── vehicles/*.jpg           # Vehicle puzzle images
+│   ├── sounds/                      # Audio files (snap, win sounds)
+│   └── fonts/                       # Custom fonts
+├── __tests__/                       # Test files
+└── README.md                        # Project documentation
+```
 
-Quick Start
-# Prereqs: Node 20+, Yarn or PNPM
-npx create-expo-app puzzlepals --template
-cd puzzlepals
+**Note:** If you prefer React Navigation over Expo Router, swap the `app/` routing structure for `src/navigation/*` and create an `App.tsx` entrypoint. The rest of the structure remains the same.
+
+## Quick Start
+
+### Prerequisites
+- **Node.js 20+** (version 20.19.4 confirmed working)
+- **Yarn or npm** (Yarn recommended for faster installs)
+
+### Project Setup
+
+**Step 1: Create Expo Project**
+```bash
+# In the repository root directory
+npx create-expo-app@latest . --template blank-typescript
+```
+
+**Step 2: Install Core Dependencies** 
+```bash
 yarn add zustand @tanstack/react-query @react-navigation/native \
   @react-navigation/native-stack react-native-gesture-handler \
   react-native-reanimated react-native-safe-area-context \
   react-native-screens expo-haptics expo-av react-native-mmkv \
   i18next react-i18next react-native-localize react-native-svg
-# (Expo config plugins for Reanimated + Gesture are auto with SDK >= 51)
-yarn ios   # or yarn android / yarn web
+```
 
-Data Model (TypeScript)
+**Step 3: Install Expo SDK Compatible Versions**
+```bash
+npx expo install react-native-gesture-handler@~2.24.0 \
+  react-native-reanimated@~3.17.4 react-native-safe-area-context@5.4.0 \
+  react-native-screens@~4.11.1 react-native-svg@15.11.2
+```
+
+**Step 4: Install Development Dependencies**
+```bash
+yarn add -D jest @testing-library/react-native ts-jest @types/jest \
+  eslint prettier @typescript-eslint/eslint-plugin \
+  @typescript-eslint/parser react-test-renderer@19.0.0 @eslint/eslintrc
+```
+
+**Step 5: Start Development**
+```bash
+# For web development (recommended for testing)
+npx expo start --web --offline
+
+# For iOS/Android (requires simulator/device)
+yarn ios    # iOS
+yarn android # Android
+```
+
+> **Note:** Expo config plugins for Reanimated + Gesture Handler are automatically configured with SDK >= 51
+
+## Data Models
+
+### Core TypeScript Types
+
+```typescript
 // src/types/index.ts
 export type Difficulty = 'AGES_3_5' | 'AGES_6_8' | 'AGES_9_10' | 'AGES_11_PLUS'; // 2x2, 3x3, 4x4, 6x6
 
@@ -137,26 +197,27 @@ export interface Progress {
   startedAt: number;
   completedAt?: number;
 }
+```
 
-Jigsaw Engine Overview
+## Jigsaw Engine Architecture
 
-Grid slicing (rectangular to start):
+### Core Puzzle Logic
 
-Choose cols×rows from difficulty.
+**Grid Slicing Process:**
+1. Choose `cols × rows` grid dimensions based on difficulty level
+2. Compute tile rectangles (target positions) for each grid cell
+3. Create `Piece` instances with shuffled starting positions around staging area
+4. Render each piece using `<Image>` component clipped with SVG mask or react-native-svg
 
-Compute tile rects (target positions).
+### Drag & Drop Mechanics
 
-Create Piece instances with shuffled starting positions around a staging area.
+**Implementation Approach:**
+- Use `react-native-gesture-handler` + `Reanimated` for smooth interactions
+- On gesture release: check if piece center is within `SNAP_THRESHOLD` pixels of target
+- If within threshold: snap to target position and mark `placed = true`
+- Provide haptic feedback and sound effects on successful snap
 
-Draw each piece via <Image> clipped with SVG mask or use react-native-svg to crop.
-
-Drag & Snap:
-
-Use react-native-gesture-handler + Reanimated.
-
-On release, if piece center within SNAP_THRESHOLD px of target rect center, snap to target and mark placed=true.
-
-Play haptics and sfx on snap.
+### Win Detection
 
 Win detection:
 
