@@ -1,9 +1,9 @@
 PuzzlePals — React Native (Expo) Jigsaw Puzzles for Kids
 
-A delightful, kid-friendly jigsaw puzzle app built with React Native + Expo. Designed for tiny hands: big tiles, gentle snapping, celebratory animations, and zero missing pieces. This README is written to be Copilot-friendly—it specifies architecture, components, types, and acceptance criteria so Copilot can scaffold the app quickly.
+A delightful, kid-friendly jigsaw puzzle app built with React Native + Expo. Designed for tiny hands: big tiles, gentle snapping, celebratory animations, and zero missing pieces. Optimized for children with age-appropriate difficulty levels and engaging, safe gameplay. This README is written to be Copilot-friendly—it specifies architecture, components, types, and acceptance criteria so Copilot can scaffold the app quickly.
 
 Tech stack: Expo (React Native + TypeScript), Zustand for state, React Navigation, Reanimated for smooth drag & drop, React Query for async, Jest + Testing Library.
-Monetization ready (IAP/ads), localization (i18n), analytics hooks, and parental gate included.
+Monetization ready with ad-supported free version and $9.99 premium upgrade, localization (i18n), analytics hooks, and parental gate included.
 
 Goals (for Copilot)
 
@@ -17,7 +17,7 @@ Offline-first: assets bundled; future remote packs possible.
 
 Features
 
-Jigsaws: 4, 9, 16, 25, 36 pieces (2×2 → 6×6 grids).
+Jigsaws: 4, 9, 16, 25, 36 pieces designed for ages 3-10+ (2×2 → 6×6 grids).
 
 Snapping: piece snaps when within threshold; supports “magnet” easing.
 
@@ -96,7 +96,7 @@ yarn ios   # or yarn android / yarn web
 
 Data Model (TypeScript)
 // src/types/index.ts
-export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD' | 'EXPERT'; // 2x2, 3x3, 4x4, 6x6
+export type Difficulty = 'AGES_3_5' | 'AGES_6_8' | 'AGES_9_10' | 'AGES_11_PLUS'; // 2x2, 3x3, 4x4, 6x6
 
 export interface PuzzlePack {
   id: string;             // e.g. 'animals'
@@ -209,7 +209,7 @@ export const useGame = create<GameStore>((set, get) => ({
 }));
 
 // Helpers (pseudo signatures for Copilot to fill)
-function diffToGrid(d: Difficulty){ /* EASY->2x2, MEDIUM->3x3, HARD->4x4, EXPERT->6x6 */ return { cols:2, rows:2 }; }
+function diffToGrid(d: Difficulty){ /* AGES_3_5->2x2, AGES_6_8->3x3, AGES_9_10->4x4, AGES_11_PLUS->6x6 */ return { cols:2, rows:2 }; }
 function createBoard(img: number, cols:number, rows:number, w:number, h:number): BoardState { /* ... */ return {} as any; }
 function isWithinSnapThreshold(piece:any, board:BoardState){ /* ... */ return false; }
 function snapToTarget(piece:any, board:BoardState){ /* ... */ }
@@ -359,17 +359,19 @@ Trigger at:
 
 PuzzleStarted, PiecePlaced, PuzzleCompleted, HintUsed, SettingsChanged.
 
-Monetization (Optional)
+Monetization Strategy
 
-Free base pack; additional packs via IAP (iOS/Android).
+Free base pack with ads displayed in menus only (never during gameplay to maintain child-friendly experience).
 
-Alternatively Ads in menus only (never during play).
+Premium upgrade available via one-time purchase of USD $9.99 that removes all ads and unlocks additional puzzle packs.
 
-Parental gate before purchases.
+Parental gate required before any purchase to ensure parental consent.
 
 // src/services/monetization.ts
+export async function purchasePremium() { /* TODO: Handle $9.99 premium upgrade */ }
 export async function purchasePack(packId: string) { /* TODO */ }
 export async function restorePurchases() { /* TODO */ }
+export async function showAd() { /* TODO: Display ad in menu only */ }
 
 Theming
 // src/theme/index.ts
@@ -461,8 +463,8 @@ export const AnimalsPack: PuzzlePack = {
   titleKey: 'packs.animals',
   coverAsset: require('../../assets/packs/animals/cover.jpg'),
   puzzles: [
-    { id: 'animals-lion', titleKey: 'puzzles.lion', imageAsset: require('../../assets/packs/animals/lion.jpg'), defaultDifficulty: 'EASY' },
-    { id: 'animals-panda', titleKey: 'puzzles.panda', imageAsset: require('../../assets/packs/animals/panda.jpg'), defaultDifficulty: 'MEDIUM' },
+    { id: 'animals-lion', titleKey: 'puzzles.lion', imageAsset: require('../../assets/packs/animals/lion.jpg'), defaultDifficulty: 'AGES_3_5' },
+    { id: 'animals-panda', titleKey: 'puzzles.panda', imageAsset: require('../../assets/packs/animals/panda.jpg'), defaultDifficulty: 'AGES_6_8' },
   ],
 };
 
