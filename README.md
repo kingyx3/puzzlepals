@@ -1,100 +1,169 @@
-PuzzlePals — React Native (Expo) Jigsaw Puzzles for Kids
+# PuzzlePals - React Native Expo Jigsaw Puzzle App
 
-A delightful, kid-friendly jigsaw puzzle app built with React Native + Expo. Designed for tiny hands: big tiles, gentle snapping, celebratory animations, and zero missing pieces. Optimized for children with age-appropriate difficulty levels and engaging, safe gameplay. This README is written to be Copilot-friendly—it specifies architecture, components, types, and acceptance criteria so Copilot can scaffold the app quickly.
+PuzzlePals is a delightful, kid-friendly jigsaw puzzle app built with React Native + Expo. Designed for tiny hands: big tiles, gentle snapping, celebratory animations, and zero missing pieces. Optimized for children with age-appropriate difficulty levels and engaging, safe gameplay.
 
-Tech stack: Expo (React Native + TypeScript), Zustand for state, React Navigation, Reanimated for smooth drag & drop, React Query for async, Jest + Testing Library.
-Monetization ready with ad-supported free version and $9.99 premium upgrade, localization (i18n), analytics hooks, and parental gate included.
+This README provides comprehensive specifications for implementing the app from scratch. The repository currently contains only this specification document - the entire app needs to be built following the detailed architecture and requirements provided below.
 
-Goals (for Copilot)
+## Tech Stack
 
-Build a jigsaw engine that turns images into N×M tiles with snap-to-target placement and win detection.
+- **React Native + Expo SDK 53** - Cross-platform mobile development
+- **TypeScript** (strict mode) - Type safety and better development experience  
+- **Zustand** - Lightweight state management
+- **React Navigation or Expo Router** - App navigation
+- **Reanimated 3 + Gesture Handler** - Smooth animations and drag & drop
+- **React Query** - Async state management
+- **Jest + Testing Library** - Testing framework
+- **ESLint + Prettier** - Code quality and formatting
 
-Kid-safe UX: large hit areas, haptic feedback, confetti on completion, no timers by default.
+## Key Features
 
-Modular design for adding new puzzle packs (animals, vehicles, space).
+- **Jigsaw Engine**: Converts images into N×M grid tiles with snap-to-target placement and win detection
+- **Kid-Safe UX**: Large hit areas, haptic feedback, confetti on completion, no timers by default
+- **Multiple Difficulties**: 2×2, 3×3, 4×4, 6×6 grids for ages 3-10+
+- **Modular Design**: Easy to add new puzzle packs (animals, vehicles, space)
+- **Offline-First**: Assets bundled; future remote packs possible
+- **Monetization Ready**: Ad-supported free version + $9.99 premium upgrade
+- **Accessibility**: VoiceOver support, large controls, reduced motion mode
+- **Localization**: i18n support with RTL mirroring
+- **Parental Controls**: Math gate for settings and purchases
 
-Offline-first: assets bundled; future remote packs possible.
+## Game Features
 
-Features
+### Puzzle Mechanics
+- **Grid-based Puzzles**: 4, 9, 16, 25, 36 pieces (2×2 → 6×6 grids) designed for ages 3-10+
 
-Jigsaws: 4, 9, 16, 25, 36 pieces designed for ages 3-10+ (2×2 → 6×6 grids).
+- **Smart Snapping**: Pieces snap when within threshold with "magnet" easing animation
+- **Hint System**: Show outline, ghost image, or peek functionality  
+- **Progress Persistence**: Resume unfinished puzzles, track completion times
 
-Snapping: piece snaps when within threshold; supports “magnet” easing.
+### User Experience  
+- **Reward System**: Unlock stickers/badges with animated "you did it!" sequences
+- **Sound & Haptics**: Snap sounds, win celebrations, tactile feedback
+- **Accessibility**: Large controls, VoiceOver labels, reduced motion support
+- **Internationalization**: Multi-language support with RTL layout compatibility
+- **Parental Controls**: Math-based gate for settings and purchase access
 
-Hint modes: show outline, ghost image, or peek.
+### Enhanced Game Features
 
-Progress saving: resume unfinished puzzle; track best time (optional).
+- **Advanced Hint System**: Progressive hint levels from piece outline to ghost image to auto-placement
+- **Educational Content**: Animal facts, learning prompts, and vocabulary building integrated with puzzle themes  
+- **Custom Puzzle Creation**: Turn family photos into puzzles with parental approval and safety controls
+- **Smart Sorting**: Auto-organize pieces by edges, corners, colors, or patterns for easier gameplay
+- **Achievement System**: Unlock stickers, avatars, and special content based on progress milestones
+- **Seasonal Content**: Holiday-themed puzzles and special events throughout the year
+- **Photo Sharing**: Share completed puzzle screenshots with family using parental-controlled sharing
+- **Voice Guidance**: Audio descriptions and hints for enhanced accessibility support
+- **Daily Challenges**: Special daily puzzles with unique rewards to encourage regular engagement
 
-Rewards: stickers/badges; animated “you did it!” sequence.
+## Project Structure
 
-Accessibility: large controls, VoiceOver labels, reduced motion mode.
+The recommended project structure after implementation:
 
-Localization: i18n with pluralization; RTL-safe.
+```
+├── app/                             # Expo Router screens
+│   ├── _layout.tsx                  # Root navigation layout 
+│   ├── index.tsx                    # Home screen (puzzle packs)
+│   ├── play/[puzzleId].tsx          # Play screen with puzzle canvas
+│   ├── settings.tsx                 # Settings with parental gate
+│   ├── rewards.tsx                  # Sticker rewards
+│   └── store/                       # Zustand stores (game, settings)
+├── src/
+│   ├── components/                  # Reusable UI components
+│   │   ├── PuzzleCanvas.tsx         # Main game canvas with drag logic
+│   │   ├── Piece.tsx                # Individual puzzle piece component
+│   │   ├── HUD.tsx                  # Game controls (hint, reset, pause)
+│   │   ├── PackCard.tsx             # Puzzle pack tiles
+│   │   └── ParentalGate.tsx         # Math-based parental control
+│   ├── engine/                      # Puzzle game logic
+│   │   ├── jigsaw.ts                # Core puzzle algorithms
+│   │   └── geometry.ts              # Rectangle math, snap detection
+│   ├── hooks/                       # Custom React hooks
+│   │   ├── usePieceDrag.ts          # Reanimated gesture handling
+│   │   └── useHaptics.ts            # Haptic feedback integration
+│   ├── stores/                      # Zustand state management
+│   │   ├── game.ts                  # Game state (current puzzle)
+│   │   └── settings.ts              # App settings (sound, difficulty)
+│   ├── services/                    # External services
+│   │   ├── storage.ts               # Progress persistence (MMKV)
+│   │   ├── analytics.ts             # Event tracking (placeholder)
+│   │   └── monetization.ts          # IAP/ads (placeholder)
+│   ├── i18n/                        # Internationalization
+│   │   ├── index.ts                 # i18next configuration
+│   │   ├── en.json                  # English translations
+│   │   └── zh.json                  # Chinese translations
+│   ├── theme/                       # Design system
+│   │   └── index.ts                 # Colors, spacing, typography
+│   ├── types/                       # TypeScript definitions
+│   │   └── index.ts                 # Core types (Puzzle, Piece, Board)
+│   └── utils/                       # Helper functions
+│       ├── device.ts                # Screen size, safe area helpers
+│       └── sound.ts                 # Audio playback (expo-av)
+├── assets/                          # Static assets
+│   ├── packs/                       # Puzzle images by theme
+│   │   ├── animals/*.jpg            # Animal puzzle images
+│   │   └── vehicles/*.jpg           # Vehicle puzzle images
+│   ├── sounds/                      # Audio files (snap, win sounds)
+│   └── fonts/                       # Custom fonts
+├── __tests__/                       # Test files
+└── README.md                        # Project documentation
+```
 
-Parental gate: math gate for settings/purchases.
+**Note:** If you prefer React Navigation over Expo Router, swap the `app/` routing structure for `src/navigation/*` and create an `App.tsx` entrypoint. The rest of the structure remains the same.
 
-Project Structure
-apps/puzzlepals/
-├─ app/
-│  ├─ _layout.tsx                  # Root navigation layout (Expo Router) or use React Navigation
-│  ├─ index.tsx                    # Home screen (packs, continue button)
-│  ├─ play/[puzzleId].tsx          # Play screen with canvas
-│  ├─ settings.tsx                 # Parent settings (difficulty, sound, language)
-│  ├─ rewards.tsx                  # Sticker book / badges
-│  └─ store/                       # Zustand stores (game, settings)
-├─ src/
-│  ├─ components/
-│  │  ├─ PuzzleCanvas.tsx          # Renders board, pieces, ghost image, drag logic
-│  │  ├─ Piece.tsx                 # Single draggable piece
-│  │  ├─ HUD.tsx                   # Top bar: hint, reset, pause
-│  │  ├─ PackCard.tsx              # Pack tile in home
-│  │  └─ ParentalGate.tsx
-│  ├─ engine/
-│  │  ├─ jigsaw.ts                 # Slicing, shuffling, snapping logic
-│  │  └─ geometry.ts               # Rect math, thresholds, positions
-│  ├─ hooks/
-│  │  ├─ usePieceDrag.ts           # Reanimated gesture logic
-│  │  └─ useHaptics.ts
-│  ├─ i18n/
-│  │  ├─ index.ts                  # i18next setup
-│  │  ├─ en.json
-│  │  └─ zh.json
-│  ├─ theme/
-│  │  └─ index.ts                  # Colors, spacing, typography
-│  ├─ types/
-│  │  └─ index.ts
-│  ├─ utils/
-│  │  ├─ device.ts                 # Layout helpers (safe area, size)
-│  │  └─ sound.ts                  # Expo AV helpers
-│  └─ services/
-│     ├─ analytics.ts              # noop wrappers to plug Amplitude/GA later
-│     ├─ storage.ts                # MMKV/AsyncStorage for progress
-│     └─ monetization.ts           # IAP/Ads placeholders
-├─ assets/
-│  ├─ packs/animals/*.jpg
-│  ├─ packs/vehicles/*.jpg
-│  ├─ fonts/
-│  └─ sfx/
-├─ package.json
-├─ app.json / expo.json
-└─ README.md
+## Quick Start
 
+### Prerequisites
+- **Node.js 20+** (version 20.19.4 confirmed working)
+- **Yarn or npm** (Yarn recommended for faster installs)
 
-If you prefer React Navigation over Expo Router, swap app/ routing for src/navigation/* and an App.tsx entrypoint. The rest stays the same.
+### Project Setup
 
-Quick Start
-# Prereqs: Node 20+, Yarn or PNPM
-npx create-expo-app puzzlepals --template
-cd puzzlepals
+**Step 1: Create Expo Project**
+```bash
+# In the repository root directory
+npx create-expo-app@latest . --template blank-typescript
+```
+
+**Step 2: Install Core Dependencies** 
+```bash
 yarn add zustand @tanstack/react-query @react-navigation/native \
   @react-navigation/native-stack react-native-gesture-handler \
   react-native-reanimated react-native-safe-area-context \
   react-native-screens expo-haptics expo-av react-native-mmkv \
   i18next react-i18next react-native-localize react-native-svg
-# (Expo config plugins for Reanimated + Gesture are auto with SDK >= 51)
-yarn ios   # or yarn android / yarn web
+```
 
-Data Model (TypeScript)
+**Step 3: Install Expo SDK Compatible Versions**
+```bash
+npx expo install react-native-gesture-handler@~2.24.0 \
+  react-native-reanimated@~3.17.4 react-native-safe-area-context@5.4.0 \
+  react-native-screens@~4.11.1 react-native-svg@15.11.2
+```
+
+**Step 4: Install Development Dependencies**
+```bash
+yarn add -D jest @testing-library/react-native ts-jest @types/jest \
+  eslint prettier @typescript-eslint/eslint-plugin \
+  @typescript-eslint/parser react-test-renderer@19.0.0 @eslint/eslintrc
+```
+
+**Step 5: Start Development**
+```bash
+# For web development (recommended for testing)
+npx expo start --web --offline
+
+# For iOS/Android (requires simulator/device)
+yarn ios    # iOS
+yarn android # Android
+```
+
+> **Note:** Expo config plugins for Reanimated + Gesture Handler are automatically configured with SDK >= 51
+
+## Data Models
+
+### Core TypeScript Types
+
+```typescript
 // src/types/index.ts
 export type Difficulty = 'AGES_3_5' | 'AGES_6_8' | 'AGES_9_10' | 'AGES_11_PLUS'; // 2x2, 3x3, 4x4, 6x6
 
@@ -137,106 +206,143 @@ export interface Progress {
   startedAt: number;
   completedAt?: number;
 }
+```
 
-Jigsaw Engine Overview
+## Jigsaw Engine Architecture
 
-Grid slicing (rectangular to start):
+### Core Puzzle Logic
 
-Choose cols×rows from difficulty.
+**Grid Slicing Process:**
+1. Choose `cols × rows` grid dimensions based on difficulty level
+2. Compute tile rectangles (target positions) for each grid cell
+3. Create `Piece` instances with shuffled starting positions around staging area
+4. Render each piece using `<Image>` component clipped with SVG mask or react-native-svg
 
-Compute tile rects (target positions).
+### Drag & Drop Mechanics
 
-Create Piece instances with shuffled starting positions around a staging area.
+**Implementation Approach:**
+- Use `react-native-gesture-handler` + `Reanimated` for smooth interactions
+- On gesture release: check if piece center is within `SNAP_THRESHOLD` pixels of target
+- If within threshold: snap to target position and mark `placed = true`
+- Provide haptic feedback and sound effects on successful snap
 
-Draw each piece via <Image> clipped with SVG mask or use react-native-svg to crop.
+### Win Detection
 
-Drag & Snap:
+**Celebration Sequence Triggered when `placedCount === cols × rows`:**
+- **Visual Effects**: Confetti animation (Lottie or particle spray)
+- **Audio**: Victory sound effect
+- **Rewards**: Unlock new stickers/badges
+- **Persistence**: Save completion data and progress
 
-Use react-native-gesture-handler + Reanimated.
+## State Management
 
-On release, if piece center within SNAP_THRESHOLD px of target rect center, snap to target and mark placed=true.
+### Zustand Game Store
 
-Play haptics and sfx on snap.
-
-Win detection:
-
-When placedCount === cols*rows, trigger celebration:
-
-Confetti (Lottie or simple particle spray),
-
-Sound,
-
-Reward sticker unlock,
-
-Save completion.
-
-Zustand Store (Game)
+```typescript
 // app/store/game.ts
 import { create } from 'zustand';
 import { BoardState, Difficulty, PuzzleMeta } from '@/src/types';
 
-type GameStore = {
-  current?: { puzzle: PuzzleMeta; difficulty: Difficulty; board: BoardState };
-  startPuzzle: (puzzle: PuzzleMeta, difficulty: Difficulty, size: {w:number,h:number}) => void;
+interface GameStore {
+  current?: { 
+    puzzle: PuzzleMeta; 
+    difficulty: Difficulty; 
+    board: BoardState 
+  };
+  startPuzzle: (
+    puzzle: PuzzleMeta, 
+    difficulty: Difficulty, 
+    size: { w: number; h: number }
+  ) => void;
   movePiece: (id: string, x: number, y: number) => void;
   placePieceIfSnapped: (id: string) => boolean;
   reset: () => void;
-};
+}
 
 export const useGame = create<GameStore>((set, get) => ({
-  startPuzzle: (p, difficulty, size) => {
+  startPuzzle: (puzzle, difficulty, size) => {
     const { cols, rows } = diffToGrid(difficulty);
-    const board = createBoard(p.imageAsset, cols, rows, size.w, size.h);
-    set({ current: { puzzle: p, difficulty, board } });
+    const board = createBoard(puzzle.imageAsset, cols, rows, size.w, size.h);
+    set({ current: { puzzle, difficulty, board } });
   },
-  movePiece: (id, x, y) => set(s => {
-    if (!s.current) return s;
-    s.current.board.pieces[id].x = x; s.current.board.pieces[id].y = y;
-    return { ...s };
+  
+  movePiece: (id, x, y) => set(state => {
+    if (!state.current) return state;
+    state.current.board.pieces[id].x = x;
+    state.current.board.pieces[id].y = y;
+    return { ...state };
   }),
+  
   placePieceIfSnapped: (id) => {
-    const s = get();
-    if (!s.current) return false;
-    const piece = s.current.board.pieces[id];
-    const snapped = isWithinSnapThreshold(piece, s.current.board);
+    const state = get();
+    if (!state.current) return false;
+    const piece = state.current.board.pieces[id];
+    const snapped = isWithinSnapThreshold(piece, state.current.board);
     if (snapped) {
-      snapToTarget(piece, s.current.board);
+      snapToTarget(piece, state.current.board);
       return true;
     }
     return false;
   },
+  
   reset: () => set({ current: undefined }),
 }));
 
-// Helpers (pseudo signatures for Copilot to fill)
-function diffToGrid(d: Difficulty){ /* AGES_3_5->2x2, AGES_6_8->3x3, AGES_9_10->4x4, AGES_11_PLUS->6x6 */ return { cols:2, rows:2 }; }
-function createBoard(img: number, cols:number, rows:number, w:number, h:number): BoardState { /* ... */ return {} as any; }
-function isWithinSnapThreshold(piece:any, board:BoardState){ /* ... */ return false; }
-function snapToTarget(piece:any, board:BoardState){ /* ... */ }
+// Helper functions (implementation details to be completed)
+function diffToGrid(difficulty: Difficulty) {
+  // AGES_3_5 -> 2x2, AGES_6_8 -> 3x3, AGES_9_10 -> 4x4, AGES_11_PLUS -> 6x6
+  const gridMap = {
+    AGES_3_5: { cols: 2, rows: 2 },
+    AGES_6_8: { cols: 3, rows: 3 },
+    AGES_9_10: { cols: 4, rows: 4 },
+    AGES_11_PLUS: { cols: 6, rows: 6 },
+  };
+  return gridMap[difficulty];
+}
 
-Core Components
-PuzzleCanvas.tsx
+function createBoard(imageAsset: number, cols: number, rows: number, width: number, height: number): BoardState {
+  // TODO: Implement board creation logic
+  return {} as BoardState;
+}
 
-Accepts BoardState, renders background ghost image (optional), pieces, and HUD.
+function isWithinSnapThreshold(piece: any, board: BoardState): boolean {
+  // TODO: Implement snap threshold detection
+  return false;
+}
 
-Calculates layout based on device width/height + safe areas.
+function snapToTarget(piece: any, board: BoardState): void {
+  // TODO: Implement snap animation to target position
+}
+```
 
-Provides snap threshold via context.
+## Core Components
 
-Piece.tsx
+### PuzzleCanvas.tsx
 
-Renders individual piece (clipped bitmap) and attaches PanGestureHandler.
+**Responsibilities:**
+- Accept `BoardState` and render background ghost image (optional)
+- Render all puzzle pieces with proper positioning
+- Calculate layout based on device dimensions and safe areas
+- Provide snap threshold configuration via React Context
 
-On onEnd, calls placePieceIfSnapped(id); animates to target with Reanimated withTiming.
+### Piece.tsx
 
-HUD.tsx
+**Functionality:**
+- Render individual puzzle piece using clipped bitmap
+- Attach `PanGestureHandler` for drag interactions
+- On gesture end: call `placePieceIfSnapped(id)` to check snap
+- Animate to target position using Reanimated `withTiming`
 
-Buttons: Hint, Reset, Home. Optional Timer.
+### HUD.tsx
 
-Exposes onHint to toggle ghost opacity for a few seconds.
+**Features:**
+- **Control Buttons**: Hint, Reset, Home navigation
+- **Optional Timer**: Display elapsed time (can be disabled for younger kids)
+- **Hint System**: Toggle ghost image opacity for 5 seconds on hint activation
 
-Screens
-Home (packs + continue)
+## App Screens
+
+### Home Screen (Puzzle Packs + Continue)
 
 Acceptance Criteria
 
@@ -270,7 +376,6 @@ Toggles: sound, music, reduced motion, language.
 
 Difficulty default.
 
-Example Screen (Play)
 // app/play/[puzzleId].tsx
 import { View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
@@ -284,26 +389,33 @@ export default function PlayScreen() {
   const { top } = useSafeAreaInsets();
   const game = useGame();
 
-  // TODO: load puzzle meta by id, then call startPuzzle on mount with layout size.
-  // onLayout of container determines available width/height.
+  const handleLayout = (event: any) => {
+    const { width, height } = event.nativeEvent.layout;
+    // TODO: Load puzzle metadata by ID and call startPuzzle
+    // startPuzzle(meta, defaultDifficulty, { w: width, h: height - 80 })
+  };
 
   return (
-    <View style={{ flex: 1, paddingTop: top }} onLayout={(e) => {
-      const { width, height } = e.nativeEvent.layout;
-      // Copilot: fetch puzzle meta by id and call startPuzzle(meta, defaultDifficulty, {w: width, h: height - 80})
-    }}>
+    <View 
+      style={{ flex: 1, paddingTop: top }} 
+      onLayout={handleLayout}
+    >
       {game.current && <PuzzleCanvas board={game.current.board} />}
       <HUD />
     </View>
   );
 }
+```
 
-Internationalization (i18n)
+## Internationalization (i18n)
 
-Library: i18next + react-i18next + react-native-localize.
+### Setup & Configuration
 
-Keep copy in /src/i18n/en.json, /src/i18n/zh.json.
+**Libraries Used:** `i18next` + `react-i18next` + `react-native-localize`
 
+**Translation Files:** `/src/i18n/en.json`, `/src/i18n/zh.json`
+
+```typescript
 // src/i18n/index.ts
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
@@ -313,71 +425,100 @@ import zh from './zh.json';
 
 i18n.use(initReactI18next).init({
   compatibilityJSON: 'v4',
-  resources: { en: { translation: en }, zh: { translation: zh } },
+  resources: { 
+    en: { translation: en }, 
+    zh: { translation: zh } 
+  },
   lng: RNLocalize.getLocales()[0]?.languageCode ?? 'en',
   fallbackLng: 'en',
   interpolation: { escapeValue: false },
 });
+
 export default i18n;
+```
 
-Accessibility
+## Accessibility Features
 
-Label buttons and pieces: accessibilityLabel, accessible.
+### Core Accessibility Support
+- **VoiceOver/TalkBack**: All buttons and pieces include `accessibilityLabel` and `accessible` props
+- **Reduced Motion**: Disable confetti and large animations when user has enabled reduced motion
+- **Touch Targets**: Minimum 44×44 point touch targets for all interactive elements
+- **Color Contrast**: Contrast-safe color palette for visual accessibility
+- **RTL Support**: Right-to-left layout mirroring via `I18nManager`
 
-Reduced motion: disable confetti/large animations if user enabled.
+## Progress Persistence
 
-Contrast-safe palette; minimum 44×44 touch targets.
+### Storage Strategy
+- **Primary**: MMKV for fast, synchronous storage
+- **Fallback**: AsyncStorage for broader compatibility
+- **Key Pattern**: `progress:<puzzleId>:<difficulty>` → `Progress` object
 
-Support RTL mirroring via I18nManager.
+## Audio & Haptics
 
-Persisting Progress
+### Sound Effects
+- **Library**: `expo-av` for loading and playing short `.wav` files
+- **Events**: Snap confirmation sound, puzzle completion celebration
 
-Use MMKV (fast) with fallback to AsyncStorage.
+### Haptic Feedback  
+- **Library**: `expo-haptics`
+- **Snap Feedback**: `selectionAsync()` on successful piece snap
+- **Win Celebration**: `notificationAsync('success')` on puzzle completion
 
-Key pattern: progress:<puzzleId>:<difficulty> → Progress.
+## Analytics Integration
 
-Sounds & Haptics
-
-expo-av: load short .wav for snap and win.
-
-expo-haptics: selectionAsync() on snap, notificationAsync(Success) on win.
-
-Analytics (Noop by default)
-
-Wrap events to be vendor-agnostic:
-
+### Event Tracking Framework
+```typescript
 // src/services/analytics.ts
 export const Analytics = {
   track(event: string, props?: Record<string, any>) {
-    // TODO: plug Amplitude/Segment/GA4
+    // TODO: Integrate with Amplitude/Segment/GA4
     if (__DEV__) console.log('[analytics]', event, props);
   },
 };
+```
 
+**Key Events to Track:**
+- `PuzzleStarted`
+- `PiecePlaced` 
+- `PuzzleCompleted`
+- `HintUsed`
+- `SettingsChanged`
 
-Trigger at:
+## Monetization Strategy
 
-PuzzleStarted, PiecePlaced, PuzzleCompleted, HintUsed, SettingsChanged.
+### Revenue Model
+- **Free Tier**: Base puzzle pack with ads displayed in menus only (never during gameplay)
+- **Premium Upgrade**: One-time $9.99 purchase removes ads + unlocks additional puzzle packs  
+- **Parental Gate**: Math-based verification required before any purchase
 
-Monetization Strategy
-
-Free base pack with ads displayed in menus only (never during gameplay to maintain child-friendly experience).
-
-Premium upgrade available via one-time purchase of USD $9.99 that removes all ads and unlocks additional puzzle packs.
-
-Parental gate required before any purchase to ensure parental consent.
-
+### Implementation Placeholders
+```typescript
 // src/services/monetization.ts
-export async function purchasePremium() { /* TODO: Handle $9.99 premium upgrade */ }
-export async function purchasePack(packId: string) { /* TODO */ }
-export async function restorePurchases() { /* TODO */ }
-export async function showAd() { /* TODO: Display ad in menu only */ }
+export async function purchasePremium(): Promise<void> {
+  // TODO: Handle $9.99 premium upgrade via app store
+}
 
-Theming
+export async function purchasePack(packId: string): Promise<void> {
+  // TODO: Handle individual pack purchases
+}
+
+export async function restorePurchases(): Promise<void> {
+  // TODO: Restore previous purchases
+}
+
+export async function showAd(): Promise<void> {
+  // TODO: Display interstitial ad in menu screens only
+}
+```
+
+## Design System
+
+### Theme Configuration
+```typescript
 // src/theme/index.ts
 export const theme = {
   colors: {
-    bg: '#FFFDF7',
+    background: '#FFFDF7',
     primary: '#6B9EFF',
     accent: '#FFB86B',
     text: '#1E1E1E',
@@ -386,75 +527,74 @@ export const theme = {
   spacing: (n: number) => n * 8,
   radius: { sm: 8, md: 16, lg: 24 },
 };
+```
 
-Testing
+## Testing & Development
+
+### Test Setup
+**Development Dependencies:**
+```bash
 yarn add -D jest @testing-library/react-native jest-expo ts-jest @types/jest
+```
 
+### Testing Strategy
+- **Unit Tests**: Test `engine/jigsaw.ts` functions (slice, shuffle, snap detection)
+- **Component Tests**: Test `Piece.tsx` drag & drop interactions  
+- **Accessibility Tests**: Verify labels and accessibility properties are present
 
-Unit test engine/jigsaw.ts (slice, shuffle, snap).
-
-Component test Piece.tsx (drag→snap).
-
-Accessibility snapshot: labels present.
-
-Example:
-
-// __tests__/engine.jest.ts
+**Example Test:**
+```typescript
+// __tests__/engine.test.ts
 import { computeTargetRects, isWithinSnapThreshold } from '@/src/engine/jigsaw';
 
-test('snap within threshold', () => {
-  // Copilot: build board + piece, move piece near target, expect true
+test('piece snaps when within threshold', () => {
+  // TODO: Create test board and piece, move piece near target, expect snap
 });
+```
 
-CI & Lint
+### Code Quality
 
-ESLint (RN config), TypeScript strict, Prettier.
+**Linting & Formatting:**
+- **ESLint**: React Native configuration with TypeScript support
+- **TypeScript**: Strict mode enabled for better type safety
+- **Prettier**: Code formatting consistency
 
-GitHub Actions: expo/expo-github-action to run jest and expo doctor.
+**CI/CD:**
+- **GitHub Actions**: Use `expo/expo-github-action` to run Jest tests and `expo doctor`
 
-Build & Release
+### Build & Release
 
-EAS Build: configure iOS/Android in eas.json.
+**Production Builds:**
+- **EAS Build**: Configure iOS/Android builds in `eas.json`
+- **Code Signing**: Use app signing and store credentials in EAS
+- **Assets**: Add app icons and splash screens in `app.json`
 
-Use app signing and store credentials in EAS.
+## Development Guidance
 
-Add app icons and splash in app.json.
+### Copilot Implementation Checklist
 
-Copilot TODO Map
+**Core Engine (`engine/jigsaw.ts`):**
+- [ ] `computeTargetRects(cols, rows, width, height)` - Calculate grid positions
+- [ ] `createPiecesFromRects(imageAsset, rects)` - Generate puzzle pieces
+- [ ] `shufflePieces(pieces)` - Randomize starting positions
+- [ ] `isWithinSnapThreshold(piece, board)` - Detect snap proximity  
+- [ ] `snapToTarget(piece, board)` - Animate piece to target
 
-Add these TODO comments in files to guide Copilot:
+**Drag & Drop (`components/Piece.tsx`):**
+- [ ] Implement `PanGestureHandler` with Reanimated position tracking
+- [ ] On gesture end → check snap threshold and animate to target
 
-engine/jigsaw.ts:
+**Navigation (`app/index.tsx`):**
+- [ ] Load puzzle packs from assets and render `PackCard` list
+- [ ] Show "Continue" button if saved progress exists
 
-// TODO: implement computeTargetRects(cols, rows, width, height)
+**Data Persistence (`services/storage.ts`):**
+- [ ] `saveProgress(progress)` - Store puzzle state
+- [ ] `getProgress(puzzleId, difficulty)` - Load saved state
 
-// TODO: implement createPiecesFromRects(imageAsset, rects)
+### Sample Asset Structure
 
-// TODO: implement shufflePieces(pieces)
-
-// TODO: implement isWithinSnapThreshold(piece, board)
-
-// TODO: implement snapToTarget(piece, board)
-
-components/Piece.tsx:
-
-// TODO: implement PanGestureHandler with Reanimated position
-
-// TODO: onEnd → check snap; animate to target
-
-app/index.tsx:
-
-// TODO: load packs from assets; render PackCard list
-
-// TODO: resume progress button if saved
-
-services/storage.ts:
-
-// TODO: saveProgress(progress)
-
-// TODO: getProgress(puzzleId, difficulty)
-
-Sample Assets Bootstrap (Animals pack)
+```typescript
 // src/data/packs.ts
 import { PuzzlePack } from '@/src/types';
 
@@ -463,24 +603,116 @@ export const AnimalsPack: PuzzlePack = {
   titleKey: 'packs.animals',
   coverAsset: require('../../assets/packs/animals/cover.jpg'),
   puzzles: [
-    { id: 'animals-lion', titleKey: 'puzzles.lion', imageAsset: require('../../assets/packs/animals/lion.jpg'), defaultDifficulty: 'AGES_3_5' },
-    { id: 'animals-panda', titleKey: 'puzzles.panda', imageAsset: require('../../assets/packs/animals/panda.jpg'), defaultDifficulty: 'AGES_6_8' },
+    { 
+      id: 'animals-lion', 
+      titleKey: 'puzzles.lion', 
+      imageAsset: require('../../assets/packs/animals/lion.jpg'), 
+      defaultDifficulty: 'AGES_3_5',
+      educationalContent: {
+        facts: ['Lions live in groups called prides', 'Male lions have manes'],
+        vocabulary: ['pride', 'mane', 'savanna'],
+        learningPrompts: ['What sound does a lion make?', 'Where do lions live?']
+      }
+    },
+    { 
+      id: 'animals-panda', 
+      titleKey: 'puzzles.panda', 
+      imageAsset: require('../../assets/packs/animals/panda.jpg'), 
+      defaultDifficulty: 'AGES_6_8',
+      educationalContent: {
+        facts: ['Pandas eat bamboo all day', 'Baby pandas are very small when born'],
+        vocabulary: ['bamboo', 'habitat', 'endangered'],
+        learningPrompts: ['What do pandas like to eat?', 'What colors are pandas?']
+      }
+    },
   ],
 };
 
-Drag & Drop Implementation Notes
+// Enhanced types for educational content
+export interface EducationalContent {
+  facts: string[];
+  vocabulary: string[];
+  learningPrompts: string[];
+  ageAppropriate?: boolean;
+}
 
-Use absolute positioning for pieces in a fixed canvas container.
+export interface PuzzleMeta {
+  id: string;
+  titleKey: string;
+  imageAsset: number;
+  defaultDifficulty: Difficulty;
+  educationalContent?: EducationalContent;
+  seasonal?: boolean;
+  customCreated?: boolean;
+}
+```
 
-Store target rects (x, y, w, h) for each (row, col).
+### Enhanced Hint System Implementation
 
-During drag: clamp within canvas bounds.
+```typescript
+// src/components/HintSystem.tsx
+import { useState } from 'react';
+import { View, TouchableOpacity, Text } from 'react-native';
 
-On release:
+export type HintLevel = 'outline' | 'ghost' | 'highlight' | 'autoplace';
 
-Compute distance to target center; if < threshold, snap and mark placed.
+interface HintSystemProps {
+  currentLevel: HintLevel;
+  onHintRequest: (level: HintLevel) => void;
+  cooldownMs?: number;
+}
 
-When placed, disable hit testing for that piece to avoid re-drag.
+export function HintSystem({ currentLevel, onHintRequest, cooldownMs = 30000 }: HintSystemProps) {
+  const [cooldownActive, setCooldownActive] = useState(false);
+  
+  const requestHint = (level: HintLevel) => {
+    if (cooldownActive) return;
+    
+    onHintRequest(level);
+    setCooldownActive(true);
+    
+    setTimeout(() => setCooldownActive(false), cooldownMs);
+  };
+  
+  const hintLevels: Array<{ level: HintLevel; label: string; description: string }> = [
+    { level: 'outline', label: 'Show Outline', description: 'See piece shapes' },
+    { level: 'ghost', label: 'Ghost Image', description: 'See faded picture' },
+    { level: 'highlight', label: 'Highlight Piece', description: 'Find next piece' },
+    { level: 'autoplace', label: 'Auto Place', description: 'Place one piece' },
+  ];
+  
+  return (
+    <View style={{ flexDirection: 'row', gap: 8 }}>
+      {hintLevels.map(({ level, label }) => (
+        <TouchableOpacity
+          key={level}
+          onPress={() => requestHint(level)}
+          disabled={cooldownActive}
+          style={{
+            padding: 12,
+            backgroundColor: cooldownActive ? '#ccc' : '#6B9EFF',
+            borderRadius: 8,
+            opacity: cooldownActive ? 0.5 : 1,
+          }}
+        >
+          <Text style={{ color: 'white', fontWeight: 'bold' }}>{label}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+}
+```
+
+## Technical Implementation Details
+
+### Drag & Drop Implementation
+
+**Core Approach:**
+- Use absolute positioning for pieces within a fixed canvas container
+- Store target rectangles `(x, y, w, h)` for each grid cell `(row, col)`
+- During drag: clamp piece movement within canvas boundaries
+- On gesture release: compute distance to target center and snap if within threshold
+- When placed: disable hit testing for that piece to prevent accidental re-dragging
 
 Roadmap
 
@@ -488,16 +720,71 @@ Interlocking puzzle edges (non-rectangular, Bezier masks).
 
 Level editor (turn kid’s photo into puzzle).
 
-Remote content packs & CDN updates.
+## Future Roadmap
 
-Co-op mode (two players on tablet).
+### Core V1 Features
+- **Advanced Piece Shapes**: Interlocking puzzle edges with non-rectangular Bezier curve masks
+- **User-Generated Content**: Level editor allowing kids to turn their photos into puzzles
+- **Cloud Content**: Remote puzzle packs with CDN-based content delivery
+- **Multiplayer**: Cooperative mode for two players on tablet devices
 
-License
+### Enhanced Learning & Engagement Features
+- **Educational Integration**: 
+  - Animal facts and information cards when completing nature puzzles
+  - Learning prompts and vocabulary building for age-appropriate content
+  - Counting practice integration (count pieces as they're placed)
+  - Color and shape recognition activities
+
+- **Advanced Hint System**:
+  - Progressive hint levels: piece outline → ghost image → piece highlighting → auto-place
+  - Smart hints that adapt to child's skill level
+  - Hint cooldown system to encourage independent problem solving
+
+- **Customization & Personalization**:
+  - Custom puzzle creation from family photos with parental approval
+  - Kid-friendly avatar system with unlockable accessories
+  - Personalized backgrounds and themed interfaces
+  - Custom difficulty settings beyond standard grid sizes
+
+- **Social & Family Features**:
+  - Photo sharing of completed puzzles with parental controls
+  - Family profiles with multiple child accounts
+  - Achievement sharing and milestone celebrations  
+  - Parent-child collaborative puzzle modes
+
+- **Content Expansion**:
+  - Seasonal and holiday-themed puzzle collections
+  - Daily challenge puzzles with special rewards
+  - Progressive content unlock based on skill development
+  - Community-generated puzzles with moderation
+
+- **Enhanced Accessibility**:
+  - Voice guidance and audio descriptions for pieces
+  - Colorblind support with pattern overlays
+  - Motor accessibility with larger controls and simplified interactions
+  - One-handed mode for children with motor disabilities
+
+- **Parent Dashboard**:
+  - Progress tracking and skill development insights
+  - Screen time controls and healthy usage recommendations
+  - Difficulty progression suggestions based on performance
+  - Learning milestone notifications
+
+- **Advanced Technical Features**:
+  - Cloud sync across family devices
+  - Offline content packs for travel
+  - AI-powered difficulty adaptation
+  - Performance analytics and optimization
+
+## License
 
 MIT © PuzzlePals Contributors
 
-One-shot script to generate rectangles (hint for Copilot)
-// src/engine/geometry.ts
+## Development Utilities
+
+### Geometry Helper Functions
+
+```typescript src/engine/geometry.ts
 export type Rect = { x: number; y: number; w: number; h: number };
 
 export function computeTargetRects(cols: number, rows: number, width: number, height: number): Rect[] {
@@ -516,15 +803,28 @@ Developer Notes
 
 Use the latest Expo SDK and libraries when installing (don’t pin versions unless required).
 
-Enable Reanimated plugin in babel.config.js:
 
-module.exports = function(api){
+### Configuration Notes
+
+**Development Best Practices:**
+- Use the latest Expo SDK and libraries when installing (avoid pinning versions unless required)
+- Enable Reanimated plugin in `babel.config.js` for gesture handling
+
+**Babel Configuration for Reanimated:**
+```javascript
+// babel.config.js
+module.exports = function(api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],
     plugins: ['react-native-reanimated/plugin'],
   };
 };
+```
 
+**Gesture Handler Setup:**
+Ensure `react-native-gesture-handler` is imported at the app entry point for proper initialization.
 
-Ensure react-native-gesture-handler is imported at the app entry.
+---
+
+*This comprehensive specification provides all the technical details needed to implement PuzzlePals from scratch. Follow the architecture, use the provided code examples, and implement features incrementally following the priority order outlined in the copilot instructions.*
