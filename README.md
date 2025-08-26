@@ -219,85 +219,121 @@ export interface Progress {
 
 ### Win Detection
 
-Win detection:
+**Celebration Sequence Triggered when `placedCount === cols × rows`:**
+- **Visual Effects**: Confetti animation (Lottie or particle spray)
+- **Audio**: Victory sound effect
+- **Rewards**: Unlock new stickers/badges
+- **Persistence**: Save completion data and progress
 
-When placedCount === cols*rows, trigger celebration:
+## State Management
 
-Confetti (Lottie or simple particle spray),
+### Zustand Game Store
 
-Sound,
-
-Reward sticker unlock,
-
-Save completion.
-
-Zustand Store (Game)
+```typescript
 // app/store/game.ts
 import { create } from 'zustand';
 import { BoardState, Difficulty, PuzzleMeta } from '@/src/types';
 
-type GameStore = {
-  current?: { puzzle: PuzzleMeta; difficulty: Difficulty; board: BoardState };
-  startPuzzle: (puzzle: PuzzleMeta, difficulty: Difficulty, size: {w:number,h:number}) => void;
+interface GameStore {
+  current?: { 
+    puzzle: PuzzleMeta; 
+    difficulty: Difficulty; 
+    board: BoardState 
+  };
+  startPuzzle: (
+    puzzle: PuzzleMeta, 
+    difficulty: Difficulty, 
+    size: { w: number; h: number }
+  ) => void;
   movePiece: (id: string, x: number, y: number) => void;
   placePieceIfSnapped: (id: string) => boolean;
   reset: () => void;
-};
+}
 
 export const useGame = create<GameStore>((set, get) => ({
-  startPuzzle: (p, difficulty, size) => {
+  startPuzzle: (puzzle, difficulty, size) => {
     const { cols, rows } = diffToGrid(difficulty);
-    const board = createBoard(p.imageAsset, cols, rows, size.w, size.h);
-    set({ current: { puzzle: p, difficulty, board } });
+    const board = createBoard(puzzle.imageAsset, cols, rows, size.w, size.h);
+    set({ current: { puzzle, difficulty, board } });
   },
-  movePiece: (id, x, y) => set(s => {
-    if (!s.current) return s;
-    s.current.board.pieces[id].x = x; s.current.board.pieces[id].y = y;
-    return { ...s };
+  
+  movePiece: (id, x, y) => set(state => {
+    if (!state.current) return state;
+    state.current.board.pieces[id].x = x;
+    state.current.board.pieces[id].y = y;
+    return { ...state };
   }),
+  
   placePieceIfSnapped: (id) => {
-    const s = get();
-    if (!s.current) return false;
-    const piece = s.current.board.pieces[id];
-    const snapped = isWithinSnapThreshold(piece, s.current.board);
+    const state = get();
+    if (!state.current) return false;
+    const piece = state.current.board.pieces[id];
+    const snapped = isWithinSnapThreshold(piece, state.current.board);
     if (snapped) {
-      snapToTarget(piece, s.current.board);
+      snapToTarget(piece, state.current.board);
       return true;
     }
     return false;
   },
+  
   reset: () => set({ current: undefined }),
 }));
 
-// Helpers (pseudo signatures for Copilot to fill)
-function diffToGrid(d: Difficulty){ /* AGES_3_5->2x2, AGES_6_8->3x3, AGES_9_10->4x4, AGES_11_PLUS->6x6 */ return { cols:2, rows:2 }; }
-function createBoard(img: number, cols:number, rows:number, w:number, h:number): BoardState { /* ... */ return {} as any; }
-function isWithinSnapThreshold(piece:any, board:BoardState){ /* ... */ return false; }
-function snapToTarget(piece:any, board:BoardState){ /* ... */ }
+// Helper functions (implementation details to be completed)
+function diffToGrid(difficulty: Difficulty) {
+  // AGES_3_5 -> 2x2, AGES_6_8 -> 3x3, AGES_9_10 -> 4x4, AGES_11_PLUS -> 6x6
+  const gridMap = {
+    AGES_3_5: { cols: 2, rows: 2 },
+    AGES_6_8: { cols: 3, rows: 3 },
+    AGES_9_10: { cols: 4, rows: 4 },
+    AGES_11_PLUS: { cols: 6, rows: 6 },
+  };
+  return gridMap[difficulty];
+}
 
-Core Components
-PuzzleCanvas.tsx
+function createBoard(imageAsset: number, cols: number, rows: number, width: number, height: number): BoardState {
+  // TODO: Implement board creation logic
+  return {} as BoardState;
+}
 
-Accepts BoardState, renders background ghost image (optional), pieces, and HUD.
+function isWithinSnapThreshold(piece: any, board: BoardState): boolean {
+  // TODO: Implement snap threshold detection
+  return false;
+}
 
-Calculates layout based on device width/height + safe areas.
+function snapToTarget(piece: any, board: BoardState): void {
+  // TODO: Implement snap animation to target position
+}
+```
 
-Provides snap threshold via context.
+## Core Components
 
-Piece.tsx
+### PuzzleCanvas.tsx
 
-Renders individual piece (clipped bitmap) and attaches PanGestureHandler.
+**Responsibilities:**
+- Accept `BoardState` and render background ghost image (optional)
+- Render all puzzle pieces with proper positioning
+- Calculate layout based on device dimensions and safe areas
+- Provide snap threshold configuration via React Context
 
-On onEnd, calls placePieceIfSnapped(id); animates to target with Reanimated withTiming.
+### Piece.tsx
 
-HUD.tsx
+**Functionality:**
+- Render individual puzzle piece using clipped bitmap
+- Attach `PanGestureHandler` for drag interactions
+- On gesture end: call `placePieceIfSnapped(id)` to check snap
+- Animate to target position using Reanimated `withTiming`
 
-Buttons: Hint, Reset, Home. Optional Timer.
+### HUD.tsx
 
-Exposes onHint to toggle ghost opacity for a few seconds.
+**Features:**
+- **Control Buttons**: Hint, Reset, Home navigation
+- **Optional Timer**: Display elapsed time (can be disabled for younger kids)
+- **Hint System**: Toggle ghost image opacity for 5 seconds on hint activation
 
-Screens
-Home (packs + continue)
+## App Screens
+
+### Home Screen (Puzzle Packs + Continue)
 
 Acceptance Criteria
 
@@ -331,7 +367,6 @@ Toggles: sound, music, reduced motion, language.
 
 Difficulty default.
 
-Example Screen (Play)
 // app/play/[puzzleId].tsx
 import { View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
@@ -345,26 +380,33 @@ export default function PlayScreen() {
   const { top } = useSafeAreaInsets();
   const game = useGame();
 
-  // TODO: load puzzle meta by id, then call startPuzzle on mount with layout size.
-  // onLayout of container determines available width/height.
+  const handleLayout = (event: any) => {
+    const { width, height } = event.nativeEvent.layout;
+    // TODO: Load puzzle metadata by ID and call startPuzzle
+    // startPuzzle(meta, defaultDifficulty, { w: width, h: height - 80 })
+  };
 
   return (
-    <View style={{ flex: 1, paddingTop: top }} onLayout={(e) => {
-      const { width, height } = e.nativeEvent.layout;
-      // Copilot: fetch puzzle meta by id and call startPuzzle(meta, defaultDifficulty, {w: width, h: height - 80})
-    }}>
+    <View 
+      style={{ flex: 1, paddingTop: top }} 
+      onLayout={handleLayout}
+    >
       {game.current && <PuzzleCanvas board={game.current.board} />}
       <HUD />
     </View>
   );
 }
+```
 
-Internationalization (i18n)
+## Internationalization (i18n)
 
-Library: i18next + react-i18next + react-native-localize.
+### Setup & Configuration
 
-Keep copy in /src/i18n/en.json, /src/i18n/zh.json.
+**Libraries Used:** `i18next` + `react-i18next` + `react-native-localize`
 
+**Translation Files:** `/src/i18n/en.json`, `/src/i18n/zh.json`
+
+```typescript
 // src/i18n/index.ts
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
@@ -374,71 +416,100 @@ import zh from './zh.json';
 
 i18n.use(initReactI18next).init({
   compatibilityJSON: 'v4',
-  resources: { en: { translation: en }, zh: { translation: zh } },
+  resources: { 
+    en: { translation: en }, 
+    zh: { translation: zh } 
+  },
   lng: RNLocalize.getLocales()[0]?.languageCode ?? 'en',
   fallbackLng: 'en',
   interpolation: { escapeValue: false },
 });
+
 export default i18n;
+```
 
-Accessibility
+## Accessibility Features
 
-Label buttons and pieces: accessibilityLabel, accessible.
+### Core Accessibility Support
+- **VoiceOver/TalkBack**: All buttons and pieces include `accessibilityLabel` and `accessible` props
+- **Reduced Motion**: Disable confetti and large animations when user has enabled reduced motion
+- **Touch Targets**: Minimum 44×44 point touch targets for all interactive elements
+- **Color Contrast**: Contrast-safe color palette for visual accessibility
+- **RTL Support**: Right-to-left layout mirroring via `I18nManager`
 
-Reduced motion: disable confetti/large animations if user enabled.
+## Progress Persistence
 
-Contrast-safe palette; minimum 44×44 touch targets.
+### Storage Strategy
+- **Primary**: MMKV for fast, synchronous storage
+- **Fallback**: AsyncStorage for broader compatibility
+- **Key Pattern**: `progress:<puzzleId>:<difficulty>` → `Progress` object
 
-Support RTL mirroring via I18nManager.
+## Audio & Haptics
 
-Persisting Progress
+### Sound Effects
+- **Library**: `expo-av` for loading and playing short `.wav` files
+- **Events**: Snap confirmation sound, puzzle completion celebration
 
-Use MMKV (fast) with fallback to AsyncStorage.
+### Haptic Feedback  
+- **Library**: `expo-haptics`
+- **Snap Feedback**: `selectionAsync()` on successful piece snap
+- **Win Celebration**: `notificationAsync('success')` on puzzle completion
 
-Key pattern: progress:<puzzleId>:<difficulty> → Progress.
+## Analytics Integration
 
-Sounds & Haptics
-
-expo-av: load short .wav for snap and win.
-
-expo-haptics: selectionAsync() on snap, notificationAsync(Success) on win.
-
-Analytics (Noop by default)
-
-Wrap events to be vendor-agnostic:
-
+### Event Tracking Framework
+```typescript
 // src/services/analytics.ts
 export const Analytics = {
   track(event: string, props?: Record<string, any>) {
-    // TODO: plug Amplitude/Segment/GA4
+    // TODO: Integrate with Amplitude/Segment/GA4
     if (__DEV__) console.log('[analytics]', event, props);
   },
 };
+```
 
+**Key Events to Track:**
+- `PuzzleStarted`
+- `PiecePlaced` 
+- `PuzzleCompleted`
+- `HintUsed`
+- `SettingsChanged`
 
-Trigger at:
+## Monetization Strategy
 
-PuzzleStarted, PiecePlaced, PuzzleCompleted, HintUsed, SettingsChanged.
+### Revenue Model
+- **Free Tier**: Base puzzle pack with ads displayed in menus only (never during gameplay)
+- **Premium Upgrade**: One-time $9.99 purchase removes ads + unlocks additional puzzle packs  
+- **Parental Gate**: Math-based verification required before any purchase
 
-Monetization Strategy
-
-Free base pack with ads displayed in menus only (never during gameplay to maintain child-friendly experience).
-
-Premium upgrade available via one-time purchase of USD $9.99 that removes all ads and unlocks additional puzzle packs.
-
-Parental gate required before any purchase to ensure parental consent.
-
+### Implementation Placeholders
+```typescript
 // src/services/monetization.ts
-export async function purchasePremium() { /* TODO: Handle $9.99 premium upgrade */ }
-export async function purchasePack(packId: string) { /* TODO */ }
-export async function restorePurchases() { /* TODO */ }
-export async function showAd() { /* TODO: Display ad in menu only */ }
+export async function purchasePremium(): Promise<void> {
+  // TODO: Handle $9.99 premium upgrade via app store
+}
 
-Theming
+export async function purchasePack(packId: string): Promise<void> {
+  // TODO: Handle individual pack purchases
+}
+
+export async function restorePurchases(): Promise<void> {
+  // TODO: Restore previous purchases
+}
+
+export async function showAd(): Promise<void> {
+  // TODO: Display interstitial ad in menu screens only
+}
+```
+
+## Design System
+
+### Theme Configuration
+```typescript
 // src/theme/index.ts
 export const theme = {
   colors: {
-    bg: '#FFFDF7',
+    background: '#FFFDF7',
     primary: '#6B9EFF',
     accent: '#FFB86B',
     text: '#1E1E1E',
@@ -447,75 +518,74 @@ export const theme = {
   spacing: (n: number) => n * 8,
   radius: { sm: 8, md: 16, lg: 24 },
 };
+```
 
-Testing
+## Testing & Development
+
+### Test Setup
+**Development Dependencies:**
+```bash
 yarn add -D jest @testing-library/react-native jest-expo ts-jest @types/jest
+```
 
+### Testing Strategy
+- **Unit Tests**: Test `engine/jigsaw.ts` functions (slice, shuffle, snap detection)
+- **Component Tests**: Test `Piece.tsx` drag & drop interactions  
+- **Accessibility Tests**: Verify labels and accessibility properties are present
 
-Unit test engine/jigsaw.ts (slice, shuffle, snap).
-
-Component test Piece.tsx (drag→snap).
-
-Accessibility snapshot: labels present.
-
-Example:
-
-// __tests__/engine.jest.ts
+**Example Test:**
+```typescript
+// __tests__/engine.test.ts
 import { computeTargetRects, isWithinSnapThreshold } from '@/src/engine/jigsaw';
 
-test('snap within threshold', () => {
-  // Copilot: build board + piece, move piece near target, expect true
+test('piece snaps when within threshold', () => {
+  // TODO: Create test board and piece, move piece near target, expect snap
 });
+```
 
-CI & Lint
+### Code Quality
 
-ESLint (RN config), TypeScript strict, Prettier.
+**Linting & Formatting:**
+- **ESLint**: React Native configuration with TypeScript support
+- **TypeScript**: Strict mode enabled for better type safety
+- **Prettier**: Code formatting consistency
 
-GitHub Actions: expo/expo-github-action to run jest and expo doctor.
+**CI/CD:**
+- **GitHub Actions**: Use `expo/expo-github-action` to run Jest tests and `expo doctor`
 
-Build & Release
+### Build & Release
 
-EAS Build: configure iOS/Android in eas.json.
+**Production Builds:**
+- **EAS Build**: Configure iOS/Android builds in `eas.json`
+- **Code Signing**: Use app signing and store credentials in EAS
+- **Assets**: Add app icons and splash screens in `app.json`
 
-Use app signing and store credentials in EAS.
+## Development Guidance
 
-Add app icons and splash in app.json.
+### Copilot Implementation Checklist
 
-Copilot TODO Map
+**Core Engine (`engine/jigsaw.ts`):**
+- [ ] `computeTargetRects(cols, rows, width, height)` - Calculate grid positions
+- [ ] `createPiecesFromRects(imageAsset, rects)` - Generate puzzle pieces
+- [ ] `shufflePieces(pieces)` - Randomize starting positions
+- [ ] `isWithinSnapThreshold(piece, board)` - Detect snap proximity  
+- [ ] `snapToTarget(piece, board)` - Animate piece to target
 
-Add these TODO comments in files to guide Copilot:
+**Drag & Drop (`components/Piece.tsx`):**
+- [ ] Implement `PanGestureHandler` with Reanimated position tracking
+- [ ] On gesture end → check snap threshold and animate to target
 
-engine/jigsaw.ts:
+**Navigation (`app/index.tsx`):**
+- [ ] Load puzzle packs from assets and render `PackCard` list
+- [ ] Show "Continue" button if saved progress exists
 
-// TODO: implement computeTargetRects(cols, rows, width, height)
+**Data Persistence (`services/storage.ts`):**
+- [ ] `saveProgress(progress)` - Store puzzle state
+- [ ] `getProgress(puzzleId, difficulty)` - Load saved state
 
-// TODO: implement createPiecesFromRects(imageAsset, rects)
+### Sample Asset Structure
 
-// TODO: implement shufflePieces(pieces)
-
-// TODO: implement isWithinSnapThreshold(piece, board)
-
-// TODO: implement snapToTarget(piece, board)
-
-components/Piece.tsx:
-
-// TODO: implement PanGestureHandler with Reanimated position
-
-// TODO: onEnd → check snap; animate to target
-
-app/index.tsx:
-
-// TODO: load packs from assets; render PackCard list
-
-// TODO: resume progress button if saved
-
-services/storage.ts:
-
-// TODO: saveProgress(progress)
-
-// TODO: getProgress(puzzleId, difficulty)
-
-Sample Assets Bootstrap (Animals pack)
+```typescript
 // src/data/packs.ts
 import { PuzzlePack } from '@/src/types';
 
@@ -529,19 +599,16 @@ export const AnimalsPack: PuzzlePack = {
   ],
 };
 
-Drag & Drop Implementation Notes
+## Technical Implementation Details
 
-Use absolute positioning for pieces in a fixed canvas container.
+### Drag & Drop Implementation
 
-Store target rects (x, y, w, h) for each (row, col).
-
-During drag: clamp within canvas bounds.
-
-On release:
-
-Compute distance to target center; if < threshold, snap and mark placed.
-
-When placed, disable hit testing for that piece to avoid re-drag.
+**Core Approach:**
+- Use absolute positioning for pieces within a fixed canvas container
+- Store target rectangles `(x, y, w, h)` for each grid cell `(row, col)`
+- During drag: clamp piece movement within canvas boundaries
+- On gesture release: compute distance to target center and snap if within threshold
+- When placed: disable hit testing for that piece to prevent accidental re-dragging
 
 Roadmap
 
@@ -549,16 +616,23 @@ Interlocking puzzle edges (non-rectangular, Bezier masks).
 
 Level editor (turn kid’s photo into puzzle).
 
-Remote content packs & CDN updates.
+## Future Roadmap
 
-Co-op mode (two players on tablet).
+### Planned Features
+- **Advanced Piece Shapes**: Interlocking puzzle edges with non-rectangular Bezier curve masks
+- **User-Generated Content**: Level editor allowing kids to turn their photos into puzzles
+- **Cloud Content**: Remote puzzle packs with CDN-based content delivery
+- **Multiplayer**: Cooperative mode for two players on tablet devices
 
-License
+## License
 
 MIT © PuzzlePals Contributors
 
-One-shot script to generate rectangles (hint for Copilot)
-// src/engine/geometry.ts
+## Development Utilities
+
+### Geometry Helper Functions
+
+```typescript src/engine/geometry.ts
 export type Rect = { x: number; y: number; w: number; h: number };
 
 export function computeTargetRects(cols: number, rows: number, width: number, height: number): Rect[] {
