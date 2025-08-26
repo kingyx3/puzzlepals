@@ -32,19 +32,16 @@ This README provides comprehensive specifications for implementing the app from 
 ### Puzzle Mechanics
 - **Grid-based Puzzles**: 4, 9, 16, 25, 36 pieces (2×2 → 6×6 grids) designed for ages 3-10+
 
-Snapping: piece snaps when within threshold; supports “magnet” easing.
+- **Smart Snapping**: Pieces snap when within threshold with "magnet" easing animation
+- **Hint System**: Show outline, ghost image, or peek functionality  
+- **Progress Persistence**: Resume unfinished puzzles, track completion times
 
-Hint modes: show outline, ghost image, or peek.
-
-Progress saving: resume unfinished puzzle; track best time (optional).
-
-Rewards: stickers/badges; animated “you did it!” sequence.
-
-Accessibility: large controls, VoiceOver labels, reduced motion mode.
-
-Localization: i18n with pluralization; RTL-safe.
-
-Parental gate: math gate for settings/purchases.
+### User Experience  
+- **Reward System**: Unlock stickers/badges with animated "you did it!" sequences
+- **Sound & Haptics**: Snap sounds, win celebrations, tactile feedback
+- **Accessibility**: Large controls, VoiceOver labels, reduced motion support
+- **Internationalization**: Multi-language support with RTL layout compatibility
+- **Parental Controls**: Math-based gate for settings and purchase access
 
 ## Project Structure
 
@@ -651,15 +648,28 @@ Developer Notes
 
 Use the latest Expo SDK and libraries when installing (don’t pin versions unless required).
 
-Enable Reanimated plugin in babel.config.js:
 
-module.exports = function(api){
+### Configuration Notes
+
+**Development Best Practices:**
+- Use the latest Expo SDK and libraries when installing (avoid pinning versions unless required)
+- Enable Reanimated plugin in `babel.config.js` for gesture handling
+
+**Babel Configuration for Reanimated:**
+```javascript
+// babel.config.js
+module.exports = function(api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],
     plugins: ['react-native-reanimated/plugin'],
   };
 };
+```
 
+**Gesture Handler Setup:**
+Ensure `react-native-gesture-handler` is imported at the app entry point for proper initialization.
 
-Ensure react-native-gesture-handler is imported at the app entry.
+---
+
+*This comprehensive specification provides all the technical details needed to implement PuzzlePals from scratch. Follow the architecture, use the provided code examples, and implement features incrementally following the priority order outlined in the copilot instructions.*
