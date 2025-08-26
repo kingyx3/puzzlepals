@@ -43,6 +43,18 @@ This README provides comprehensive specifications for implementing the app from 
 - **Internationalization**: Multi-language support with RTL layout compatibility
 - **Parental Controls**: Math-based gate for settings and purchase access
 
+### Enhanced Game Features
+
+- **Advanced Hint System**: Progressive hint levels from piece outline to ghost image to auto-placement
+- **Educational Content**: Animal facts, learning prompts, and vocabulary building integrated with puzzle themes  
+- **Custom Puzzle Creation**: Turn family photos into puzzles with parental approval and safety controls
+- **Smart Sorting**: Auto-organize pieces by edges, corners, colors, or patterns for easier gameplay
+- **Achievement System**: Unlock stickers, avatars, and special content based on progress milestones
+- **Seasonal Content**: Holiday-themed puzzles and special events throughout the year
+- **Photo Sharing**: Share completed puzzle screenshots with family using parental-controlled sharing
+- **Voice Guidance**: Audio descriptions and hints for enhanced accessibility support
+- **Daily Challenges**: Special daily puzzles with unique rewards to encourage regular engagement
+
 ## Project Structure
 
 The recommended project structure after implementation:
@@ -591,10 +603,105 @@ export const AnimalsPack: PuzzlePack = {
   titleKey: 'packs.animals',
   coverAsset: require('../../assets/packs/animals/cover.jpg'),
   puzzles: [
-    { id: 'animals-lion', titleKey: 'puzzles.lion', imageAsset: require('../../assets/packs/animals/lion.jpg'), defaultDifficulty: 'AGES_3_5' },
-    { id: 'animals-panda', titleKey: 'puzzles.panda', imageAsset: require('../../assets/packs/animals/panda.jpg'), defaultDifficulty: 'AGES_6_8' },
+    { 
+      id: 'animals-lion', 
+      titleKey: 'puzzles.lion', 
+      imageAsset: require('../../assets/packs/animals/lion.jpg'), 
+      defaultDifficulty: 'AGES_3_5',
+      educationalContent: {
+        facts: ['Lions live in groups called prides', 'Male lions have manes'],
+        vocabulary: ['pride', 'mane', 'savanna'],
+        learningPrompts: ['What sound does a lion make?', 'Where do lions live?']
+      }
+    },
+    { 
+      id: 'animals-panda', 
+      titleKey: 'puzzles.panda', 
+      imageAsset: require('../../assets/packs/animals/panda.jpg'), 
+      defaultDifficulty: 'AGES_6_8',
+      educationalContent: {
+        facts: ['Pandas eat bamboo all day', 'Baby pandas are very small when born'],
+        vocabulary: ['bamboo', 'habitat', 'endangered'],
+        learningPrompts: ['What do pandas like to eat?', 'What colors are pandas?']
+      }
+    },
   ],
 };
+
+// Enhanced types for educational content
+export interface EducationalContent {
+  facts: string[];
+  vocabulary: string[];
+  learningPrompts: string[];
+  ageAppropriate?: boolean;
+}
+
+export interface PuzzleMeta {
+  id: string;
+  titleKey: string;
+  imageAsset: number;
+  defaultDifficulty: Difficulty;
+  educationalContent?: EducationalContent;
+  seasonal?: boolean;
+  customCreated?: boolean;
+}
+```
+
+### Enhanced Hint System Implementation
+
+```typescript
+// src/components/HintSystem.tsx
+import { useState } from 'react';
+import { View, TouchableOpacity, Text } from 'react-native';
+
+export type HintLevel = 'outline' | 'ghost' | 'highlight' | 'autoplace';
+
+interface HintSystemProps {
+  currentLevel: HintLevel;
+  onHintRequest: (level: HintLevel) => void;
+  cooldownMs?: number;
+}
+
+export function HintSystem({ currentLevel, onHintRequest, cooldownMs = 30000 }: HintSystemProps) {
+  const [cooldownActive, setCooldownActive] = useState(false);
+  
+  const requestHint = (level: HintLevel) => {
+    if (cooldownActive) return;
+    
+    onHintRequest(level);
+    setCooldownActive(true);
+    
+    setTimeout(() => setCooldownActive(false), cooldownMs);
+  };
+  
+  const hintLevels: Array<{ level: HintLevel; label: string; description: string }> = [
+    { level: 'outline', label: 'Show Outline', description: 'See piece shapes' },
+    { level: 'ghost', label: 'Ghost Image', description: 'See faded picture' },
+    { level: 'highlight', label: 'Highlight Piece', description: 'Find next piece' },
+    { level: 'autoplace', label: 'Auto Place', description: 'Place one piece' },
+  ];
+  
+  return (
+    <View style={{ flexDirection: 'row', gap: 8 }}>
+      {hintLevels.map(({ level, label }) => (
+        <TouchableOpacity
+          key={level}
+          onPress={() => requestHint(level)}
+          disabled={cooldownActive}
+          style={{
+            padding: 12,
+            backgroundColor: cooldownActive ? '#ccc' : '#6B9EFF',
+            borderRadius: 8,
+            opacity: cooldownActive ? 0.5 : 1,
+          }}
+        >
+          <Text style={{ color: 'white', fontWeight: 'bold' }}>{label}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+}
+```
 
 ## Technical Implementation Details
 
@@ -615,11 +722,59 @@ Level editor (turn kid’s photo into puzzle).
 
 ## Future Roadmap
 
-### Planned Features
+### Core V1 Features
 - **Advanced Piece Shapes**: Interlocking puzzle edges with non-rectangular Bezier curve masks
 - **User-Generated Content**: Level editor allowing kids to turn their photos into puzzles
 - **Cloud Content**: Remote puzzle packs with CDN-based content delivery
 - **Multiplayer**: Cooperative mode for two players on tablet devices
+
+### Enhanced Learning & Engagement Features
+- **Educational Integration**: 
+  - Animal facts and information cards when completing nature puzzles
+  - Learning prompts and vocabulary building for age-appropriate content
+  - Counting practice integration (count pieces as they're placed)
+  - Color and shape recognition activities
+
+- **Advanced Hint System**:
+  - Progressive hint levels: piece outline → ghost image → piece highlighting → auto-place
+  - Smart hints that adapt to child's skill level
+  - Hint cooldown system to encourage independent problem solving
+
+- **Customization & Personalization**:
+  - Custom puzzle creation from family photos with parental approval
+  - Kid-friendly avatar system with unlockable accessories
+  - Personalized backgrounds and themed interfaces
+  - Custom difficulty settings beyond standard grid sizes
+
+- **Social & Family Features**:
+  - Photo sharing of completed puzzles with parental controls
+  - Family profiles with multiple child accounts
+  - Achievement sharing and milestone celebrations  
+  - Parent-child collaborative puzzle modes
+
+- **Content Expansion**:
+  - Seasonal and holiday-themed puzzle collections
+  - Daily challenge puzzles with special rewards
+  - Progressive content unlock based on skill development
+  - Community-generated puzzles with moderation
+
+- **Enhanced Accessibility**:
+  - Voice guidance and audio descriptions for pieces
+  - Colorblind support with pattern overlays
+  - Motor accessibility with larger controls and simplified interactions
+  - One-handed mode for children with motor disabilities
+
+- **Parent Dashboard**:
+  - Progress tracking and skill development insights
+  - Screen time controls and healthy usage recommendations
+  - Difficulty progression suggestions based on performance
+  - Learning milestone notifications
+
+- **Advanced Technical Features**:
+  - Cloud sync across family devices
+  - Offline content packs for travel
+  - AI-powered difficulty adaptation
+  - Performance analytics and optimization
 
 ## License
 
