@@ -1,0 +1,133 @@
+// Individual puzzle piece component
+
+import React from 'react';
+import { Image, StyleSheet } from 'react-native';
+import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+import Animated, { 
+  useAnimatedGestureHandler, 
+  useAnimatedStyle, 
+  useSharedValue, 
+  runOnJS, 
+  withSpring 
+} from 'react-native-reanimated';
+import { Piece as PieceType } from '../types';
+
+interface PieceProps {
+  piece: PieceType;
+  imageAsset: number;
+  onMove: (pieceId: string, x: number, y: number) => void;
+  onMoveEnd: (pieceId: string) => void;
+  onBringToFront: (pieceId: string) => void;
+  disabled?: boolean;
+}
+
+export const Piece: React.FC<PieceProps> = ({
+  piece,
+  imageAsset,
+  onMove,
+  onMoveEnd,
+  onBringToFront,
+  disabled = false,
+}) => {
+  const translateX = useSharedValue(piece.x);
+  const translateY = useSharedValue(piece.y);
+  
+  // Update position when piece prop changes
+  React.useEffect(() => {
+    translateX.value = withSpring(piece.x);
+    translateY.value = withSpring(piece.y);
+  }, [piece.x, piece.y, translateX, translateY]);
+
+  const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, {
+    startX: number;
+    startY: number;
+  }>({
+    onStart: (_, context) => {
+      context.startX = translateX.value;
+      context.startY = translateY.value;
+      runOnJS(onBringToFront)(piece.id);
+    },
+    onActive: (event, context) => {
+      const newX = context.startX + event.translationX;
+      const newY = context.startY + event.translationY;
+      
+      translateX.value = newX;
+      translateY.value = newY;
+      
+      runOnJS(onMove)(piece.id, newX, newY);
+    },
+    onEnd: () => {
+      runOnJS(onMoveEnd)(piece.id);
+    },
+  });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+    ],
+  }));
+
+  const pieceStyle = [
+    styles.piece,
+    {
+      width: piece.width,
+      height: piece.height,
+      zIndex: piece.zIndex,
+    },
+    animatedStyle,
+  ];
+
+  if (disabled || piece.placed) {
+    // Static piece (no gesture handling)
+    return (
+      <Animated.View style={pieceStyle}>
+        <Image 
+          source={imageAsset} 
+          style={[styles.image, { opacity: piece.placed ? 1 : 0.8 }]}
+          resizeMode="cover"
+        />
+        {piece.placed && <Animated.View style={styles.placedOverlay} />}
+      </Animated.View>
+    );
+  }
+
+  return (
+    <PanGestureHandler onGestureEvent={gestureHandler}>
+      <Animated.View style={pieceStyle}>
+        <Image 
+          source={imageAsset} 
+          style={styles.image}
+          resizeMode="cover"
+        />
+      </Animated.View>
+    </PanGestureHandler>
+  );
+};
+
+const styles = StyleSheet.create({
+  piece: {
+    position: 'absolute',
+    borderRadius: 4,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 4,
+  },
+  placedOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+    borderWidth: 2,
+    borderColor: '#4CAF50',
+    borderRadius: 4,
+  },
+});
