@@ -1,46 +1,42 @@
+import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { HomeScreen } from './src/screens/HomeScreen';
+import { GameScreen } from './src/screens/GameScreen';
+import { PuzzleMeta, Difficulty } from './src/types';
+
+type Screen = 'home' | 'game';
 
 export default function App() {
+  const [currentScreen, setCurrentScreen] = useState<Screen>('home');
+  const [selectedPuzzle, setSelectedPuzzle] = useState<PuzzleMeta | null>(null);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('AGES_3_5');
+
+  const handleSelectPuzzle = (puzzle: PuzzleMeta) => {
+    setSelectedPuzzle(puzzle);
+    setSelectedDifficulty(puzzle.defaultDifficulty);
+    setCurrentScreen('game');
+  };
+
+  const handleExitGame = () => {
+    setCurrentScreen('home');
+    setSelectedPuzzle(null);
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>🧩 Welcome to PuzzlePals! 🧩</Text>
-      <Text style={styles.subtitle}>
-        A delightful jigsaw puzzle app for kids!
-      </Text>
-      <Text style={styles.instruction}>
-        Open up App.tsx to start working on your app!
-      </Text>
+    <>
+      {currentScreen === 'home' && (
+        <HomeScreen onSelectPuzzle={handleSelectPuzzle} />
+      )}
+      
+      {currentScreen === 'game' && selectedPuzzle && (
+        <GameScreen 
+          puzzle={selectedPuzzle} 
+          difficulty={selectedDifficulty}
+          onExit={handleExitGame} 
+        />
+      )}
+      
       <StatusBar style="auto" />
-    </View>
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFDF7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#6B9EFF',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 18,
-    color: '#FFB86B',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  instruction: {
-    fontSize: 14,
-    color: '#9AA0A6',
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-});
