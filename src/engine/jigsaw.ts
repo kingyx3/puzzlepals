@@ -1,6 +1,6 @@
 // Core jigsaw puzzle engine
 
-import { Difficulty, Piece, BoardState, Rectangle, Position } from '../types';
+import { Difficulty, Piece, BoardState, Rectangle, Position, EdgeShape } from '../types';
 import { distance, getRectCenter } from './geometry';
 import { layout } from '../theme';
 
@@ -9,12 +9,109 @@ import { layout } from '../theme';
  */
 export function difficultyToGrid(difficulty: Difficulty): { cols: number; rows: number } {
   const gridMap = {
-    AGES_3_5: { cols: 2, rows: 2 },     // 4 pieces
-    AGES_6_8: { cols: 3, rows: 3 },     // 9 pieces
-    AGES_9_10: { cols: 4, rows: 4 },    // 16 pieces
-    AGES_11_PLUS: { cols: 6, rows: 6 }, // 36 pieces
+    AGES_3_5: { cols: 2, rows: 2 },     // 4 pieces (square)
+    AGES_6_8: { cols: 3, rows: 3 },     // 9 pieces (square)
+    AGES_9_10: { cols: 4, rows: 4 },    // 16 pieces (square)
+    AGES_11_PLUS: { cols: 6, rows: 6 }, // 36 pieces (jigsaw)
+    EASY: { cols: 4, rows: 4 },         // 16 pieces (square)
+    MEDIUM: { cols: 6, rows: 6 },       // 36 pieces (jigsaw)
+    HARD: { cols: 8, rows: 8 },         // 64 pieces (jigsaw)
+    EXPERT: { cols: 10, rows: 10 },     // 100 pieces (jigsaw)
+    MASTER: { cols: 12, rows: 8 },      // 96 pieces (jigsaw)
   };
   return gridMap[difficulty];
+}
+
+/**
+ * Determine if difficulty level should use jigsaw edges
+ */
+export function shouldUseJigsawEdges(difficulty: Difficulty): boolean {
+  const jigsawDifficulties: Difficulty[] = ['AGES_11_PLUS', 'MEDIUM', 'HARD', 'EXPERT', 'MASTER'];
+  return jigsawDifficulties.includes(difficulty);
+}
+
+/**
+ * Generate jigsaw edge shapes for a puzzle piece
+ */
+export function generateJigsawEdges(
+  col: number,
+  row: number,
+  cols: number,
+  rows: number,
+  seed: number = 0
+): EdgeShape {
+  // Use deterministic random based on position and seed
+  const random = (n: number) => {
+    const x = Math.sin(seed + col * 1000 + row * 100 + n) * 10000;
+    return x - Math.floor(x);
+  };
+
+  return {
+    // Top edge: flat if top row, otherwise random in/out
+    top: row === 0 ? 'flat' : (random(1) < 0.5 ? 'in' : 'out'),
+    
+    // Right edge: flat if rightmost column, otherwise random in/out
+    right: col === cols - 1 ? 'flat' : (random(2) < 0.5 ? 'in' : 'out'),
+    
+    // Bottom edge: flat if bottom row, otherwise random in/out
+    bottom: row === rows - 1 ? 'flat' : (random(3) < 0.5 ? 'in' : 'out'),
+    
+    // Left edge: flat if leftmost column, otherwise random in/out
+    left: col === 0 ? 'flat' : (random(4) < 0.5 ? 'in' : 'out'),
+  };
+}
+
+/**
+ * Ensure neighboring pieces have complementary edges
+ */
+export function harmonizeJigsawEdges(
+  pieces: Record<string, Piece>,
+  cols: number,
+  rows: number
+): Record<string, Piece> {
+  const harmonizedPieces = { ...pieces };
+
+  // Iterate through all pieces and ensure complementary edges
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const pieceId = `piece_${row}_${col}`;
+      const piece = harmonizedPieces[pieceId];
+      
+      if (!piece || !piece.edges) continue;
+
+      // Harmonize with right neighbor
+      if (col < cols - 1) {
+        const rightPieceId = `piece_${row}_${col + 1}`;
+        const rightPiece = harmonizedPieces[rightPieceId];
+        
+        if (rightPiece && rightPiece.edges) {
+          // Right piece's left edge should be opposite of current piece's right edge
+          if (piece.edges.right === 'in') {
+            rightPiece.edges.left = 'out';
+          } else if (piece.edges.right === 'out') {
+            rightPiece.edges.left = 'in';
+          }
+        }
+      }
+
+      // Harmonize with bottom neighbor
+      if (row < rows - 1) {
+        const bottomPieceId = `piece_${row + 1}_${col}`;
+        const bottomPiece = harmonizedPieces[bottomPieceId];
+        
+        if (bottomPiece && bottomPiece.edges) {
+          // Bottom piece's top edge should be opposite of current piece's bottom edge
+          if (piece.edges.bottom === 'in') {
+            bottomPiece.edges.top = 'out';
+          } else if (piece.edges.bottom === 'out') {
+            bottomPiece.edges.top = 'in';
+          }
+        }
+      }
+    }
+  }
+
+  return harmonizedPieces;
 }
 
 /**
@@ -58,9 +155,12 @@ export function createPiecesFromRects(
   cols: number,
   rows: number,
   canvasWidth: number,
-  canvasHeight: number
+  canvasHeight: number,
+  difficulty: Difficulty,
+  seed: number = 123
 ): Record<string, Piece> {
   const pieces: Record<string, Piece> = {};
+  const useJigsaw = shouldUseJigsawEdges(difficulty);
   
   targetRects.forEach((rect, index) => {
     const col = index % cols;
@@ -70,7 +170,7 @@ export function createPiecesFromRects(
     // Start pieces in a shuffled position around the staging area
     const startPos = getRandomStartPosition(rect, canvasWidth, canvasHeight);
     
-    pieces[pieceId] = {
+    const piece: Piece = {
       id: pieceId,
       col,
       row,
@@ -82,8 +182,21 @@ export function createPiecesFromRects(
       height: rect.height,
       placed: false,
       zIndex: 1,
+      shape: useJigsaw ? 'JIGSAW' : 'SQUARE',
     };
+
+    // Add jigsaw edges if needed
+    if (useJigsaw) {
+      piece.edges = generateJigsawEdges(col, row, cols, rows, seed);
+    }
+
+    pieces[pieceId] = piece;
   });
+  
+  // Harmonize jigsaw edges between neighboring pieces
+  if (useJigsaw) {
+    return harmonizeJigsawEdges(pieces, cols, rows);
+  }
   
   return pieces;
 }
@@ -187,10 +300,12 @@ export function createBoard(
   rows: number,
   canvasWidth: number,
   canvasHeight: number,
-  padding: number = 20
+  difficulty: Difficulty,
+  padding: number = 20,
+  seed: number = 123
 ): BoardState {
   const targetRects = computeTargetRects(cols, rows, canvasWidth, canvasHeight, padding);
-  const pieces = createPiecesFromRects(imageAsset, targetRects, cols, rows, canvasWidth, canvasHeight);
+  const pieces = createPiecesFromRects(imageAsset, targetRects, cols, rows, canvasWidth, canvasHeight, difficulty, seed);
   
   return {
     pieces,

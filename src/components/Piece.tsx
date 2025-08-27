@@ -11,6 +11,7 @@ import Animated, {
   withSpring 
 } from 'react-native-reanimated';
 import { Piece as PieceType } from '../types';
+import { JigsawPieceShape } from './JigsawPieceShape';
 
 interface PieceProps {
   piece: PieceType;
@@ -82,11 +83,21 @@ export const Piece: React.FC<PieceProps> = ({
     // Static piece (no gesture handling)
     return (
       <Animated.View style={pieceStyle}>
-        <Image 
-          source={imageAsset} 
-          style={[styles.image, { opacity: piece.placed ? 1 : 0.8 }]}
-          resizeMode="cover"
-        />
+        {piece.shape === 'JIGSAW' && piece.edges ? (
+          <JigsawPieceShape
+            width={piece.width}
+            height={piece.height}
+            edges={piece.edges}
+            imageAsset={imageAsset}
+            style={{ opacity: piece.placed ? 1 : 0.8 }}
+          />
+        ) : (
+          <Image 
+            source={imageAsset} 
+            style={[styles.image, { opacity: piece.placed ? 1 : 0.8 }]}
+            resizeMode="cover"
+          />
+        )}
         {piece.placed && <Animated.View style={styles.placedOverlay} />}
       </Animated.View>
     );
@@ -95,11 +106,20 @@ export const Piece: React.FC<PieceProps> = ({
   return (
     <PanGestureHandler onGestureEvent={gestureHandler}>
       <Animated.View style={pieceStyle}>
-        <Image 
-          source={imageAsset} 
-          style={styles.image}
-          resizeMode="cover"
-        />
+        {piece.shape === 'JIGSAW' && piece.edges ? (
+          <JigsawPieceShape
+            width={piece.width}
+            height={piece.height}
+            edges={piece.edges}
+            imageAsset={imageAsset}
+          />
+        ) : (
+          <Image 
+            source={imageAsset} 
+            style={styles.image}
+            resizeMode="cover"
+          />
+        )}
       </Animated.View>
     </PanGestureHandler>
   );

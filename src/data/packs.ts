@@ -1,6 +1,6 @@
 // Sample puzzle packs and data
 
-import { PuzzlePack } from '../types';
+import { PuzzlePack, PuzzleMeta } from '../types';
 
 // For now, we'll use placeholder assets - replace with actual images
 const placeholderImage = require('../../assets/adaptive-icon.png'); // Using the existing adaptive icon as placeholder
@@ -58,6 +58,23 @@ export const AnimalsPack: PuzzlePack = {
         ],
       },
     },
+    {
+      id: 'animals-eagle',
+      titleKey: 'puzzles.eagle',
+      imageAsset: placeholderImage,
+      defaultDifficulty: 'AGES_11_PLUS',
+      educationalContent: {
+        facts: [
+          'Eagles have incredible eyesight',
+          'Eagles are birds of prey',
+        ],
+        vocabulary: ['predator', 'eyesight', 'soar'],
+        learningPrompts: [
+          'How do eagles hunt for food?',
+          'What makes eagles good hunters?',
+        ],
+      },
+    },
   ],
 };
 
@@ -81,7 +98,45 @@ export const VehiclesPack: PuzzlePack = {
   ],
 };
 
-export const allPacks: PuzzlePack[] = [AnimalsPack, VehiclesPack];
+export const AdvancedPack: PuzzlePack = {
+  id: 'advanced',
+  titleKey: 'packs.advanced',
+  coverAsset: placeholderImage,
+  puzzles: [
+    {
+      id: 'advanced-nature',
+      titleKey: 'puzzles.nature',
+      imageAsset: placeholderImage,
+      defaultDifficulty: 'EASY',
+    },
+    {
+      id: 'advanced-landscape',
+      titleKey: 'puzzles.landscape',
+      imageAsset: placeholderImage,
+      defaultDifficulty: 'MEDIUM',
+    },
+    {
+      id: 'advanced-cityscape',
+      titleKey: 'puzzles.cityscape',
+      imageAsset: placeholderImage,
+      defaultDifficulty: 'HARD',
+    },
+    {
+      id: 'advanced-masterpiece',
+      titleKey: 'puzzles.masterpiece',
+      imageAsset: placeholderImage,
+      defaultDifficulty: 'EXPERT',
+    },
+    {
+      id: 'advanced-ultimate',
+      titleKey: 'puzzles.ultimate',
+      imageAsset: placeholderImage,
+      defaultDifficulty: 'MASTER',
+    },
+  ],
+};
+
+export const allPacks: PuzzlePack[] = [AnimalsPack, VehiclesPack, AdvancedPack];
 
 // Helper function to find puzzle by ID
 export function findPuzzleById(puzzleId: string): { pack: PuzzlePack; puzzle: PuzzleMeta } | null {

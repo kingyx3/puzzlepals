@@ -1,6 +1,15 @@
 // Core TypeScript types for PuzzlePals
 
-export type Difficulty = 'AGES_3_5' | 'AGES_6_8' | 'AGES_9_10' | 'AGES_11_PLUS'; // 2x2, 3x3, 4x4, 6x6
+export type Difficulty = 
+  | 'AGES_3_5'      // 2x2 = 4 pieces (square pieces)
+  | 'AGES_6_8'      // 3x3 = 9 pieces (square pieces) 
+  | 'AGES_9_10'     // 4x4 = 16 pieces (square pieces)
+  | 'AGES_11_PLUS'  // 6x6 = 36 pieces (jigsaw edges)
+  | 'EASY'          // 4x4 = 16 pieces (square pieces)
+  | 'MEDIUM'        // 6x6 = 36 pieces (jigsaw edges)
+  | 'HARD'          // 8x8 = 64 pieces (jigsaw edges)
+  | 'EXPERT'        // 10x10 = 100 pieces (jigsaw edges)
+  | 'MASTER';       // 12x8 = 96 pieces (jigsaw edges)
 
 export interface PuzzlePack {
   id: string; // e.g. 'animals'
@@ -24,6 +33,15 @@ export interface EducationalContent {
   ageAppropriate?: boolean;
 }
 
+export type PieceShape = 'SQUARE' | 'JIGSAW';
+
+export interface EdgeShape {
+  top: 'flat' | 'in' | 'out';
+  right: 'flat' | 'in' | 'out';
+  bottom: 'flat' | 'in' | 'out';
+  left: 'flat' | 'in' | 'out';
+}
+
 export interface Piece {
   id: string;
   col: number; // target col (0..cols-1)
@@ -36,6 +54,8 @@ export interface Piece {
   height: number;
   placed: boolean; // true when snapped to target
   zIndex: number; // for layering during drag
+  shape: PieceShape; // shape type (square or jigsaw)
+  edges?: EdgeShape; // edge configuration for jigsaw pieces
 }
 
 export interface BoardState {

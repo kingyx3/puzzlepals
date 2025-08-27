@@ -53,7 +53,8 @@ export const useGameStore = create<GameState>((set, get) => ({
       cols,
       rows,
       canvasSize.width,
-      canvasSize.height
+      canvasSize.height,
+      difficulty
     );
     
     set({
