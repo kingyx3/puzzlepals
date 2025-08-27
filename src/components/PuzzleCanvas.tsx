@@ -8,6 +8,7 @@ import { Piece } from './Piece';
 import { useGameStore } from '../stores/game';
 import { useSettingsStore } from '../stores/settings';
 import { colors } from '../theme';
+import { playSnapSound, playCelebrationSound } from '../utils/sound';
 
 interface PuzzleCanvasProps {
   onPuzzleComplete?: () => void;
@@ -15,7 +16,7 @@ interface PuzzleCanvasProps {
 
 export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({ onPuzzleComplete }) => {
   const { currentPuzzle, movePiece, trySnapPiece, bringToFront } = useGameStore();
-  const { hapticEnabled } = useSettingsStore();
+  const { hapticEnabled, soundEnabled } = useSettingsStore();
   
   const handlePieceMove = useCallback((pieceId: string, x: number, y: number) => {
     movePiece(pieceId, x, y);
@@ -24,10 +25,15 @@ export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({ onPuzzleComplete }) 
   const handlePieceMoveEnd = useCallback(async (pieceId: string) => {
     const wasSnapped = trySnapPiece(pieceId);
     
-    if (wasSnapped && hapticEnabled) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    if (wasSnapped) {
+      if (hapticEnabled) {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+      if (soundEnabled) {
+        await playSnapSound();
+      }
     }
-  }, [trySnapPiece, hapticEnabled]);
+  }, [trySnapPiece, hapticEnabled, soundEnabled]);
   
   const handleBringToFront = useCallback((pieceId: string) => {
     bringToFront(pieceId);
@@ -36,9 +42,12 @@ export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({ onPuzzleComplete }) 
   // Check for puzzle completion
   useEffect(() => {
     if (currentPuzzle?.board.isCompleted && onPuzzleComplete) {
+      if (soundEnabled) {
+        playCelebrationSound();
+      }
       onPuzzleComplete();
     }
-  }, [currentPuzzle?.board.isCompleted, onPuzzleComplete]);
+  }, [currentPuzzle?.board.isCompleted, onPuzzleComplete, soundEnabled]);
   
   if (!currentPuzzle) {
     return null;
