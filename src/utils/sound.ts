@@ -12,13 +12,11 @@ let celebrationSound: Audio.Sound | null = null;
 export async function initializeSounds(): Promise<void> {
   try {
     // In a real implementation, you would load actual sound files
-    // For now, we'll just prepare the Audio system
+    // For now, we'll just prepare the Audio system with basic settings
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
-      interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
       playsInSilentModeIOS: true,
       shouldDuckAndroid: true,
-      interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
       playThroughEarpieceAndroid: false,
     });
     

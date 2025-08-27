@@ -51,6 +51,16 @@ function getDifficultyLabel(difficulty: string): string {
       return '4×4';
     case 'AGES_11_PLUS':
       return '6×6';
+    case 'EASY':
+      return 'Easy 4×4';
+    case 'MEDIUM':
+      return 'Medium 6×6';
+    case 'HARD':
+      return 'Hard 8×8';
+    case 'EXPERT':
+      return 'Expert 10×10';
+    case 'MASTER':
+      return 'Master 12×8';
     default:
       return '2×2';
   }
