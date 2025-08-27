@@ -7,9 +7,10 @@ PuzzlePals is a delightful, kid-friendly jigsaw puzzle app built with React Nati
 ## Working Effectively
 
 ### CRITICAL: Timeout and Timing Information
+
 - **NEVER CANCEL** any build, test, or installation commands. Always set appropriate timeouts.
 - Project creation: 2-3 minutes - Set timeout to 300+ seconds
-- Dependency installation: 2-3 minutes total - Set timeout to 300+ seconds  
+- Dependency installation: 2-3 minutes total - Set timeout to 300+ seconds
 - Development server startup: 15-30 seconds - Set timeout to 60+ seconds
 - Tests: 5-10 seconds - Set timeout to 30+ seconds
 - Linting/formatting: 1-2 seconds - Set timeout to 30+ seconds
@@ -17,11 +18,13 @@ PuzzlePals is a delightful, kid-friendly jigsaw puzzle app built with React Nati
 ### Bootstrap the Project (REQUIRED - Repository is Empty)
 
 **Prerequisites:**
+
 - Node.js 20+ (20.19.4 confirmed working)
 - Yarn (preferred) or npm
 - Current repository only contains README.md with specifications
 
 **Step 1: Create the Expo Project** - NEVER CANCEL, takes 2-3 minutes:
+
 ```bash
 # In the repository root (not a subdirectory)
 npx create-expo-app@latest . --template blank-typescript
@@ -29,21 +32,25 @@ npx create-expo-app@latest . --template blank-typescript
 ```
 
 **Step 2: Install Core Dependencies** - NEVER CANCEL, takes 2-3 minutes:
+
 ```bash
 yarn add zustand @tanstack/react-query @react-navigation/native @react-navigation/native-stack react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-screens expo-haptics expo-av react-native-mmkv i18next react-i18next react-native-localize react-native-svg
 ```
 
 **Step 3: Install Expo SDK Compatible Versions** - CRITICAL for compatibility:
+
 ```bash
 npx expo install react-native-gesture-handler@~2.24.0 react-native-reanimated@~3.17.4 react-native-safe-area-context@5.4.0 react-native-screens@~4.11.1 react-native-svg@15.11.2
 ```
 
 **Step 4: Install Web Support Dependencies**:
+
 ```bash
 npx expo install react-dom react-native-web @expo/metro-runtime
 ```
 
 **Step 5: Install Development Dependencies**:
+
 ```bash
 yarn add -D jest @testing-library/react-native ts-jest @types/jest eslint prettier @typescript-eslint/eslint-plugin @typescript-eslint/parser react-test-renderer@19.0.0 @eslint/eslintrc
 ```
@@ -51,6 +58,7 @@ yarn add -D jest @testing-library/react-native ts-jest @types/jest eslint pretti
 **Step 6: Configure Development Tools**:
 
 Create `jest.config.js`:
+
 ```javascript
 module.exports = {
   preset: 'ts-jest',
@@ -65,6 +73,7 @@ module.exports = {
 ```
 
 Create `eslint.config.js` (ESLint v9 flat config):
+
 ```javascript
 const ts = require('@typescript-eslint/eslint-plugin');
 const tsParser = require('@typescript-eslint/parser');
@@ -80,9 +89,15 @@ module.exports = [
         ecmaFeatures: { jsx: true },
       },
       globals: {
-        console: 'readonly', process: 'readonly', Buffer: 'readonly',
-        __dirname: 'readonly', __filename: 'readonly', global: 'readonly',
-        module: 'readonly', require: 'readonly', exports: 'readonly',
+        console: 'readonly',
+        process: 'readonly',
+        Buffer: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        global: 'readonly',
+        module: 'readonly',
+        require: 'readonly',
+        exports: 'readonly',
       },
     },
     plugins: { '@typescript-eslint': ts },
@@ -96,6 +111,7 @@ module.exports = [
 ```
 
 Create `.prettierrc.js`:
+
 ```javascript
 module.exports = {
   semi: true,
@@ -107,11 +123,12 @@ module.exports = {
 ```
 
 Update `package.json` scripts section:
+
 ```json
 "scripts": {
   "start": "expo start",
   "android": "expo start --android",
-  "ios": "expo start --ios", 
+  "ios": "expo start --ios",
   "web": "expo start --web",
   "test": "jest",
   "test:watch": "jest --watch",
@@ -124,20 +141,23 @@ Update `package.json` scripts section:
 ## Build, Test, and Lint Commands
 
 ### Development Server
+
 - **Web development**: `npx expo start --web --offline`
   - Starts in 15-30 seconds, set timeout to 60+ seconds
   - Runs on http://localhost:19006 (or next available port)
   - **NEVER CANCEL** - Wait for "Webpack compiled successfully" message
 
-### Testing  
+### Testing
+
 - **Run all tests**: `yarn test` - takes 5-10 seconds
-- **Watch mode**: `yarn test:watch`  
+- **Watch mode**: `yarn test:watch`
 - **IMPORTANT**: Use `ts-jest` preset, NOT `jest-expo` (has compatibility issues)
 - Tests are fast, but set timeout to 30+ seconds to be safe
 
 ### Linting and Formatting
+
 - **Lint code**: `yarn lint` - takes 1-2 seconds, set timeout to 30+ seconds
-- **Fix lint issues**: `yarn lint:fix` 
+- **Fix lint issues**: `yarn lint:fix`
 - **Format code**: `yarn format` - takes 1-2 seconds
 - **ALWAYS** run these before committing changes
 
@@ -146,6 +166,7 @@ Update `package.json` scripts section:
 **ALWAYS** perform these validation steps after making changes:
 
 ### 1. Complete Setup Validation
+
 ```bash
 # Verify all dependencies installed correctly
 npx expo install --check
@@ -153,22 +174,25 @@ npx expo install --check
 ```
 
 ### 2. Development Server Test
+
 ```bash
 # Start web development server
 npx expo start --web --offline
 # Wait 15-30 seconds, should see "Webpack compiled successfully"
-# Open browser to http://localhost:19006 
+# Open browser to http://localhost:19006
 # Should see default Expo app with "Open up App.tsx to start working"
 ```
 
 ### 3. Test Suite Validation
+
 ```bash
 # Run tests to ensure framework works
 yarn test
 # Should pass all tests (starts with 0 tests in empty project)
 ```
 
-### 4. Code Quality Validation  
+### 4. Code Quality Validation
+
 ```bash
 # Verify linting and formatting work
 yarn lint && yarn format
@@ -176,18 +200,22 @@ yarn lint && yarn format
 ```
 
 ### 5. Manual Functionality Testing
+
 After implementing features:
+
 - **Puzzle Loading**: Test loading different puzzle packs and images
-- **Drag & Drop**: Test piece dragging with smooth animation 
+- **Drag & Drop**: Test piece dragging with smooth animation
 - **Snapping**: Test piece snapping to correct positions
 - **Win Detection**: Complete a puzzle and verify celebration triggers
 - **Settings**: Test parental gate, sound toggles, difficulty changes
 - **Persistence**: Test progress saving and resuming puzzles
 
 ### 6. Enhanced Features Testing (Phase 2)
+
 After implementing enhanced features:
+
 - **Hint System**: Test progressive hint levels work correctly
-- **Educational Content**: Verify facts and prompts display appropriately  
+- **Educational Content**: Verify facts and prompts display appropriately
 - **Photo Puzzles**: Test family photo import and puzzle generation
 - **Achievements**: Verify unlockables and milestone tracking
 - **Sorting**: Test auto-organization of pieces by type
@@ -202,7 +230,7 @@ The repository starts empty except for README.md. After setup, implement this st
 ├── app/                          # Expo Router screens
 │   ├── _layout.tsx              # Root layout
 │   ├── index.tsx                # Home screen (puzzle packs)
-│   ├── play/[puzzleId].tsx      # Play screen with puzzle canvas  
+│   ├── play/[puzzleId].tsx      # Play screen with puzzle canvas
 │   ├── settings.tsx             # Settings with parental gate
 │   └── rewards.tsx              # Sticker rewards
 ├── src/
@@ -240,7 +268,8 @@ The repository starts empty except for README.md. After setup, implement this st
 
 ## Architecture Overview
 
-**Tech Stack**: 
+**Tech Stack**:
+
 - React Native + Expo SDK 53
 - TypeScript (strict mode)
 - Zustand for state management
@@ -250,10 +279,11 @@ The repository starts empty except for README.md. After setup, implement this st
 - ESLint + Prettier for code quality
 
 **Key Features to Implement**:
+
 - Grid-based puzzle slicing (2×2 to 6×6 pieces)
 - Smooth drag & drop with snap detection
 - Progress persistence with MMKV
-- Haptic feedback and sound effects  
+- Haptic feedback and sound effects
 - Multiple difficulty levels
 - Kid-friendly UI with large touch targets
 - Celebration animations on completion
@@ -261,6 +291,7 @@ The repository starts empty except for README.md. After setup, implement this st
 - Parental controls for settings
 
 **Enhanced Features for Future Development**:
+
 - Custom puzzle creation from family photos
 - Educational content integration (animal facts, learning prompts)
 - Progressive hint system (outline → ghost → piece highlighting)
@@ -275,21 +306,25 @@ The repository starts empty except for README.md. After setup, implement this st
 ## Common Issues and Solutions
 
 ### Dependency Version Conflicts
+
 - Always use `npx expo install <package>` for Expo-compatible versions
 - If conflicts arise, check Expo SDK compatibility guide
 - React and react-test-renderer versions must match exactly
 
 ### ESLint Configuration
+
 - ESLint v9 requires flat config format (eslint.config.js)
-- Do NOT use .eslintrc.* files with ESLint v9
+- Do NOT use .eslintrc.\* files with ESLint v9
 - The provided config works with TypeScript and React Native
 
-### Jest Configuration  
+### Jest Configuration
+
 - Use `ts-jest` preset for reliable testing
 - `jest-expo` preset has compatibility issues with current setup
 - React component testing requires additional setup (not included in basic config)
 
 ### Development Server Issues
+
 - Use `--offline` flag to avoid networking restrictions
 - Web server typically runs on port 19006
 - iOS/Android require physical device or emulator (not available in current environment)
@@ -302,7 +337,7 @@ Quick reference for common operations:
 # Start development (most common)
 npx expo start --web --offline
 
-# Run tests before committing  
+# Run tests before committing
 yarn test && yarn lint && yarn format
 
 # Install new dependency (Expo-compatible)
@@ -320,10 +355,11 @@ npx expo start --clear
 When implementing the app, follow this sequence:
 
 ### Phase 1: Core Foundation
+
 1. **Core Types & Data Models** (src/types/index.ts)
 2. **Basic Navigation** (app/ screens)
 3. **Puzzle Engine** (src/engine/ - slicing, snapping logic)
-4. **Game Components** (src/components/ - Canvas, Pieces)  
+4. **Game Components** (src/components/ - Canvas, Pieces)
 5. **State Management** (src/stores/ - game state)
 6. **Drag & Drop** (gesture handlers, animations)
 7. **UI Polish** (sounds, haptics, celebrations)
@@ -332,6 +368,7 @@ When implementing the app, follow this sequence:
 10. **Testing & Validation**
 
 ### Phase 2: Enhanced Features (Post-MVP)
+
 11. **Advanced Hint System** (progressive hints, smart suggestions)
 12. **Educational Content Integration** (facts, learning prompts)
 13. **Photo Puzzle Creation** (family photo import with safety controls)
