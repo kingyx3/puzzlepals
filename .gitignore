@@ -35,3 +35,7 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# Deployment secrets
+secrets/
+google-service-account.json
