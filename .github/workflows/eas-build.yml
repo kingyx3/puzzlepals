@@ -51,6 +51,9 @@ jobs:
           expo-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
           
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+          
       - name: EAS Build (Preview)
         if: github.ref == 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/')
         run: eas build --platform all --profile preview --non-interactive
@@ -79,6 +82,9 @@ jobs:
         with:
           expo-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+          
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
         
       - name: EAS Submit to Stores
         run: eas submit --platform all --profile production --non-interactive
