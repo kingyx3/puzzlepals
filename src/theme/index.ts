@@ -20,6 +20,7 @@ export const colors = {
   
   // Semantic colors
   success: '#4CAF50',
+  onSuccess: '#FFFFFF',
   warning: '#FF9800',
   error: '#F44336',
   info: '#2196F3',

@@ -1,22 +1,28 @@
 // Home screen showing puzzle packs
 
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import { PackCard } from '../components/PackCard';
 import { allPacks } from '../data/packs';
 import { PuzzleMeta } from '../types';
-import { colors, spacing, typography } from '../theme';
+import { colors, spacing, typography, layout } from '../theme';
 
 interface HomeScreenProps {
   onSelectPuzzle: (puzzle: PuzzleMeta) => void;
+  onOpenSettings: () => void;
 }
 
-export const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectPuzzle }) => {
+export const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectPuzzle, onOpenSettings }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>🧩 PuzzlePals</Text>
-        <Text style={styles.subtitle}>Choose your puzzle adventure!</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>🧩 PuzzlePals</Text>
+          <Text style={styles.subtitle}>Choose your puzzle adventure!</Text>
+        </View>
+        <TouchableOpacity style={styles.settingsButton} onPress={onOpenSettings}>
+          <Text style={styles.settingsButtonText}>⚙️</Text>
+        </TouchableOpacity>
       </View>
       
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
@@ -40,6 +46,12 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: spacing.lg,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  titleContainer: {
+    flex: 1,
     alignItems: 'center',
   },
   title: {
@@ -52,6 +64,23 @@ const styles = StyleSheet.create({
     fontSize: typography.lg,
     color: colors.secondary,
     textAlign: 'center',
+  },
+  settingsButton: {
+    padding: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: layout.touchTarget / 2,
+    minWidth: layout.touchTarget,
+    minHeight: layout.touchTarget,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 2,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  settingsButtonText: {
+    fontSize: typography.lg,
   },
   scrollView: {
     flex: 1,
