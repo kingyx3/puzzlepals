@@ -13,9 +13,10 @@ import { playSnapSound, playCelebrationSound } from '../utils/sound';
 
 interface PuzzleCanvasProps {
   onPuzzleComplete?: () => void;
+  onPieceSnap?: () => void;
 }
 
-export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({ onPuzzleComplete }) => {
+export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({ onPuzzleComplete, onPieceSnap }) => {
   const { 
     currentPuzzle, 
     movePiece, 
@@ -40,8 +41,10 @@ export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({ onPuzzleComplete }) 
       if (soundEnabled) {
         await playSnapSound();
       }
+      // Trigger visual snap effect
+      onPieceSnap?.();
     }
-  }, [trySnapPiece, hapticEnabled, soundEnabled]);
+  }, [trySnapPiece, hapticEnabled, soundEnabled, onPieceSnap]);
   
   const handleBringToFront = useCallback((pieceId: string) => {
     bringToFront(pieceId);

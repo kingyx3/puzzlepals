@@ -1,0 +1,319 @@
+// Enhanced achievement system with better engagement features
+
+import React from 'react';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  Modal, 
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
+import { useAchievementStore } from '../stores/achievements';
+import { colors, spacing, typography } from '../theme';
+
+interface AchievementDisplayProps {
+  visible: boolean;
+  onClose: () => void;
+}
+
+export const AchievementDisplay: React.FC<AchievementDisplayProps> = ({ visible, onClose }) => {
+  const { achievements, unlockedAchievements, playerStats } = useAchievementStore();
+
+  const unlockedAchievementsData = achievements.filter(achievement => 
+    unlockedAchievements.includes(achievement.id)
+  );
+
+  const lockedAchievements = achievements.filter(achievement => 
+    !unlockedAchievements.includes(achievement.id)
+  );
+
+  const getProgressText = (achievement: { id: string; title: string; description: string }) => {
+    switch (achievement.id) {
+      case 'puzzle_master':
+        return `${playerStats.totalPuzzlesCompleted}/100 puzzles`;
+      case 'speed_demon':
+        const fastestTime = Math.min(...Object.values(playerStats.difficultyStats).map(stat => stat.bestTime));
+        return fastestTime < 2 * 60 * 1000 ? 'Completed!' : 'Keep practicing!';
+      case 'streak_champion':
+        return `${playerStats.currentStreak} day streak`;
+      case 'hint_free':
+        const hintsUsed = playerStats.totalHintsUsed;
+        return hintsUsed === 0 ? 'No hints used!' : `${hintsUsed} hints used`;
+      default:
+        return '';
+    }
+  };
+
+  const getAchievementIcon = (achievementId: string, isUnlocked: boolean) => {
+    const icons: Record<string, string> = {
+      first_puzzle: '🎯',
+      puzzle_master: '👑',
+      speed_demon: '⚡',
+      streak_champion: '🔥',
+      hint_free: '🧠',
+      difficulty_climber: '🏔️',
+      perfectionist: '💎',
+      explorer: '🗺️',
+    };
+    
+    return isUnlocked ? icons[achievementId] || '🏆' : '🔒';
+  };
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <SafeAreaView style={styles.overlay}>
+        <View style={styles.panel}>
+          <View style={styles.header}>
+            <Text style={styles.title}>🏆 Achievements</Text>
+            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+              <Text style={styles.closeButtonText}>✕</Text>
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+            {/* Player Stats Summary */}
+            <View style={styles.statsSection}>
+              <Text style={styles.sectionTitle}>Your Progress</Text>
+              <View style={styles.statsGrid}>
+                <View style={styles.statCard}>
+                  <Text style={styles.statNumber}>{playerStats.totalPuzzlesCompleted}</Text>
+                  <Text style={styles.statLabel}>Puzzles Completed</Text>
+                </View>
+                <View style={styles.statCard}>
+                  <Text style={styles.statNumber}>{playerStats.currentStreak}</Text>
+                  <Text style={styles.statLabel}>Current Streak</Text>
+                </View>
+                <View style={styles.statCard}>
+                  <Text style={styles.statNumber}>
+                    {Math.floor(playerStats.averageCompletionTime / (60 * 1000))}m
+                  </Text>
+                  <Text style={styles.statLabel}>Avg. Time</Text>
+                </View>
+                <View style={styles.statCard}>
+                  <Text style={styles.statNumber}>{unlockedAchievementsData.length}</Text>
+                  <Text style={styles.statLabel}>Achievements</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Unlocked Achievements */}
+            {unlockedAchievementsData.length > 0 && (
+              <View style={styles.achievementsSection}>
+                <Text style={styles.sectionTitle}>🎉 Unlocked Achievements</Text>
+                {unlockedAchievementsData.map((achievement) => (
+                  <View key={achievement.id} style={[styles.achievementCard, styles.unlockedCard]}>
+                    <View style={styles.achievementIcon}>
+                      <Text style={styles.achievementIconText}>
+                        {getAchievementIcon(achievement.id, true)}
+                      </Text>
+                    </View>
+                    <View style={styles.achievementContent}>
+                      <Text style={styles.achievementTitle}>{achievement.title}</Text>
+                      <Text style={styles.achievementDescription}>{achievement.description}</Text>
+                      <Text style={styles.achievementProgress}>
+                        {getProgressText(achievement)}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {/* Locked Achievements */}
+            {lockedAchievements.length > 0 && (
+              <View style={styles.achievementsSection}>
+                <Text style={styles.sectionTitle}>🎯 Keep Going</Text>
+                {lockedAchievements.map((achievement) => (
+                  <View key={achievement.id} style={[styles.achievementCard, styles.lockedCard]}>
+                    <View style={styles.achievementIcon}>
+                      <Text style={styles.achievementIconText}>
+                        {getAchievementIcon(achievement.id, false)}
+                      </Text>
+                    </View>
+                    <View style={styles.achievementContent}>
+                      <Text style={[styles.achievementTitle, styles.lockedTitle]}>
+                        {achievement.title}
+                      </Text>
+                      <Text style={[styles.achievementDescription, styles.lockedDescription]}>
+                        {achievement.description}
+                      </Text>
+                      <Text style={styles.achievementProgress}>
+                        {getProgressText(achievement)}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {/* Tips Section */}
+            <View style={styles.tipsSection}>
+              <Text style={styles.sectionTitle}>💡 Achievement Tips</Text>
+              <Text style={styles.tipText}>• Complete puzzles daily to maintain your streak</Text>
+              <Text style={styles.tipText}>• Try harder difficulties for bonus achievements</Text>
+              <Text style={styles.tipText}>• Challenge yourself to use fewer hints</Text>
+              <Text style={styles.tipText}>• Speed runs unlock special achievements</Text>
+            </View>
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    </Modal>
+  );
+};
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  panel: {
+    backgroundColor: colors.surface,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '90%',
+    minHeight: '70%',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.outline,
+  },
+  title: {
+    fontSize: typography.xl,
+    fontWeight: typography.weight.bold,
+    color: colors.onSurface,
+  },
+  closeButton: {
+    padding: spacing.xs,
+    borderRadius: 20,
+    backgroundColor: colors.outline,
+    minWidth: 32,
+    minHeight: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeButtonText: {
+    fontSize: typography.md,
+    color: colors.onSurface,
+  },
+  content: {
+    padding: spacing.lg,
+  },
+  statsSection: {
+    marginBottom: spacing.xl,
+  },
+  sectionTitle: {
+    fontSize: typography.lg,
+    fontWeight: typography.weight.semibold,
+    color: colors.onSurface,
+    marginBottom: spacing.md,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  statCard: {
+    flex: 1,
+    minWidth: '22%',
+    backgroundColor: colors.background,
+    borderRadius: 12,
+    padding: spacing.md,
+    alignItems: 'center',
+  },
+  statNumber: {
+    fontSize: typography.xl,
+    fontWeight: typography.weight.bold,
+    color: colors.primary,
+    marginBottom: spacing.xs / 2,
+  },
+  statLabel: {
+    fontSize: typography.xs,
+    color: colors.secondary,
+    textAlign: 'center',
+    lineHeight: typography.xs * 1.2,
+  },
+  achievementsSection: {
+    marginBottom: spacing.xl,
+  },
+  achievementCard: {
+    flexDirection: 'row',
+    backgroundColor: colors.background,
+    borderRadius: 12,
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    borderWidth: 2,
+  },
+  unlockedCard: {
+    borderColor: colors.success,
+    backgroundColor: 'rgba(76, 175, 80, 0.05)',
+  },
+  lockedCard: {
+    borderColor: colors.outline,
+    opacity: 0.7,
+  },
+  achievementIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: colors.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: spacing.md,
+  },
+  achievementIconText: {
+    fontSize: typography.xl,
+  },
+  achievementContent: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  achievementTitle: {
+    fontSize: typography.md,
+    fontWeight: typography.weight.semibold,
+    color: colors.onSurface,
+    marginBottom: spacing.xs / 2,
+  },
+  lockedTitle: {
+    color: colors.secondary,
+  },
+  achievementDescription: {
+    fontSize: typography.sm,
+    color: colors.secondary,
+    marginBottom: spacing.xs,
+    lineHeight: typography.sm * 1.3,
+  },
+  lockedDescription: {
+    color: colors.outline,
+  },
+  achievementProgress: {
+    fontSize: typography.xs,
+    color: colors.primary,
+    fontWeight: typography.weight.medium,
+    fontStyle: 'italic',
+  },
+  tipsSection: {
+    backgroundColor: 'rgba(107, 158, 255, 0.1)',
+    borderRadius: 12,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  tipText: {
+    fontSize: typography.sm,
+    color: colors.onSurface,
+    marginBottom: spacing.xs,
+    lineHeight: typography.sm * 1.4,
+  },
+});
