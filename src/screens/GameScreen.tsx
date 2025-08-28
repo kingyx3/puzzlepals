@@ -11,7 +11,12 @@ import {
   Alert 
 } from 'react-native';
 import { PuzzleCanvas } from '../components/PuzzleCanvas';
+import { PieceSortingPanel, SortingCriteria } from '../components/PieceSortingPanel';
+import { AccessibilityEnhancements } from '../components/AccessibilityEnhancements';
+import { VisualEffects } from '../components/VisualEffects';
+import { AchievementDisplay } from '../components/AchievementDisplay';
 import { useGameStore } from '../stores/game';
+import { useAchievementStore } from '../stores/achievements';
 import { PuzzleMeta, Difficulty } from '../types';
 import { colors, spacing, typography, layout } from '../theme';
 
@@ -23,8 +28,15 @@ interface GameScreenProps {
 
 export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onExit }) => {
   const { startPuzzle, currentPuzzle, resetPuzzle, exitPuzzle, useHint } = useGameStore();
+  const { getRecommendedDifficulty } = useAchievementStore();
   const [showCelebration, setShowCelebration] = useState(false);
   const [hintMessage, setHintMessage] = useState<string | null>(null);
+  const [showSortingPanel, setShowSortingPanel] = useState(false);
+  const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false);
+  const [showAchievementPanel, setShowAchievementPanel] = useState(false);
+  const [currentSorting, setCurrentSorting] = useState<SortingCriteria>('none');
+  const [snapEffectTrigger, setSnapEffectTrigger] = useState(false);
+  const [completionEffectTrigger, setCompletionEffectTrigger] = useState(false);
   
   // Initialize puzzle when component mounts
   React.useEffect(() => {
@@ -44,11 +56,28 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
   
   const handlePuzzleComplete = useCallback(() => {
     setShowCelebration(true);
+    setCompletionEffectTrigger(prev => !prev); // Trigger completion visual effect
+    
     // Show celebration for a few seconds
     setTimeout(() => {
       setShowCelebration(false);
     }, 3000);
-  }, []);
+    
+    // Suggest next difficulty if player is performing well
+    setTimeout(() => {
+      const recommendedDifficulty = getRecommendedDifficulty();
+      if (recommendedDifficulty !== difficulty) {
+        Alert.alert(
+          'Great Job! 🎉',
+          `Based on your performance, you might enjoy the ${recommendedDifficulty.replace('_', ' ')} difficulty level. Would you like to try it next time?`,
+          [
+            { text: 'Maybe Later', style: 'cancel' },
+            { text: 'Sounds Good!', style: 'default' },
+          ]
+        );
+      }
+    }, 4000);
+  }, [difficulty, getRecommendedDifficulty]);
   
   const handleHint = useCallback(() => {
     const hintResult = useHint();
@@ -58,6 +87,16 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
       setTimeout(() => setHintMessage(null), 5000);
     }
   }, [useHint]);
+
+  const handlePieceSnap = useCallback(() => {
+    setSnapEffectTrigger(prev => !prev); // Trigger snap visual effect
+  }, []);
+
+  const handleSortingChange = useCallback((criteria: SortingCriteria) => {
+    setCurrentSorting(criteria);
+    // Here you could implement the actual sorting logic
+    // For now, we'll just track the preference
+  }, []);
   
   const handleReset = useCallback(() => {
     Alert.alert(
@@ -96,7 +135,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
   
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header with controls */}
+      {/* Header with enhanced controls */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.exitButton} onPress={handleExit}>
           <Text style={styles.buttonText}>← Back</Text>
@@ -109,15 +148,33 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
           </Text>
         </View>
         
-        <TouchableOpacity style={styles.hintButton} onPress={handleHint}>
-          <Text style={styles.buttonText}>💡 Hint</Text>
-        </TouchableOpacity>
+        <View style={styles.rightControls}>
+          <TouchableOpacity style={styles.achievementButton} onPress={() => setShowAchievementPanel(true)}>
+            <Text style={styles.buttonText}>🏆</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.accessibilityButton} onPress={() => setShowAccessibilityPanel(true)}>
+            <Text style={styles.buttonText}>♿</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.hintButton} onPress={handleHint}>
+            <Text style={styles.buttonText}>💡</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       
-      {/* Progress bar */}
+      {/* Enhanced progress bar with additional info */}
       <View style={styles.progressContainer}>
         <View style={styles.progressBar}>
           <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
+        </View>
+        <View style={styles.progressStats}>
+          <Text style={styles.progressStatsText}>
+            {Math.round(progress * 100)}% Complete
+          </Text>
+          {currentSorting !== 'none' && (
+            <Text style={styles.sortingIndicator}>
+              Sorted by {currentSorting}
+            </Text>
+          )}
         </View>
       </View>
       
@@ -128,13 +185,24 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
         </View>
       )}
       
-      {/* Puzzle canvas */}
+      {/* Puzzle canvas with visual effects */}
       <View style={styles.gameArea}>
-        <PuzzleCanvas onPuzzleComplete={handlePuzzleComplete} />
+        <PuzzleCanvas onPuzzleComplete={handlePuzzleComplete} onPieceSnap={handlePieceSnap} />
+        {currentPuzzle && (
+          <VisualEffects
+            canvasWidth={currentPuzzle.board.width}
+            canvasHeight={currentPuzzle.board.height}
+            snapEffectTrigger={snapEffectTrigger}
+            completionTrigger={completionEffectTrigger}
+          />
+        )}
       </View>
       
-      {/* Bottom controls */}
+      {/* Enhanced bottom controls */}
       <View style={styles.bottomControls}>
+        <TouchableOpacity style={styles.sortButton} onPress={() => setShowSortingPanel(true)}>
+          <Text style={styles.sortButtonText}>🧩 Sort Pieces</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
           <Text style={styles.resetButtonText}>🔄 Reset</Text>
         </TouchableOpacity>
@@ -147,6 +215,26 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
           <Text style={styles.celebrationSubtext}>Great job!</Text>
         </View>
       )}
+      
+      {/* Achievement Display Panel */}
+      <AchievementDisplay
+        visible={showAchievementPanel}
+        onClose={() => setShowAchievementPanel(false)}
+      />
+      
+      {/* Piece Sorting Panel */}
+      <PieceSortingPanel
+        visible={showSortingPanel}
+        onClose={() => setShowSortingPanel(false)}
+        onSortChange={handleSortingChange}
+        currentSort={currentSorting}
+      />
+      
+      {/* Accessibility Enhancements Panel */}
+      <AccessibilityEnhancements
+        visible={showAccessibilityPanel}
+        onClose={() => setShowAccessibilityPanel(false)}
+      />
     </SafeAreaView>
   );
 };
@@ -192,6 +280,26 @@ const styles = StyleSheet.create({
     borderRadius: layout.touchTarget / 2,
     minWidth: layout.touchTarget,
     alignItems: 'center',
+    marginLeft: spacing.xs,
+  },
+  rightControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  accessibilityButton: {
+    padding: spacing.sm,
+    backgroundColor: colors.primary,
+    borderRadius: layout.touchTarget / 2,
+    minWidth: layout.touchTarget,
+    alignItems: 'center',
+    marginLeft: spacing.xs,
+  },
+  achievementButton: {
+    padding: spacing.sm,
+    backgroundColor: colors.warning,
+    borderRadius: layout.touchTarget / 2,
+    minWidth: layout.touchTarget,
+    alignItems: 'center',
   },
   buttonText: {
     fontSize: typography.sm,
@@ -213,6 +321,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.success,
     borderRadius: 4,
   },
+  progressStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: spacing.xs,
+  },
+  progressStatsText: {
+    fontSize: typography.sm,
+    color: colors.secondary,
+    fontWeight: typography.weight.medium,
+  },
+  sortingIndicator: {
+    fontSize: typography.xs,
+    color: colors.primary,
+    fontStyle: 'italic',
+  },
   gameArea: {
     flex: 1,
     justifyContent: 'center',
@@ -220,9 +344,25 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   bottomControls: {
+    flexDirection: 'row',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  sortButton: {
+    padding: spacing.md,
+    backgroundColor: colors.primary,
+    borderRadius: layout.touchTarget / 2,
+    minWidth: layout.touchTarget * 2,
+    alignItems: 'center',
+    flex: 1,
+    marginRight: spacing.sm,
+  },
+  sortButtonText: {
+    fontSize: typography.md,
+    fontWeight: typography.weight.medium,
+    color: colors.onPrimary,
   },
   resetButton: {
     padding: spacing.md,
@@ -230,6 +370,8 @@ const styles = StyleSheet.create({
     borderRadius: layout.touchTarget / 2,
     minWidth: layout.touchTarget * 2,
     alignItems: 'center',
+    flex: 1,
+    marginLeft: spacing.sm,
   },
   resetButtonText: {
     fontSize: typography.md,
