@@ -109,7 +109,7 @@ export async function showAd(): Promise<AdResult> {
 }
 
 /**
- * Handle premium upgrade purchase ($9.99)
+ * Handle premium upgrade purchase ($5.00)
  */
 export async function purchasePremium(): Promise<PurchaseResult> {
   try {
