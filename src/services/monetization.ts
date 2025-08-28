@@ -6,6 +6,7 @@ export interface AdResult {
   success: boolean;
   error?: string;
   revenue?: number;
+  skipped?: boolean;
 }
 
 export interface PurchaseResult {
@@ -25,15 +26,15 @@ interface MonetizationConfig {
 let config: MonetizationConfig = {
   adsEnabled: true,
   premiumPurchased: false,
-  adFrequency: 3, // Show ad every 3rd puzzle
-  adTimeout: 5000, // 5 second timeout
+  adFrequency: 1, // Show ad before every puzzle
+  adTimeout: 30000, // 30 second timeout for blocking ads
 };
 
 let puzzleStartCount = 0; // Track puzzle starts for ad frequency
 
 /**
  * Show interstitial ad before starting a puzzle
- * Non-blocking - returns immediately and doesn't prevent game from starting
+ * BLOCKING - game will not start until ad is completed or skipped
  */
 export async function showAd(): Promise<AdResult> {
   try {
@@ -47,57 +48,17 @@ export async function showAd(): Promise<AdResult> {
       return { success: true };
     }
 
-    // Check ad frequency - only show every N puzzle starts
+    // Check ad frequency - show before every puzzle now
     puzzleStartCount++;
     if (puzzleStartCount % config.adFrequency !== 0) {
       return { success: true };
     }
 
-    console.log('🎬 Showing interstitial ad before puzzle start...');
+    console.log('🎬 Loading interstitial ad (BLOCKING)...');
     
-    // Simulate ad loading and display
-    // In real implementation, this would integrate with:
-    // - Google AdMob (react-native-google-mobile-ads)
-    // - Facebook Audience Network
-    // - Unity Ads
-    // - AppLovin MAX
-    
-    const adPromise = new Promise<AdResult>((resolve) => {
-      // Simulate ad loading time (1-3 seconds)
-      const loadTime = Math.random() * 2000 + 1000;
-      
-      setTimeout(() => {
-        // Simulate 90% success rate
-        const success = Math.random() > 0.1;
-        
-        if (success) {
-          console.log('✅ Ad displayed successfully');
-          resolve({ 
-            success: true, 
-            revenue: 0.02 // Typical interstitial CPM 
-          });
-        } else {
-          console.log('❌ Ad failed to load');
-          resolve({ 
-            success: false, 
-            error: 'Ad failed to load' 
-          });
-        }
-      }, loadTime);
-    });
-
-    // Race against timeout to ensure game isn't blocked
-    const timeoutPromise = new Promise<AdResult>((resolve) => {
-      setTimeout(() => {
-        console.log('⏰ Ad timed out');
-        resolve({ 
-          success: false, 
-          error: 'Ad timeout' 
-        });
-      }, config.adTimeout);
-    });
-
-    return await Promise.race([adPromise, timeoutPromise]);
+    // Real Google AdMob implementation would go here
+    // For now, simulate the blocking ad experience
+    return await showInterstitialAd();
 
   } catch (error) {
     console.error('Ad error:', error);
@@ -106,6 +67,133 @@ export async function showAd(): Promise<AdResult> {
       error: error instanceof Error ? error.message : 'Unknown ad error' 
     };
   }
+}
+
+/**
+ * Show interstitial ad with Google AdMob integration
+ * This function simulates the real AdMob behavior until integration is complete
+ */
+async function showInterstitialAd(): Promise<AdResult> {
+  // TODO: Replace with real Google AdMob implementation
+  // import { InterstitialAd, AdEventType } from 'react-native-google-mobile-ads';
+  // 
+  // const adUnitId = __DEV__ 
+  //   ? TestIds.INTERSTITIAL // Test ad unit ID
+  //   : 'ca-app-pub-YOUR_PUBLISHER_ID/YOUR_AD_UNIT_ID'; // Production ad unit ID
+  // 
+  // const interstitial = InterstitialAd.createForAdRequest(adUnitId);
+  // 
+  // return new Promise((resolve) => {
+  //   let adShown = false;
+  //   let skipTimer: NodeJS.Timeout;
+  //   
+  //   // Ad loaded successfully
+  //   interstitial.addAdEventListener(AdEventType.LOADED, () => {
+  //     console.log('AdMob: Interstitial ad loaded');
+  //     interstitial.show();
+  //   });
+  //   
+  //   // Ad displayed
+  //   interstitial.addAdEventListener(AdEventType.OPENED, () => {
+  //     console.log('AdMob: Interstitial ad opened');
+  //     adShown = true;
+  //     
+  //     // Enable skip after 5 seconds
+  //     skipTimer = setTimeout(() => {
+  //       console.log('AdMob: Skip button now available');
+  //       // In real implementation, this would show skip button in UI
+  //     }, 5000);
+  //   });
+  //   
+  //   // Ad closed (completed or skipped)
+  //   interstitial.addAdEventListener(AdEventType.CLOSED, () => {
+  //     console.log('AdMob: Interstitial ad closed');
+  //     clearTimeout(skipTimer);
+  //     resolve({ 
+  //       success: true, 
+  //       revenue: 0.02,
+  //       skipped: false // Would track if skip button was used
+  //     });
+  //   });
+  //   
+  //   // Ad failed to load
+  //   interstitial.addAdEventListener(AdEventType.ERROR, (error) => {
+  //     console.log('AdMob: Interstitial ad failed:', error);
+  //     clearTimeout(skipTimer);
+  //     resolve({ 
+  //       success: false, 
+  //       error: error.message 
+  //     });
+  //   });
+  //   
+  //   // Start loading the ad
+  //   interstitial.load();
+  //   
+  //   // Timeout fallback
+  //   setTimeout(() => {
+  //     if (!adShown) {
+  //       console.log('AdMob: Ad load timeout');
+  //       clearTimeout(skipTimer);
+  //       resolve({ 
+  //         success: false, 
+  //         error: 'Ad load timeout' 
+  //       });
+  //     }
+  //   }, config.adTimeout);
+  // });
+
+  // SIMULATION: Remove this when implementing real AdMob
+  return new Promise<AdResult>((resolve) => {
+    console.log('🎬 [SIMULATION] Showing interstitial ad...');
+    
+    // Simulate ad loading time (2-5 seconds)
+    const loadTime = Math.random() * 3000 + 2000;
+    
+    setTimeout(() => {
+      // Simulate 95% success rate (higher than non-blocking ads)
+      const success = Math.random() > 0.05;
+      
+      if (success) {
+        console.log('✅ [SIMULATION] Ad displayed successfully');
+        
+        // Simulate ad duration (5-15 seconds, skippable after 5)
+        const adDuration = Math.random() * 10000 + 5000;
+        const skipAvailableAt = 5000;
+        
+        setTimeout(() => {
+          console.log('⏭️ [SIMULATION] Skip button now available');
+        }, skipAvailableAt);
+        
+        setTimeout(() => {
+          // Simulate user behavior: 30% skip, 70% watch full ad
+          const wasSkipped = Math.random() < 0.3;
+          
+          if (wasSkipped) {
+            console.log('⏭️ [SIMULATION] Ad was skipped by user');
+            resolve({ 
+              success: true, 
+              revenue: 0.01, // Lower revenue for skipped ads
+              skipped: true 
+            });
+          } else {
+            console.log('✅ [SIMULATION] Ad watched completely');
+            resolve({ 
+              success: true, 
+              revenue: 0.02, // Full revenue for completed ads
+              skipped: false 
+            });
+          }
+        }, adDuration);
+        
+      } else {
+        console.log('❌ [SIMULATION] Ad failed to load');
+        resolve({ 
+          success: false, 
+          error: 'Ad failed to load' 
+        });
+      }
+    }, loadTime);
+  });
 }
 
 /**
@@ -232,8 +320,8 @@ export function resetMonetizationState(): void {
   config = {
     adsEnabled: true,
     premiumPurchased: false,
-    adFrequency: 3,
-    adTimeout: 5000,
+    adFrequency: 1, // Show ad before every puzzle
+    adTimeout: 30000, // 30 second timeout for blocking ads
   };
   console.log('🔄 Monetization state reset');
 }
