@@ -1,12 +1,13 @@
 // Main puzzle canvas component
 
 import React, { useEffect, useCallback } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 import { Piece } from './Piece';
 import { useGameStore } from '../stores/game';
 import { useSettingsStore } from '../stores/settings';
+import { useAchievementStore } from '../stores/achievements';
 import { colors } from '../theme';
 import { playSnapSound, playCelebrationSound } from '../utils/sound';
 
@@ -15,7 +16,14 @@ interface PuzzleCanvasProps {
 }
 
 export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({ onPuzzleComplete }) => {
-  const { currentPuzzle, movePiece, trySnapPiece, bringToFront } = useGameStore();
+  const { 
+    currentPuzzle, 
+    movePiece, 
+    trySnapPiece, 
+    bringToFront, 
+    showGhostImage, 
+    highlightedPieces 
+  } = useGameStore();
   const { hapticEnabled, soundEnabled } = useSettingsStore();
   
   const handlePieceMove = useCallback((pieceId: string, x: number, y: number) => {
@@ -42,12 +50,31 @@ export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({ onPuzzleComplete }) 
   // Check for puzzle completion
   useEffect(() => {
     if (currentPuzzle?.board.isCompleted && onPuzzleComplete) {
+      // Record completion stats for achievements
+      const completionTime = Date.now() - currentPuzzle.startTime;
+      const { recordPuzzleCompletion, getEfficiencyScore } = useAchievementStore.getState();
+      
+      const efficiency = getEfficiencyScore(
+        completionTime,
+        currentPuzzle.hintsUsed,
+        currentPuzzle.difficulty
+      );
+      
+      recordPuzzleCompletion({
+        puzzleId: currentPuzzle.puzzle.id,
+        difficulty: currentPuzzle.difficulty,
+        completionTime,
+        hintsUsed: currentPuzzle.hintsUsed,
+        completedAt: Date.now(),
+        efficiency,
+      });
+      
       if (soundEnabled) {
         playCelebrationSound();
       }
       onPuzzleComplete();
     }
-  }, [currentPuzzle?.board.isCompleted, onPuzzleComplete, soundEnabled]);
+  }, [currentPuzzle?.board.isCompleted, currentPuzzle?.startTime, currentPuzzle?.hintsUsed, currentPuzzle?.difficulty, currentPuzzle?.puzzle.id, onPuzzleComplete, soundEnabled]);
   
   if (!currentPuzzle) {
     return null;
@@ -59,6 +86,17 @@ export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({ onPuzzleComplete }) 
   return (
     <GestureHandlerRootView style={styles.container}>
       <View style={[styles.canvas, { width: board.width, height: board.height }]}>
+        {/* Ghost image overlay for hints */}
+        {showGhostImage && (
+          <View style={styles.ghostImageContainer}>
+            <Image
+              source={typeof board.imageAsset === 'number' ? board.imageAsset : { uri: board.imageAsset }}
+              style={[styles.ghostImage, { width: board.width, height: board.height }]}
+              resizeMode="cover"
+            />
+          </View>
+        )}
+        
         {/* Render puzzle outline/grid */}
         <View style={styles.puzzleArea}>
           {pieces.map((piece) => (
@@ -72,6 +110,7 @@ export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({ onPuzzleComplete }) 
                   width: piece.width,
                   height: piece.height,
                 },
+                highlightedPieces.includes(piece.id) && styles.highlightedTarget,
               ]}
             />
           ))}
@@ -86,6 +125,7 @@ export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({ onPuzzleComplete }) 
             onMove={handlePieceMove}
             onMoveEnd={handlePieceMoveEnd}
             onBringToFront={handleBringToFront}
+            highlighted={highlightedPieces.includes(piece.id)}
           />
         ))}
       </View>
@@ -113,6 +153,16 @@ const styles = StyleSheet.create({
     elevation: 4,
     position: 'relative',
   },
+  ghostImageContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    zIndex: 1,
+    opacity: 0.3,
+  },
+  ghostImage: {
+    borderRadius: 12,
+  },
   puzzleArea: {
     position: 'absolute',
     top: 0,
@@ -126,5 +176,11 @@ const styles = StyleSheet.create({
     borderColor: colors.outline,
     borderStyle: 'dashed',
     backgroundColor: 'rgba(107, 158, 255, 0.05)',
+  },
+  highlightedTarget: {
+    borderWidth: 3,
+    borderColor: colors.secondary,
+    borderStyle: 'solid',
+    backgroundColor: 'rgba(255, 184, 107, 0.2)',
   },
 });

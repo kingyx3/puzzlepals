@@ -24,6 +24,7 @@ interface GameScreenProps {
 export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onExit }) => {
   const { startPuzzle, currentPuzzle, resetPuzzle, exitPuzzle, useHint } = useGameStore();
   const [showCelebration, setShowCelebration] = useState(false);
+  const [hintMessage, setHintMessage] = useState<string | null>(null);
   
   // Initialize puzzle when component mounts
   React.useEffect(() => {
@@ -48,6 +49,15 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
       setShowCelebration(false);
     }, 3000);
   }, []);
+  
+  const handleHint = useCallback(() => {
+    const hintResult = useHint();
+    if (hintResult?.message) {
+      setHintMessage(hintResult.message);
+      // Clear hint message after 5 seconds
+      setTimeout(() => setHintMessage(null), 5000);
+    }
+  }, [useHint]);
   
   const handleReset = useCallback(() => {
     Alert.alert(
@@ -99,7 +109,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
           </Text>
         </View>
         
-        <TouchableOpacity style={styles.hintButton} onPress={useHint}>
+        <TouchableOpacity style={styles.hintButton} onPress={handleHint}>
           <Text style={styles.buttonText}>💡 Hint</Text>
         </TouchableOpacity>
       </View>
@@ -110,6 +120,13 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
           <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
         </View>
       </View>
+      
+      {/* Hint message */}
+      {hintMessage && (
+        <View style={styles.hintMessageContainer}>
+          <Text style={styles.hintMessageText}>{hintMessage}</Text>
+        </View>
+      )}
       
       {/* Puzzle canvas */}
       <View style={styles.gameArea}>
@@ -247,5 +264,19 @@ const styles = StyleSheet.create({
     fontSize: typography.lg,
     color: colors.onBackground,
     textAlign: 'center',
+  },
+  hintMessageContainer: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    marginHorizontal: spacing.md,
+    backgroundColor: colors.secondary,
+    borderRadius: spacing.sm,
+    alignItems: 'center',
+  },
+  hintMessageText: {
+    fontSize: typography.md,
+    color: colors.onSecondary,
+    textAlign: 'center',
+    fontWeight: typography.weight.medium,
   },
 });

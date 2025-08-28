@@ -1,6 +1,6 @@
 // Individual puzzle piece component
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Image, StyleSheet } from 'react-native';
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, { 
@@ -20,18 +20,27 @@ interface PieceProps {
   onMoveEnd: (pieceId: string) => void;
   onBringToFront: (pieceId: string) => void;
   disabled?: boolean;
+  highlighted?: boolean;
 }
 
-export const Piece: React.FC<PieceProps> = ({
+export const Piece: React.FC<PieceProps> = memo(({
   piece,
   imageAsset,
   onMove,
   onMoveEnd,
   onBringToFront,
   disabled = false,
+  highlighted = false,
 }) => {
+  // Only re-initialize shared values when piece position changes or when piece is reset
   const translateX = useSharedValue(piece.x);
   const translateY = useSharedValue(piece.y);
+  
+  // Update shared values when piece position changes externally (like reset)
+  React.useEffect(() => {
+    translateX.value = piece.x;
+    translateY.value = piece.y;
+  }, [piece.x, piece.y, translateX, translateY]);
   
   // Update position when piece prop changes
   React.useEffect(() => {
@@ -76,6 +85,7 @@ export const Piece: React.FC<PieceProps> = ({
       height: piece.height,
       zIndex: piece.zIndex,
     },
+    highlighted && styles.highlighted,
     animatedStyle,
   ];
 
@@ -123,7 +133,7 @@ export const Piece: React.FC<PieceProps> = ({
       </Animated.View>
     </PanGestureHandler>
   );
-};
+});
 
 const styles = StyleSheet.create({
   piece: {
@@ -150,4 +160,15 @@ const styles = StyleSheet.create({
     borderColor: '#4CAF50',
     borderRadius: 4,
   },
+  highlighted: {
+    borderWidth: 3,
+    borderColor: '#FFB86B',
+    shadowColor: '#FFB86B',
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
+    elevation: 8,
+  },
 });
+
+// Add display name for debugging
+Piece.displayName = 'Piece';

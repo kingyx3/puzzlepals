@@ -255,37 +255,91 @@ export function shufflePieces(
 }
 
 /**
- * Check if a piece is within snapping threshold of its target
+ * Enhanced snap detection with edge-aware magnetic zones
  */
 export function isWithinSnapThreshold(
   piece: Piece,
   threshold: number = layout.snapThreshold
 ): boolean {
-  const pieceCenter = getRectCenter({
+  const pieceRect = {
     x: piece.x,
     y: piece.y,
     width: piece.width,
     height: piece.height,
-  });
+  };
   
-  const targetCenter = getRectCenter({
+  const targetRect = {
     x: piece.targetX,
     y: piece.targetY,
     width: piece.width,
     height: piece.height,
-  });
+  };
   
-  return distance(pieceCenter, targetCenter) <= threshold;
+  // Primary check - center-to-center distance
+  const pieceCenter = getRectCenter(pieceRect);
+  const targetCenter = getRectCenter(targetRect);
+  const centerDistance = distance(pieceCenter, targetCenter);
+  
+  if (centerDistance <= threshold) {
+    return true;
+  }
+  
+  // Only apply enhanced magnetic zones if base threshold is reasonably large
+  if (threshold < 15) {
+    return false; // For small thresholds, use only center-to-center distance
+  }
+  
+  // Enhanced magnetic zone - check edge alignment
+  const magneticThreshold = threshold * 1.2;
+  
+  // Check for edge alignment (horizontal or vertical)
+  const horizontalOverlap = Math.min(pieceRect.x + pieceRect.width, targetRect.x + targetRect.width) - 
+                           Math.max(pieceRect.x, targetRect.x);
+  const verticalOverlap = Math.min(pieceRect.y + pieceRect.height, targetRect.y + targetRect.height) - 
+                         Math.max(pieceRect.y, targetRect.y);
+  
+  // If there's significant overlap in one dimension and the other dimension is close
+  const overlapThreshold = Math.min(piece.width, piece.height) * 0.6;
+  
+  if (horizontalOverlap > overlapThreshold) {
+    const verticalDistance = Math.abs(pieceCenter.y - targetCenter.y);
+    if (verticalDistance <= magneticThreshold) {
+      return true;
+    }
+  }
+  
+  if (verticalOverlap > overlapThreshold) {
+    const horizontalDistance = Math.abs(pieceCenter.x - targetCenter.x);
+    if (horizontalDistance <= magneticThreshold) {
+      return true;
+    }
+  }
+  
+  return false;
 }
 
 /**
- * Snap a piece to its target position
+ * Calculate optimal snap position with edge-aware alignment
  */
-export function snapToTarget(piece: Piece): Piece {
+export function calculateSnapPosition(piece: Piece): { x: number; y: number } {
+  // For now, always snap to exact target position
+  // This can be enhanced to snap to best-fit position considering overlaps
   return {
-    ...piece,
     x: piece.targetX,
     y: piece.targetY,
+  };
+}
+
+/**
+ * Snap a piece to its optimal target position
+ */
+export function snapToTarget(piece: Piece): Piece {
+  const snapPosition = calculateSnapPosition(piece);
+  
+  return {
+    ...piece,
+    x: snapPosition.x,
+    y: snapPosition.y,
     placed: true,
     zIndex: 0, // Lower z-index for placed pieces
   };
