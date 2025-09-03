@@ -19,6 +19,7 @@ import { useGameStore } from '../stores/game';
 import { useAchievementStore } from '../stores/achievements';
 import { PuzzleMeta, Difficulty } from '../types';
 import { colors, spacing, typography, layout } from '../theme';
+import { getAccessibilityProps, getProgressAccessibility } from '../utils/accessibility';
 
 interface GameScreenProps {
   puzzle: PuzzleMeta;
@@ -132,30 +133,73 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
   }
   
   const progress = currentPuzzle.board.completedCount / (currentPuzzle.board.cols * currentPuzzle.board.rows);
+  const progressAccessibility = getProgressAccessibility(
+    currentPuzzle.board.completedCount,
+    currentPuzzle.board.cols * currentPuzzle.board.rows
+  );
   
   return (
     <SafeAreaView style={styles.container}>
       {/* Header with enhanced controls */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.exitButton} onPress={handleExit}>
+        <TouchableOpacity 
+          style={styles.exitButton} 
+          onPress={handleExit}
+          {...getAccessibilityProps({
+            label: 'Exit puzzle and go back',
+            hint: 'Returns to the puzzle selection screen',
+            role: 'button',
+          })}
+        >
           <Text style={styles.buttonText}>← Back</Text>
         </TouchableOpacity>
         
         <View style={styles.titleSection}>
-          <Text style={styles.puzzleTitle}>{puzzle.titleKey}</Text>
-          <Text style={styles.progressText}>
+          <Text 
+            style={styles.puzzleTitle}
+            accessible={true}
+            accessibilityRole="header"
+          >
+            {puzzle.titleKey}
+          </Text>
+          <Text 
+            style={styles.progressText}
+            accessible={true}
+            accessibilityLabel={`Progress: ${currentPuzzle.board.completedCount} pieces placed out of ${currentPuzzle.board.cols * currentPuzzle.board.rows} total pieces`}
+          >
             {currentPuzzle.board.completedCount} / {currentPuzzle.board.cols * currentPuzzle.board.rows}
           </Text>
         </View>
         
         <View style={styles.rightControls}>
-          <TouchableOpacity style={styles.achievementButton} onPress={() => setShowAchievementPanel(true)}>
+          <TouchableOpacity 
+            style={styles.achievementButton} 
+            onPress={() => setShowAchievementPanel(true)}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="View achievements"
+            accessibilityHint="Opens the achievements panel to see your progress and unlocked rewards"
+          >
             <Text style={styles.buttonText}>🏆</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.accessibilityButton} onPress={() => setShowAccessibilityPanel(true)}>
+          <TouchableOpacity 
+            style={styles.accessibilityButton} 
+            onPress={() => setShowAccessibilityPanel(true)}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Accessibility settings"
+            accessibilityHint="Opens accessibility options including voice guidance and visual adjustments"
+          >
             <Text style={styles.buttonText}>♿</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.hintButton} onPress={handleHint}>
+          <TouchableOpacity 
+            style={styles.hintButton} 
+            onPress={handleHint}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Get a hint"
+            accessibilityHint="Provides a helpful hint for solving the current puzzle"
+          >
             <Text style={styles.buttonText}>💡</Text>
           </TouchableOpacity>
         </View>
@@ -163,7 +207,14 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
       
       {/* Enhanced progress bar with additional info */}
       <View style={styles.progressContainer}>
-        <View style={styles.progressBar}>
+        <View 
+          style={styles.progressBar}
+          {...getAccessibilityProps({
+            label: progressAccessibility.label,
+            role: 'progressbar',
+          })}
+          accessibilityValue={progressAccessibility.value}
+        >
           <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
         </View>
         <View style={styles.progressStats}>

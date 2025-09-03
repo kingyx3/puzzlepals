@@ -20,12 +20,24 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectPuzzle, onOpenSe
           <Text style={styles.title}>🧩 PuzzlePals</Text>
           <Text style={styles.subtitle}>Choose your puzzle adventure!</Text>
         </View>
-        <TouchableOpacity style={styles.settingsButton} onPress={onOpenSettings}>
+        <TouchableOpacity 
+          style={styles.settingsButton} 
+          onPress={onOpenSettings}
+          accessible={true}
+          accessibilityRole="button"
+          accessibilityLabel="Open settings"
+          accessibilityHint="Opens the settings screen where you can adjust app preferences and accessibility options"
+        >
           <Text style={styles.settingsButtonText}>⚙️</Text>
         </TouchableOpacity>
       </View>
       
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+      <ScrollView 
+        style={styles.scrollView} 
+        contentContainerStyle={styles.content}
+        accessible={false}
+        accessibilityLabel="Puzzle packs list"
+      >
         {allPacks.map((pack) => (
           <PackCard
             key={pack.id}
@@ -68,9 +80,9 @@ const styles = StyleSheet.create({
   settingsButton: {
     padding: spacing.sm,
     backgroundColor: colors.surface,
-    borderRadius: layout.touchTarget / 2,
-    minWidth: layout.touchTarget,
-    minHeight: layout.touchTarget,
+    borderRadius: layout.touchTargetLarge / 2,
+    minWidth: layout.touchTargetLarge, // Increased for kid-friendly design
+    minHeight: layout.touchTargetLarge, // Increased for kid-friendly design
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 2,

@@ -78,8 +78,9 @@ export const typography = {
 } as const;
 
 export const layout = {
-  // Touch targets - minimum 44pt for accessibility
-  touchTarget: 44,
+  // Touch targets - minimum 44pt for accessibility (increased for kids)
+  touchTarget: 48, // Increased from 44 for kid-friendly design
+  touchTargetLarge: 56, // For primary actions
   
   // Game area dimensions
   minPuzzleSize: 200,
@@ -93,6 +94,13 @@ export const layout = {
     fast: 150,
     normal: 300,
     slow: 500,
+    celebration: 1000, // For completion celebrations
+  },
+  
+  // Kid-friendly spacing
+  kidFriendlySpacing: {
+    betweenButtons: 16, // Minimum space between interactive elements
+    aroundTouchTargets: 8, // Padding around touch targets
   },
 } as const;
 

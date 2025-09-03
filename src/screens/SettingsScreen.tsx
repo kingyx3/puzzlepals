@@ -90,10 +90,23 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onExit }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={onExit}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={onExit}
+          accessible={true}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+          accessibilityHint="Returns to the previous screen"
+        >
           <Text style={styles.backButtonText}>← Back</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Settings</Text>
+        <Text 
+          style={styles.title}
+          accessible={true}
+          accessibilityRole="header"
+        >
+          Settings
+        </Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -155,6 +168,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onExit }) => {
               onValueChange={setSoundEnabled}
               trackColor={{ false: colors.outline, true: colors.primary }}
               thumbColor={soundEnabled ? colors.onPrimary : colors.onSurface}
+              accessible={true}
+              accessibilityLabel="Toggle sound effects"
+              accessibilityHint={soundEnabled ? "Sound effects are currently on" : "Sound effects are currently off"}
             />
           </View>
 
@@ -168,6 +184,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onExit }) => {
               onValueChange={setHapticsEnabled}
               trackColor={{ false: colors.outline, true: colors.primary }}
               thumbColor={hapticsEnabled ? colors.onPrimary : colors.onSurface}
+              accessible={true}
+              accessibilityLabel="Toggle haptic feedback"
+              accessibilityHint={hapticsEnabled ? "Haptic feedback is currently on" : "Haptic feedback is currently off"}
             />
           </View>
         </View>
