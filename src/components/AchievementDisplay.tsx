@@ -10,7 +10,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import { useAchievementStore } from '../stores/achievements';
+import { useAchievementStore, Achievement } from '../stores/achievements';
 import { colors, spacing, typography } from '../theme';
 
 interface AchievementDisplayProps {
@@ -29,7 +29,40 @@ export const AchievementDisplay: React.FC<AchievementDisplayProps> = ({ visible,
     !unlockedAchievements.includes(achievement.id)
   );
 
-  const getProgressText = (achievement: { id: string; title: string; description: string }) => {
+  // Helper functions to get display text from keys
+  const getAchievementTitle = (achievement: Achievement): string => {
+    // For now, return simple English titles based on titleKey
+    // TODO: Implement proper i18n when translation system is ready
+    const titleMap: Record<string, string> = {
+      'achievements.first_puzzle': 'First Steps',
+      'achievements.puzzle_master': 'Puzzle Master',
+      'achievements.speed_demon': 'Speed Demon',
+      'achievements.streak_champion': 'Streak Champion',
+      'achievements.hint_free': 'No Hints Hero',
+      'achievements.difficulty_climber': 'Difficulty Climber',
+      'achievements.perfectionist': 'Perfectionist',
+      'achievements.explorer': 'Explorer',
+    };
+    return titleMap[achievement.titleKey] || achievement.titleKey;
+  };
+
+  const getAchievementDescription = (achievement: Achievement): string => {
+    // For now, return simple English descriptions based on descriptionKey
+    // TODO: Implement proper i18n when translation system is ready
+    const descriptionMap: Record<string, string> = {
+      'achievements.first_puzzle_desc': 'Complete your first puzzle',
+      'achievements.puzzle_master_desc': 'Complete 100 puzzles',
+      'achievements.speed_demon_desc': 'Complete a puzzle in under 2 minutes',
+      'achievements.streak_champion_desc': 'Maintain a 7-day streak',
+      'achievements.hint_free_desc': 'Complete a puzzle without hints',
+      'achievements.difficulty_climber_desc': 'Complete puzzles on all difficulties',
+      'achievements.perfectionist_desc': 'Complete 10 puzzles with 100% accuracy',
+      'achievements.explorer_desc': 'Try all puzzle packs',
+    };
+    return descriptionMap[achievement.descriptionKey] || achievement.descriptionKey;
+  };
+
+  const getProgressText = (achievement: Achievement) => {
     switch (achievement.id) {
       case 'puzzle_master':
         return `${playerStats.totalPuzzlesCompleted}/100 puzzles`;
@@ -115,8 +148,8 @@ export const AchievementDisplay: React.FC<AchievementDisplayProps> = ({ visible,
                       </Text>
                     </View>
                     <View style={styles.achievementContent}>
-                      <Text style={styles.achievementTitle}>{achievement.title}</Text>
-                      <Text style={styles.achievementDescription}>{achievement.description}</Text>
+                      <Text style={styles.achievementTitle}>{getAchievementTitle(achievement)}</Text>
+                      <Text style={styles.achievementDescription}>{getAchievementDescription(achievement)}</Text>
                       <Text style={styles.achievementProgress}>
                         {getProgressText(achievement)}
                       </Text>
@@ -139,10 +172,10 @@ export const AchievementDisplay: React.FC<AchievementDisplayProps> = ({ visible,
                     </View>
                     <View style={styles.achievementContent}>
                       <Text style={[styles.achievementTitle, styles.lockedTitle]}>
-                        {achievement.title}
+                        {getAchievementTitle(achievement)}
                       </Text>
                       <Text style={[styles.achievementDescription, styles.lockedDescription]}>
-                        {achievement.description}
+                        {getAchievementDescription(achievement)}
                       </Text>
                       <Text style={styles.achievementProgress}>
                         {getProgressText(achievement)}

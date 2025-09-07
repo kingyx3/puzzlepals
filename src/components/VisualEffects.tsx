@@ -42,6 +42,15 @@ export const VisualEffects: React.FC<VisualEffectsProps> = ({
   // Hint highlight animation
   const hintPulse = useSharedValue(0);
 
+  // Animated props for SVG components
+  const snapCircleProps = useAnimatedProps(() => ({
+    strokeOpacity: snapOpacity.value,
+  }));
+
+  const sparkleProps = useAnimatedProps(() => ({
+    opacity: sparkleProgress.value,
+  }));
+
   // Trigger snap effect
   React.useEffect(() => {
     if (snapEffectTrigger) {
@@ -119,7 +128,7 @@ export const VisualEffects: React.FC<VisualEffectsProps> = ({
           fill="none"
           stroke={colors.success}
           strokeWidth="4"
-          strokeOpacity={snapOpacity}
+          animatedProps={snapCircleProps}
         />
 
         {/* Hint highlights */}
@@ -148,7 +157,7 @@ export const VisualEffects: React.FC<VisualEffectsProps> = ({
               cy={y}
               r="4"
               fill={colors.warning}
-              opacity={sparkleProgress}
+              animatedProps={sparkleProps}
             />
           );
         })}
