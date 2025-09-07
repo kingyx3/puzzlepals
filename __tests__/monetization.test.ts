@@ -10,73 +10,87 @@ import {
 
 describe('Monetization Service', () => {
   beforeEach(() => {
+    jest.useFakeTimers();
     resetMonetizationState();
-    jest.clearAllTimers();
   });
 
   afterEach(() => {
-    jest.clearAllTimers();
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
   });
 
   describe('showAd', () => {
     it('should show ad before every puzzle start', async () => {
       // Every puzzle start should show ad (may succeed or fail based on simulation)
-      let result = await showAd();
-      expect(typeof result.success).toBe('boolean');
-      if (result.success) {
-        expect(result.revenue).toBeGreaterThanOrEqual(0);
-        expect(typeof result.skipped).toBe('boolean');
+      const adPromise1 = showAd();
+      jest.advanceTimersByTime(20000); // Advance past ad loading and duration
+      const result1 = await adPromise1;
+      
+      expect(typeof result1.success).toBe('boolean');
+      if (result1.success) {
+        expect(result1.revenue).toBeGreaterThanOrEqual(0);
+        expect(typeof result1.skipped).toBe('boolean');
       } else {
-        expect(result.error).toBeDefined();
+        expect(result1.error).toBeDefined();
       }
       
       // Second puzzle start should also show ad
-      result = await showAd();
-      expect(typeof result.success).toBe('boolean');
-      if (result.success) {
-        expect(result.revenue).toBeGreaterThanOrEqual(0);
-        expect(typeof result.skipped).toBe('boolean');
+      const adPromise2 = showAd();
+      jest.advanceTimersByTime(20000);
+      const result2 = await adPromise2;
+      
+      expect(typeof result2.success).toBe('boolean');
+      if (result2.success) {
+        expect(result2.revenue).toBeGreaterThanOrEqual(0);
+        expect(typeof result2.skipped).toBe('boolean');
       } else {
-        expect(result.error).toBeDefined();
+        expect(result2.error).toBeDefined();
       }
       
       // Third puzzle start should also show ad
-      result = await showAd();
-      expect(typeof result.success).toBe('boolean');
-      if (result.success) {
-        expect(result.revenue).toBeGreaterThanOrEqual(0);
-        expect(typeof result.skipped).toBe('boolean');
+      const adPromise3 = showAd();
+      jest.advanceTimersByTime(20000);
+      const result3 = await adPromise3;
+      
+      expect(typeof result3.success).toBe('boolean');
+      if (result3.success) {
+        expect(result3.revenue).toBeGreaterThanOrEqual(0);
+        expect(typeof result3.skipped).toBe('boolean');
       } else {
-        expect(result.error).toBeDefined();
+        expect(result3.error).toBeDefined();
       }
-    });
+    }, 15000);
 
     it('should skip ads for premium users', async () => {
       updateMonetizationConfig({ premiumPurchased: true });
       
-      // Should skip ad on every attempt
-      let result = await showAd();
-      expect(result.success).toBe(true);
-      expect(result.revenue).toBeUndefined();
-      expect(result.skipped).toBeUndefined();
+      // Should skip ad on every attempt - no timers needed for premium users
+      const result1 = await showAd();
+      expect(result1.success).toBe(true);
+      expect(result1.revenue).toBeUndefined();
+      expect(result1.skipped).toBeUndefined();
       
-      result = await showAd();
-      expect(result.success).toBe(true);
-      expect(result.revenue).toBeUndefined();
-      expect(result.skipped).toBeUndefined();
+      const result2 = await showAd();
+      expect(result2.success).toBe(true);
+      expect(result2.revenue).toBeUndefined();
+      expect(result2.skipped).toBeUndefined();
     });
 
     it('should respect ad timeout (30 seconds)', async () => {
       updateMonetizationConfig({ adTimeout: 100 }); // Very short timeout for testing
       
       const startTime = Date.now();
-      const result = await showAd();
+      const adPromise = showAd();
+      
+      // Advance timers past the timeout
+      jest.advanceTimersByTime(200);
+      const result = await adPromise;
       const endTime = Date.now();
       
       // Should complete quickly due to timeout or simulation
-      expect(endTime - startTime).toBeLessThan(8000); // Allow time for simulation
+      expect(endTime - startTime).toBeLessThan(1000); // Should be very fast with fake timers
       expect(typeof result.success).toBe('boolean');
-    }, 10000); // 10 second test timeout
+    }, 15000);
   });
 
   describe('premium status', () => {
@@ -93,15 +107,23 @@ describe('Monetization Service', () => {
       let stats = getMonetizationStats();
       expect(stats.puzzleStartCount).toBe(0);
       
-      await showAd();
+      const adPromise1 = showAd();
+      jest.advanceTimersByTime(20000);
+      await adPromise1;
       stats = getMonetizationStats();
       expect(stats.puzzleStartCount).toBe(1);
       
-      await showAd();
-      await showAd();
+      const adPromise2 = showAd();
+      jest.advanceTimersByTime(20000);
+      await adPromise2;
+      
+      const adPromise3 = showAd();
+      jest.advanceTimersByTime(20000);
+      await adPromise3;
+      
       stats = getMonetizationStats();
       expect(stats.puzzleStartCount).toBe(3);
-    });
+    }, 15000);
 
     it('should provide accurate config info', () => {
       const stats = getMonetizationStats();
@@ -127,8 +149,14 @@ describe('Monetization Service', () => {
   describe('reset functionality', () => {
     it('should reset to default state', async () => {
       // Make some changes
-      await showAd();
-      await showAd();
+      const adPromise1 = showAd();
+      jest.advanceTimersByTime(20000);
+      await adPromise1;
+      
+      const adPromise2 = showAd();
+      jest.advanceTimersByTime(20000);
+      await adPromise2;
+      
       updateMonetizationConfig({ premiumPurchased: true });
       
       let stats = getMonetizationStats();
@@ -141,6 +169,6 @@ describe('Monetization Service', () => {
       stats = getMonetizationStats();
       expect(stats.puzzleStartCount).toBe(0);
       expect(stats.isPremium).toBe(false);
-    });
+    }, 15000);
   });
 });

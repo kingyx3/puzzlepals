@@ -146,10 +146,26 @@ async function showInterstitialAd(): Promise<AdResult> {
   return new Promise<AdResult>((resolve) => {
     console.log('🎬 [SIMULATION] Showing interstitial ad...');
     
+    let resolved = false;
+    
     // Simulate ad loading time (2-5 seconds)
     const loadTime = Math.random() * 3000 + 2000;
     
+    // Add timeout handling like the real AdMob implementation
+    const timeoutTimer = setTimeout(() => {
+      if (!resolved) {
+        console.log('⏰ [SIMULATION] Ad timed out');
+        resolved = true;
+        resolve({ 
+          success: false, 
+          error: 'Ad load timeout' 
+        });
+      }
+    }, config.adTimeout);
+    
     setTimeout(() => {
+      if (resolved) return; // Already timed out
+      
       // Simulate 95% success rate (higher than non-blocking ads)
       const success = Math.random() > 0.05;
       
@@ -161,12 +177,19 @@ async function showInterstitialAd(): Promise<AdResult> {
         const skipAvailableAt = 5000;
         
         setTimeout(() => {
-          console.log('⏭️ [SIMULATION] Skip button now available');
+          if (!resolved) {
+            console.log('⏭️ [SIMULATION] Skip button now available');
+          }
         }, skipAvailableAt);
         
         setTimeout(() => {
+          if (resolved) return; // Already timed out
+          
           // Simulate user behavior: 30% skip, 70% watch full ad
           const wasSkipped = Math.random() < 0.3;
+          
+          resolved = true;
+          clearTimeout(timeoutTimer);
           
           if (wasSkipped) {
             console.log('⏭️ [SIMULATION] Ad was skipped by user');
@@ -187,6 +210,8 @@ async function showInterstitialAd(): Promise<AdResult> {
         
       } else {
         console.log('❌ [SIMULATION] Ad failed to load');
+        resolved = true;
+        clearTimeout(timeoutTimer);
         resolve({ 
           success: false, 
           error: 'Ad failed to load' 
