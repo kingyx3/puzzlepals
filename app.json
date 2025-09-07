@@ -12,7 +12,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.puzzlepals.app",
@@ -42,9 +44,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "your-project-id-here"
+        "projectId": "5e1a1c74-ba26-400a-91e2-4f98ed4fc87c"
       }
     },
-    "owner": "your-expo-username"
+    "owner": "kingyx3"
   }
 }
