@@ -65,12 +65,21 @@ export const AccessibilityEnhancements: React.FC<AccessibilityEnhancementsProps>
     // Stop any current speech
     Speech.stop();
     
-    speechUtteranceRef.current = Speech.speak(text, {
+    // Speech.speak returns void, not SpeechOptions
+    Speech.speak(text, {
       language: 'en',
       pitch: 1.0,
       rate: 0.8,
       voice: undefined, // Use system default
     });
+    
+    // Store the options instead for reference if needed
+    speechUtteranceRef.current = {
+      language: 'en',
+      pitch: 1.0,
+      rate: 0.8,
+      voice: undefined,
+    };
   };
 
   const describePiece = (piece: Piece) => {
