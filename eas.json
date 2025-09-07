@@ -1,6 +1,6 @@
 {
   "cli": {
-    "version": ">= 16.18.0",
+    "version": ">= 7.0.0",
     "appVersionSource": "remote"
   },
   "build": {
@@ -33,19 +33,6 @@
       },
       "android": {
         "buildType": "app-bundle"
-      }
-    }
-  },
-  "submit": {
-    "production": {
-      "ios": {
-        "appleId": "your-apple-id@email.com",
-        "ascAppId": "your-app-store-connect-app-id",
-        "appleTeamId": "your-apple-team-id"
-      },
-      "android": {
-        "serviceAccountKeyPath": "./secrets/google-service-account.json",
-        "track": "internal"
       }
     }
   }

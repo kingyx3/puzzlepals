@@ -32,9 +32,9 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.puzzlepals.app",
+      "versionCode": 1,
       "permissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.CAMERA"
       ]
     },
