@@ -7,12 +7,22 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Image,
 } from 'react-native';
+import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+import Animated, { 
+  useAnimatedGestureHandler, 
+  useAnimatedStyle, 
+  useSharedValue, 
+  runOnJS,
+  withSpring
+} from 'react-native-reanimated';
 import { useGameStore } from '../stores/game';
 import { organizePiecesByType } from '../engine/hints';
 import { colors, spacing, typography } from '../theme';
 import { SortingCriteria } from './PieceSortingPanel';
 import { Piece as PieceType } from '../types';
+import { JigsawPieceShape } from './JigsawPieceShape';
 
 interface PieceOrganizerProps {
   sortingCriteria: SortingCriteria;
@@ -21,11 +31,22 @@ interface PieceOrganizerProps {
 interface PieceItemProps {
   piece: PieceType;
   index: number;
+  imageAsset: string | number;
+  boardCols: number;
+  boardRows: number;
 }
 
-const PieceItem: React.FC<PieceItemProps> = ({ piece, index }) => {
+const PieceItem: React.FC<PieceItemProps> = ({ piece, index, imageAsset, boardCols, boardRows }) => {
   const { movePiece, bringToFront } = useGameStore();
   
+  // Animation values for dragging
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const scale = useSharedValue(1);
+  
+  const miniatureSize = 40; // Fixed size for miniature pieces
+  const scaleRatio = miniatureSize / Math.max(piece.width, piece.height);
+
   const handlePress = () => {
     // Bring piece to front and move it to center for easy access
     bringToFront(piece.id);
@@ -33,19 +54,120 @@ const PieceItem: React.FC<PieceItemProps> = ({ piece, index }) => {
     movePiece(piece.id, piece.targetX, piece.targetY + 100);
   };
 
+  const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, {
+    startX: number;
+    startY: number;
+  }>({
+    onStart: (_, context) => {
+      context.startX = translateX.value;
+      context.startY = translateY.value;
+      scale.value = withSpring(1.2); // Slightly enlarge when picked up
+    },
+    onActive: (event, context) => {
+      translateX.value = context.startX + event.translationX;
+      translateY.value = context.startY + event.translationY;
+    },
+    onEnd: (event) => {
+      // If dragged upward significantly, move to main canvas
+      if (event.translationY < -100) {
+        // Reset position and move piece to canvas
+        translateX.value = withSpring(0);
+        translateY.value = withSpring(0);
+        scale.value = withSpring(1);
+        
+        // Move piece to canvas staging area
+        runOnJS(bringToFront)(piece.id);
+        runOnJS(movePiece)(piece.id, piece.targetX, piece.targetY + 100);
+      } else {
+        // Return to original position
+        translateX.value = withSpring(0);
+        translateY.value = withSpring(0);
+        scale.value = withSpring(1);
+      }
+    },
+  });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+      { scale: scale.value },
+    ],
+  }));
+
   return (
-    <TouchableOpacity 
-      style={styles.pieceItem}
-      onPress={handlePress}
-      activeOpacity={0.7}
-    >
-      <View style={styles.piecePreview}>
-        <Text style={styles.pieceIndex}>{index + 1}</Text>
-      </View>
-      <Text style={styles.pieceLabel}>
-        {piece.row}-{piece.col}
-      </Text>
-    </TouchableOpacity>
+    <View style={styles.pieceItemContainer}>
+      <PanGestureHandler onGestureEvent={gestureHandler}>
+        <Animated.View style={[styles.pieceItem, animatedStyle]}>
+          <TouchableOpacity 
+            style={styles.piecePreview}
+            onPress={handlePress}
+            activeOpacity={0.7}
+          >
+            {piece.shape === 'JIGSAW' && piece.edges ? (
+              <View style={styles.miniaturePieceContainer}>
+                <JigsawPieceShape
+                  width={miniatureSize}
+                  height={miniatureSize}
+                  edges={piece.edges}
+                  imageAsset={imageAsset}
+                  style={{ 
+                    transform: [{ scale: scaleRatio }],
+                    width: piece.width * scaleRatio,
+                    height: piece.height * scaleRatio,
+                  }}
+                />
+              </View>
+            ) : (
+              <View style={styles.miniaturePieceContainer}>
+                {/* Render square piece with actual image content */}
+                <View style={[styles.squarePiecePreview, {
+                  width: miniatureSize,
+                  height: miniatureSize,
+                }]}>
+                  <View style={styles.imageClipContainer}>
+                    {/* Show the actual portion of the image this piece represents */}
+                    <View style={[styles.clippedImage, {
+                      width: miniatureSize * boardCols,
+                      height: miniatureSize * boardRows,
+                      left: -piece.col * miniatureSize,
+                      top: -piece.row * miniatureSize,
+                    }]}>
+                      {typeof imageAsset === 'number' ? (
+                        <Image 
+                          source={imageAsset}
+                          style={[styles.fullImage, {
+                            width: miniatureSize * boardCols,
+                            height: miniatureSize * boardRows,
+                          }]}
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <Image 
+                          source={{ uri: imageAsset }}
+                          style={[styles.fullImage, {
+                            width: miniatureSize * boardCols,
+                            height: miniatureSize * boardRows,
+                          }]}
+                          resizeMode="cover"
+                        />
+                      )}
+                    </View>
+                  </View>
+                  {/* Add piece number overlay */}
+                  <View style={styles.pieceOverlay}>
+                    <Text style={styles.pieceNumber}>{index + 1}</Text>
+                  </View>
+                </View>
+              </View>
+            )}
+          </TouchableOpacity>
+          <Text style={styles.pieceLabel}>
+            {piece.row}-{piece.col}
+          </Text>
+        </Animated.View>
+      </PanGestureHandler>
+    </View>
   );
 };
 
@@ -136,13 +258,14 @@ export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
   }
 
   const totalPieces = organizedPieces.sections.reduce((sum, section) => sum + section.pieces.length, 0);
+  const { board } = currentPuzzle;
   
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>{organizedPieces.title}</Text>
         <Text style={styles.subtitle}>
-          {totalPieces} pieces remaining • Tap to bring to staging area
+          {totalPieces} pieces remaining • Tap to bring to staging area • Drag up to move to puzzle
         </Text>
       </View>
       
@@ -172,6 +295,9 @@ export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
                   key={piece.id}
                   piece={piece}
                   index={pieceIndex}
+                  imageAsset={board.imageAsset}
+                  boardCols={board.cols}
+                  boardRows={board.rows}
                 />
               ))}
             </ScrollView>
@@ -248,8 +374,10 @@ const styles = StyleSheet.create({
   piecesContent: {
     paddingRight: spacing.md,
   },
-  pieceItem: {
+  pieceItemContainer: {
     marginRight: spacing.xs,
+  },
+  pieceItem: {
     alignItems: 'center',
   },
   piecePreview: {
@@ -259,10 +387,59 @@ const styles = StyleSheet.create({
     borderRadius: spacing.xs,
     borderWidth: 1,
     borderColor: colors.outline,
-    borderStyle: 'dashed',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing.xs / 2,
+    overflow: 'hidden',
+  },
+  miniaturePieceContainer: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  squarePiecePreview: {
+    borderRadius: spacing.xs,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  imageClipContainer: {
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  clippedImage: {
+    position: 'absolute',
+  },
+  fullImage: {
+    width: '100%',
+    height: '100%',
+  },
+  pieceOverlay: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 8,
+    width: 16,
+    height: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pieceNumber: {
+    fontSize: 10,
+    color: 'white',
+    fontWeight: typography.weight.bold,
+    textAlign: 'center',
+  },
+  simplePiecePreview: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderStyle: 'dashed',
   },
   pieceIndex: {
     fontSize: typography.xs,
