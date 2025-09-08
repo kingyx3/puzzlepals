@@ -263,7 +263,7 @@ export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>{organizedPieces.title}</Text>
+        <Text style={styles.title}>🧩 Puzzle Pieces Carousel</Text>
         <Text style={styles.subtitle}>
           {totalPieces} pieces remaining • Tap to bring to staging area • Drag up to move to puzzle
         </Text>
@@ -274,6 +274,10 @@ export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}
         showsHorizontalScrollIndicator={false}
+        pagingEnabled={false}
+        decelerationRate="fast"
+        snapToInterval={140}
+        snapToAlignment="start"
       >
         {organizedPieces.sections.map((section, sectionIndex) => (
           <View key={sectionIndex} style={styles.section}>
@@ -311,20 +315,29 @@ export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: colors.outline,
-    maxHeight: 140, // Fixed height to control layout
+    borderTopWidth: 2,
+    borderTopColor: colors.primary,
+    maxHeight: 150, // Slightly increased height for better carousel appearance
+    shadowColor: colors.shadow,
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
   },
   header: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.outline,
+    backgroundColor: 'rgba(107, 158, 255, 0.05)',
   },
   title: {
     fontSize: typography.md,
     fontWeight: typography.weight.semibold,
-    color: colors.onSurface,
+    color: colors.primary,
   },
   subtitle: {
     fontSize: typography.sm,
@@ -336,11 +349,23 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.md,
+    alignItems: 'center',
   },
   section: {
     marginRight: spacing.lg,
-    minWidth: 120,
+    minWidth: 130,
+    backgroundColor: colors.background,
+    borderRadius: spacing.sm,
+    padding: spacing.sm,
+    shadowColor: colors.shadow,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -349,52 +374,64 @@ const styles = StyleSheet.create({
     paddingLeft: spacing.sm,
     paddingRight: spacing.xs,
     paddingVertical: spacing.xs,
-    borderLeftWidth: 3,
-    marginBottom: spacing.xs,
+    borderLeftWidth: 4,
+    marginBottom: spacing.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    borderRadius: spacing.xs,
   },
   sectionTitle: {
     fontSize: typography.sm,
-    fontWeight: typography.weight.medium,
+    fontWeight: typography.weight.semibold,
     color: colors.onSurface,
     flex: 1,
   },
   sectionCount: {
     fontSize: typography.xs,
-    color: colors.secondary,
-    backgroundColor: colors.background,
+    color: colors.onPrimary,
+    backgroundColor: colors.primary,
     paddingHorizontal: spacing.xs,
     paddingVertical: spacing.xs / 2,
-    borderRadius: spacing.xs,
-    minWidth: 20,
+    borderRadius: spacing.sm,
+    minWidth: 24,
     textAlign: 'center',
+    fontWeight: typography.weight.bold,
   },
   piecesContainer: {
-    maxHeight: 60,
+    maxHeight: 70,
   },
   piecesContent: {
     paddingRight: spacing.md,
+    alignItems: 'center',
   },
   pieceItemContainer: {
-    marginRight: spacing.xs,
+    marginRight: spacing.sm,
   },
   pieceItem: {
     alignItems: 'center',
   },
   piecePreview: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     backgroundColor: colors.background,
-    borderRadius: spacing.xs,
-    borderWidth: 1,
-    borderColor: colors.outline,
+    borderRadius: spacing.sm,
+    borderWidth: 2,
+    borderColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing.xs / 2,
     overflow: 'hidden',
+    shadowColor: colors.shadow,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
   },
   miniaturePieceContainer: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
