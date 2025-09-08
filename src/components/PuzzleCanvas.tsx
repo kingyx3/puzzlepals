@@ -2,7 +2,6 @@
 
 import React, { useEffect, useCallback } from 'react';
 import { View, StyleSheet, Image } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 import { Piece } from './Piece';
 import { useGameStore } from '../stores/game';
@@ -87,7 +86,7 @@ export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({ onPuzzleComplete, on
   const pieces = Object.values(board.pieces);
   
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <View style={styles.container}>
       <View style={[styles.canvas, { width: board.width, height: board.height }]}>
         {/* Ghost image overlay for hints */}
         {showGhostImage && (
@@ -132,7 +131,7 @@ export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({ onPuzzleComplete, on
           />
         ))}
       </View>
-    </GestureHandlerRootView>
+    </View>
   );
 };
 
