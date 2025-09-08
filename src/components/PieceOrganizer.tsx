@@ -1,0 +1,454 @@
+// Scrollable component to organize and display puzzle pieces under the main puzzle area
+
+import React, { useMemo } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
+import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+import Animated, { 
+  useAnimatedGestureHandler, 
+  useAnimatedStyle, 
+  useSharedValue, 
+  runOnJS,
+  withSpring
+} from 'react-native-reanimated';
+import { useGameStore } from '../stores/game';
+import { organizePiecesByType } from '../engine/hints';
+import { colors, spacing, typography } from '../theme';
+import { SortingCriteria } from './PieceSortingPanel';
+import { Piece as PieceType } from '../types';
+import { JigsawPieceShape } from './JigsawPieceShape';
+
+interface PieceOrganizerProps {
+  sortingCriteria: SortingCriteria;
+}
+
+interface PieceItemProps {
+  piece: PieceType;
+  index: number;
+  imageAsset: string | number;
+  boardCols: number;
+  boardRows: number;
+}
+
+const PieceItem: React.FC<PieceItemProps> = ({ piece, index, imageAsset, boardCols, boardRows }) => {
+  const { movePiece, bringToFront } = useGameStore();
+  
+  // Animation values for dragging
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const scale = useSharedValue(1);
+  
+  const miniatureSize = 40; // Fixed size for miniature pieces
+  const scaleRatio = miniatureSize / Math.max(piece.width, piece.height);
+
+  const handlePress = () => {
+    // Bring piece to front and move it to center for easy access
+    bringToFront(piece.id);
+    // Move to a staging area in the center-bottom of the canvas
+    movePiece(piece.id, piece.targetX, piece.targetY + 100);
+  };
+
+  const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, {
+    startX: number;
+    startY: number;
+  }>({
+    onStart: (_, context) => {
+      context.startX = translateX.value;
+      context.startY = translateY.value;
+      scale.value = withSpring(1.2); // Slightly enlarge when picked up
+    },
+    onActive: (event, context) => {
+      translateX.value = context.startX + event.translationX;
+      translateY.value = context.startY + event.translationY;
+    },
+    onEnd: (event) => {
+      // If dragged upward significantly, move to main canvas
+      if (event.translationY < -100) {
+        // Reset position and move piece to canvas
+        translateX.value = withSpring(0);
+        translateY.value = withSpring(0);
+        scale.value = withSpring(1);
+        
+        // Move piece to canvas staging area
+        runOnJS(bringToFront)(piece.id);
+        runOnJS(movePiece)(piece.id, piece.targetX, piece.targetY + 100);
+      } else {
+        // Return to original position
+        translateX.value = withSpring(0);
+        translateY.value = withSpring(0);
+        scale.value = withSpring(1);
+      }
+    },
+  });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+      { scale: scale.value },
+    ],
+  }));
+
+  return (
+    <View style={styles.pieceItemContainer}>
+      <PanGestureHandler onGestureEvent={gestureHandler}>
+        <Animated.View style={[styles.pieceItem, animatedStyle]}>
+          <TouchableOpacity 
+            style={styles.piecePreview}
+            onPress={handlePress}
+            activeOpacity={0.7}
+          >
+            {piece.shape === 'JIGSAW' && piece.edges ? (
+              <View style={styles.miniaturePieceContainer}>
+                <JigsawPieceShape
+                  width={miniatureSize}
+                  height={miniatureSize}
+                  edges={piece.edges}
+                  imageAsset={imageAsset}
+                  style={{ 
+                    transform: [{ scale: scaleRatio }],
+                    width: piece.width * scaleRatio,
+                    height: piece.height * scaleRatio,
+                  }}
+                />
+              </View>
+            ) : (
+              <View style={styles.miniaturePieceContainer}>
+                {/* Render square piece with actual image content */}
+                <View style={[styles.squarePiecePreview, {
+                  width: miniatureSize,
+                  height: miniatureSize,
+                }]}>
+                  <View style={styles.imageClipContainer}>
+                    {/* Show the actual portion of the image this piece represents */}
+                    <View style={[styles.clippedImage, {
+                      width: miniatureSize * boardCols,
+                      height: miniatureSize * boardRows,
+                      left: -piece.col * miniatureSize,
+                      top: -piece.row * miniatureSize,
+                    }]}>
+                      {typeof imageAsset === 'number' ? (
+                        <Image 
+                          source={imageAsset}
+                          style={[styles.fullImage, {
+                            width: miniatureSize * boardCols,
+                            height: miniatureSize * boardRows,
+                          }]}
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <Image 
+                          source={{ uri: imageAsset }}
+                          style={[styles.fullImage, {
+                            width: miniatureSize * boardCols,
+                            height: miniatureSize * boardRows,
+                          }]}
+                          resizeMode="cover"
+                        />
+                      )}
+                    </View>
+                  </View>
+                  {/* Add piece number overlay */}
+                  <View style={styles.pieceOverlay}>
+                    <Text style={styles.pieceNumber}>{index + 1}</Text>
+                  </View>
+                </View>
+              </View>
+            )}
+          </TouchableOpacity>
+          <Text style={styles.pieceLabel}>
+            {piece.row}-{piece.col}
+          </Text>
+        </Animated.View>
+      </PanGestureHandler>
+    </View>
+  );
+};
+
+export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
+  sortingCriteria,
+}) => {
+  const { currentPuzzle } = useGameStore();
+  
+  const organizedPieces = useMemo(() => {
+    if (!currentPuzzle) return null;
+    
+    const { board } = currentPuzzle;
+    const unplacedPieces = Object.values(board.pieces).filter(piece => !piece.placed);
+    
+    switch (sortingCriteria) {
+      case 'type': {
+        const organized = organizePiecesByType(board);
+        return {
+          title: 'Sorted by Type',
+          sections: [
+            {
+              title: 'Corners',
+              pieces: organized.corners.filter(p => !p.placed),
+              color: colors.warning,
+              icon: '📐',
+            },
+            {
+              title: 'Edges', 
+              pieces: organized.edges.filter(p => !p.placed),
+              color: colors.secondary,
+              icon: '📏',
+            },
+            {
+              title: 'Interior',
+              pieces: organized.interior.filter(p => !p.placed),
+              color: colors.primary,
+              icon: '🔳',
+            },
+          ],
+        };
+      }
+      case 'color':
+        return {
+          title: 'Sorted by Color',
+          sections: [
+            {
+              title: 'All Pieces',
+              pieces: unplacedPieces,
+              color: colors.primary,
+              icon: '🎨',
+            },
+          ],
+        };
+      case 'progress':
+        // Sort by distance to target position
+        return {
+          title: 'Sorted by Progress',
+          sections: [
+            {
+              title: 'Closest to Target',
+              pieces: unplacedPieces.sort((a, b) => {
+                const distA = Math.sqrt(Math.pow(a.x - a.targetX, 2) + Math.pow(a.y - a.targetY, 2));
+                const distB = Math.sqrt(Math.pow(b.x - b.targetX, 2) + Math.pow(b.y - b.targetY, 2));
+                return distA - distB;
+              }),
+              color: colors.success,
+              icon: '🎯',
+            },
+          ],
+        };
+      default:
+        return {
+          title: 'All Pieces',
+          sections: [
+            {
+              title: 'Unplaced Pieces',
+              pieces: unplacedPieces,
+              color: colors.outline,
+              icon: '🧩',
+            },
+          ],
+        };
+    }
+  }, [currentPuzzle, sortingCriteria]);
+
+  if (!currentPuzzle || !organizedPieces) {
+    return null;
+  }
+
+  const totalPieces = organizedPieces.sections.reduce((sum, section) => sum + section.pieces.length, 0);
+  const { board } = currentPuzzle;
+  
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>{organizedPieces.title}</Text>
+        <Text style={styles.subtitle}>
+          {totalPieces} pieces remaining • Tap to bring to staging area • Drag up to move to puzzle
+        </Text>
+      </View>
+      
+      <ScrollView 
+        horizontal 
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.scrollContent}
+        showsHorizontalScrollIndicator={false}
+      >
+        {organizedPieces.sections.map((section, sectionIndex) => (
+          <View key={sectionIndex} style={styles.section}>
+            <View style={[styles.sectionHeader, { borderLeftColor: section.color }]}>
+              <Text style={styles.sectionTitle}>
+                {section.icon} {section.title}
+              </Text>
+              <Text style={styles.sectionCount}>{section.pieces.length}</Text>
+            </View>
+            
+            <ScrollView 
+              horizontal
+              style={styles.piecesContainer}
+              contentContainerStyle={styles.piecesContent}
+              showsHorizontalScrollIndicator={false}
+            >
+              {section.pieces.map((piece, pieceIndex) => (
+                <PieceItem
+                  key={piece.id}
+                  piece={piece}
+                  index={pieceIndex}
+                  imageAsset={board.imageAsset}
+                  boardCols={board.cols}
+                  boardRows={board.rows}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        ))}
+      </ScrollView>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: colors.surface,
+    borderTopWidth: 1,
+    borderTopColor: colors.outline,
+    maxHeight: 140, // Fixed height to control layout
+  },
+  header: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.outline,
+  },
+  title: {
+    fontSize: typography.md,
+    fontWeight: typography.weight.semibold,
+    color: colors.onSurface,
+  },
+  subtitle: {
+    fontSize: typography.sm,
+    color: colors.secondary,
+    marginTop: spacing.xs / 2,
+  },
+  scrollContainer: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  section: {
+    marginRight: spacing.lg,
+    minWidth: 120,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingLeft: spacing.sm,
+    paddingRight: spacing.xs,
+    paddingVertical: spacing.xs,
+    borderLeftWidth: 3,
+    marginBottom: spacing.xs,
+  },
+  sectionTitle: {
+    fontSize: typography.sm,
+    fontWeight: typography.weight.medium,
+    color: colors.onSurface,
+    flex: 1,
+  },
+  sectionCount: {
+    fontSize: typography.xs,
+    color: colors.secondary,
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: spacing.xs / 2,
+    borderRadius: spacing.xs,
+    minWidth: 20,
+    textAlign: 'center',
+  },
+  piecesContainer: {
+    maxHeight: 60,
+  },
+  piecesContent: {
+    paddingRight: spacing.md,
+  },
+  pieceItemContainer: {
+    marginRight: spacing.xs,
+  },
+  pieceItem: {
+    alignItems: 'center',
+  },
+  piecePreview: {
+    width: 40,
+    height: 40,
+    backgroundColor: colors.background,
+    borderRadius: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.outline,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: spacing.xs / 2,
+    overflow: 'hidden',
+  },
+  miniaturePieceContainer: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  squarePiecePreview: {
+    borderRadius: spacing.xs,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  imageClipContainer: {
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  clippedImage: {
+    position: 'absolute',
+  },
+  fullImage: {
+    width: '100%',
+    height: '100%',
+  },
+  pieceOverlay: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 8,
+    width: 16,
+    height: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pieceNumber: {
+    fontSize: 10,
+    color: 'white',
+    fontWeight: typography.weight.bold,
+    textAlign: 'center',
+  },
+  simplePiecePreview: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderStyle: 'dashed',
+  },
+  pieceIndex: {
+    fontSize: typography.xs,
+    color: colors.secondary,
+    fontWeight: typography.weight.medium,
+  },
+  pieceLabel: {
+    fontSize: typography.xs,
+    color: colors.secondary,
+    textAlign: 'center',
+  },
+});

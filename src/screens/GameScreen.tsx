@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { PuzzleCanvas } from '../components/PuzzleCanvas';
 import { PieceSortingPanel, SortingCriteria } from '../components/PieceSortingPanel';
+import { PieceOrganizer } from '../components/PieceOrganizer';
 import { AccessibilityEnhancements } from '../components/AccessibilityEnhancements';
 import { VisualEffects } from '../components/VisualEffects';
 import { AchievementDisplay } from '../components/AchievementDisplay';
@@ -44,9 +45,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
     const screenWidth = Dimensions.get('window').width;
     const screenHeight = Dimensions.get('window').height;
     
-    // Calculate canvas size (leaving space for controls)
+    // Calculate canvas size (leaving space for controls and piece organizer)
     const maxWidth = screenWidth - spacing.xl * 2;
-    const maxHeight = screenHeight * 0.6; // 60% of screen height
+    const maxHeight = screenHeight * 0.5; // Reduced from 0.6 to make room for piece organizer
     const canvasSize = Math.min(maxWidth, maxHeight, layout.maxPuzzleSize);
     
     startPuzzle(puzzle, difficulty, { 
@@ -249,6 +250,11 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
         )}
       </View>
       
+      {/* Piece organizer under the puzzle */}
+      <PieceOrganizer
+        sortingCriteria={currentSorting}
+      />
+      
       {/* Enhanced bottom controls */}
       <View style={styles.bottomControls}>
         <TouchableOpacity style={styles.sortButton} onPress={() => setShowSortingPanel(true)}>
@@ -393,6 +399,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: spacing.md,
+    minHeight: 200, // Ensure minimum height for puzzle canvas
   },
   bottomControls: {
     flexDirection: 'row',
@@ -400,6 +407,9 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     alignItems: 'center',
     justifyContent: 'space-between',
+    backgroundColor: colors.surface,
+    borderTopWidth: 1,
+    borderTopColor: colors.outline,
   },
   sortButton: {
     padding: spacing.md,
