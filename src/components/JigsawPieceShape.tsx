@@ -9,7 +9,7 @@ interface JigsawPieceShapeProps {
   width: number;
   height: number;
   edges: EdgeShape;
-  imageAsset: number;
+  imageAsset: number | string;
   style?: object;
 }
 
@@ -34,7 +34,7 @@ export const JigsawPieceShape: React.FC<JigsawPieceShapeProps> = ({
         
         {/* Background image clipped to jigsaw shape */}
         <SvgImage
-          href={imageAsset}
+          href={typeof imageAsset === 'number' ? imageAsset : { uri: imageAsset }}
           width={width}
           height={height}
           clipPath={`url(#${clipId})`}
