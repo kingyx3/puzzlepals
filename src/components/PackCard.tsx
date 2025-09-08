@@ -3,8 +3,18 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { PuzzlePack, PuzzleMeta } from '../types';
-import { colors, spacing, borderRadius, typography, shadows, layout } from '../theme';
-import { getAccessibilityProps, getPuzzleAccessibilityLabel } from '../utils/accessibility';
+import {
+  colors,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  layout,
+} from '../theme';
+import {
+  getAccessibilityProps,
+  getPuzzleAccessibilityLabel,
+} from '../utils/accessibility';
 
 interface PackCardProps {
   pack: PuzzlePack;
@@ -12,7 +22,11 @@ interface PackCardProps {
   style?: object;
 }
 
-export const PackCard: React.FC<PackCardProps> = ({ pack, onSelectPuzzle, style }) => {
+export const PackCard: React.FC<PackCardProps> = ({
+  pack,
+  onSelectPuzzle,
+  style,
+}) => {
   const [pressedPuzzle, setPressedPuzzle] = useState<string | null>(null);
 
   const handlePuzzlePress = (puzzle: PuzzleMeta) => {
@@ -30,14 +44,14 @@ export const PackCard: React.FC<PackCardProps> = ({ pack, onSelectPuzzle, style 
         <Image source={pack.coverAsset} style={styles.coverImage} />
         <Text style={styles.title}>{pack.titleKey}</Text>
       </View>
-      
+
       <View style={styles.puzzlesGrid}>
         {pack.puzzles.map((puzzle) => (
           <TouchableOpacity
             key={puzzle.id}
             style={[
               styles.puzzleItem,
-              pressedPuzzle === puzzle.id && styles.puzzleItemPressed
+              pressedPuzzle === puzzle.id && styles.puzzleItemPressed,
             ]}
             onPress={() => handlePuzzlePress(puzzle)}
             activeOpacity={0.8}
@@ -50,15 +64,15 @@ export const PackCard: React.FC<PackCardProps> = ({ pack, onSelectPuzzle, style 
               role: 'button',
             })}
           >
-            <Image 
-              source={puzzle.imageAsset} 
-              style={styles.puzzleImage} 
+            <Image
+              source={puzzle.imageAsset}
+              style={styles.puzzleImage}
               {...getAccessibilityProps({
                 label: `Preview image for ${puzzle.titleKey} puzzle`,
                 role: 'image',
               })}
             />
-            <Text 
+            <Text
               style={styles.puzzleTitle}
               accessible={true}
               accessibilityRole="text"

@@ -12,18 +12,19 @@ type Screen = 'home' | 'game' | 'settings' | 'loading-ad';
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
   const [selectedPuzzle, setSelectedPuzzle] = useState<PuzzleMeta | null>(null);
-  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('AGES_3_5');
+  const [selectedDifficulty, setSelectedDifficulty] =
+    useState<Difficulty>('AGES_3_5');
 
   const handleSelectPuzzle = async (puzzle: PuzzleMeta) => {
     try {
       // Set loading state while ad is showing
       setCurrentScreen('loading-ad');
-      
+
       console.log('🎬 Starting ad before puzzle...');
-      
+
       // BLOCKING: Wait for ad to complete or be skipped before starting game
       const adResult = await showAd();
-      
+
       if (adResult.success) {
         if (adResult.skipped) {
           console.log('⏭️ Ad was skipped, starting puzzle');
@@ -33,12 +34,11 @@ export default function App() {
       } else {
         console.log('❌ Ad failed, starting puzzle anyway');
       }
-      
+
       // Start the puzzle after ad is done
       setSelectedPuzzle(puzzle);
       setSelectedDifficulty(puzzle.defaultDifficulty);
       setCurrentScreen('game');
-      
     } catch (error) {
       console.error('Error in puzzle selection flow:', error);
       // Always allow game to start even if ad system fails
@@ -64,28 +64,26 @@ export default function App() {
   return (
     <>
       {currentScreen === 'home' && (
-        <HomeScreen 
-          onSelectPuzzle={handleSelectPuzzle} 
+        <HomeScreen
+          onSelectPuzzle={handleSelectPuzzle}
           onOpenSettings={handleOpenSettings}
         />
       )}
-      
-      {currentScreen === 'loading-ad' && (
-        <AdLoadingScreen />
-      )}
-      
+
+      {currentScreen === 'loading-ad' && <AdLoadingScreen />}
+
       {currentScreen === 'game' && selectedPuzzle && (
-        <GameScreen 
-          puzzle={selectedPuzzle} 
+        <GameScreen
+          puzzle={selectedPuzzle}
           difficulty={selectedDifficulty}
-          onExit={handleExitGame} 
+          onExit={handleExitGame}
         />
       )}
-      
+
       {currentScreen === 'settings' && (
         <SettingsScreen onExit={handleExitSettings} />
       )}
-      
+
       <StatusBar style="auto" />
     </>
   );

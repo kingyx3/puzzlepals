@@ -55,10 +55,7 @@ export function clamp(value: number, min: number, max: number): number {
 /**
  * Clamp a position within bounds
  */
-export function clampPosition(
-  position: Position,
-  bounds: Rectangle
-): Position {
+export function clampPosition(position: Position, bounds: Rectangle): Position {
   return {
     x: clamp(position.x, bounds.x, bounds.x + bounds.width),
     y: clamp(position.y, bounds.y, bounds.y + bounds.height),

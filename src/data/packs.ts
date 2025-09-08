@@ -68,10 +68,7 @@ export const AnimalsPack: PuzzlePack = {
       imageAsset: eagleImage,
       defaultDifficulty: 'AGES_11_PLUS',
       educationalContent: {
-        facts: [
-          'Eagles have incredible eyesight',
-          'Eagles are birds of prey',
-        ],
+        facts: ['Eagles have incredible eyesight', 'Eagles are birds of prey'],
         vocabulary: ['predator', 'eyesight', 'soar'],
         learningPrompts: [
           'How do eagles hunt for food?',
@@ -156,9 +153,11 @@ export const AdvancedPack: PuzzlePack = {
 export const allPacks: PuzzlePack[] = [AnimalsPack, VehiclesPack, AdvancedPack];
 
 // Helper function to find puzzle by ID
-export function findPuzzleById(puzzleId: string): { pack: PuzzlePack; puzzle: PuzzleMeta } | null {
+export function findPuzzleById(
+  puzzleId: string
+): { pack: PuzzlePack; puzzle: PuzzleMeta } | null {
   for (const pack of allPacks) {
-    const puzzle = pack.puzzles.find(p => p.id === puzzleId);
+    const puzzle = pack.puzzles.find((p) => p.id === puzzleId);
     if (puzzle) {
       return { pack, puzzle };
     }

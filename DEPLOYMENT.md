@@ -36,7 +36,7 @@ This guide covers the complete process of deploying the PuzzlePals React Native 
 # Install Expo CLI globally
 npm install -g @expo/cli
 
-# Install EAS CLI globally  
+# Install EAS CLI globally
 npm install -g eas-cli
 
 # Login to your Expo account
@@ -198,16 +198,19 @@ Create the following assets in your `assets/` directory:
 Create screenshots for both stores:
 
 **iOS Screenshots:**
+
 - iPhone: 1290x2796px (iPhone 14 Pro Max) - at least 3 images
 - iPad: 2048x2732px (12.9" iPad Pro) - at least 3 images
 
 **Android Screenshots:**
-- Phone: 1080x1920px - at least 2 images  
+
+- Phone: 1080x1920px - at least 2 images
 - Tablet: 1920x1080px - at least 1 image (landscape)
 
 ### Asset Generation
 
 Use tools like:
+
 - **Expo Asset Generator**: Built into Expo CLI
 - **App Icon Generator**: Online tools for multiple sizes
 - **Figma**: For custom designs and mockups
@@ -254,7 +257,7 @@ eas build --platform all --profile production
 
 1. **Create App**: Go to [Google Play Console](https://play.google.com/console)
 2. **Fill App Details**:
-   - App name: "PuzzlePals" 
+   - App name: "PuzzlePals"
    - Default language: English
    - App category: Education or Family/Education
    - Content rating: Everyone or Everyone 3+
@@ -271,11 +274,13 @@ eas submit --platform android --profile production
 ### 3. Store Listing Information
 
 **Short Description** (80 characters):
+
 ```
 Kid-friendly jigsaw puzzles with educational content and gentle gameplay.
 ```
 
 **Full Description** (4000 characters):
+
 ```
 🧩 PuzzlePals - Safe, Educational Jigsaw Puzzles for Kids
 
@@ -296,7 +301,7 @@ Designed specifically for tiny hands and growing minds, PuzzlePals offers a deli
 
 🎨 Beautiful Puzzle Collections:
 • Adorable animals and nature scenes
-• Vibrant, child-friendly illustrations  
+• Vibrant, child-friendly illustrations
 • Multiple difficulty levels
 • Regular content updates
 
@@ -314,8 +319,9 @@ Download now and watch your little ones develop problem-solving skills while hav
 ### 4. Content Rating
 
 Complete the content rating questionnaire:
+
 - **Violence**: None
-- **Sexual Content**: None  
+- **Sexual Content**: None
 - **Profanity**: None
 - **Controlled Substances**: None
 - **Gambling**: None
@@ -331,7 +337,7 @@ Complete the content rating questionnaire:
 ### 6. Release
 
 1. **Internal Testing**: Test with up to 100 internal testers
-2. **Closed Testing**: Expand to select external users  
+2. **Closed Testing**: Expand to select external users
 3. **Open Testing**: Public beta (optional)
 4. **Production**: Full public release
 
@@ -359,6 +365,7 @@ eas submit --platform ios --profile production
 ### 3. App Information
 
 **Description**:
+
 ```
 🧩 PuzzlePals - The Perfect Puzzle App for Kids
 
@@ -390,14 +397,15 @@ Transform screen time into learning time with PuzzlePals, the jigsaw puzzle app 
 
 Perfect for developing:
 • Problem-solving skills
-• Hand-eye coordination  
+• Hand-eye coordination
 • Pattern recognition
 • Patience and persistence
 
 Join thousands of families who trust PuzzlePals for quality educational entertainment!
 ```
 
-**Keywords**: 
+**Keywords**:
+
 ```
 puzzle,kids,children,educational,jigsaw,family,learning,preschool,toddler,animals
 ```
@@ -405,6 +413,7 @@ puzzle,kids,children,educational,jigsaw,family,learning,preschool,toddler,animal
 ### 4. Age Rating
 
 Select appropriate age rating:
+
 - **4+** for basic version
 - Consider **Parental Guidance** if needed
 
@@ -417,6 +426,7 @@ Select appropriate age rating:
 ### 6. Version Release
 
 Choose release option:
+
 - **Automatically release**: After approval
 - **Manually release**: You control timing
 - **Scheduled release**: Set specific date/time
@@ -459,6 +469,7 @@ eas submit --platform all --profile production
 Keep release notes user-friendly:
 
 **Example**:
+
 ```
 🎉 New in Version 1.1.0:
 
@@ -483,22 +494,25 @@ The project uses local EAS builds via GitHub Actions for better control and cost
 Current workflow (`.github/workflows/eas-build.yml`) includes:
 
 **Key Features:**
+
 - Local EAS builds using `--local` flag (no cloud dependency)
 - Cross-platform builds (Android on Ubuntu, iOS on macOS)
 - Automatic artifact uploads for easy download
 - Store submission integration for production releases
 
 **Workflow Triggers:**
+
 ```yaml
 on:
   push:
-    branches: [develop, main]  # Local builds for both branches
-    tags: ['v*']              # Production releases
+    branches: [develop, main] # Local builds for both branches
+    tags: ['v*'] # Production releases
   pull_request:
     branches: [develop, main]
 ```
 
 **Build Matrix:**
+
 - **Android builds**: Run on Ubuntu with Android SDK
 - **iOS builds**: Run on macOS with Xcode (production only)
 - **Preview builds**: Android APK only (develop branch)
@@ -522,6 +536,7 @@ Set these secrets in GitHub repository settings:
 **Error**: Native module compatibility issues
 
 **Solution**:
+
 ```bash
 # Ensure all dependencies are EAS compatible
 npx expo install --check
@@ -535,12 +550,13 @@ npx expo doctor
 **Error**: Build runs out of memory
 
 **Solution**: Upgrade build resource class in `eas.json`:
+
 ```json
 {
   "build": {
     "production": {
       "ios": {
-        "resourceClass": "m-large"  // or m-medium
+        "resourceClass": "m-large" // or m-medium
       }
     }
   }
@@ -552,6 +568,7 @@ npx expo doctor
 **Error**: iOS code signing failures
 
 **Solution**:
+
 1. Ensure Apple Developer account is active
 2. Let EAS manage certificates: `eas credentials`
 3. Verify Bundle ID matches App Store Connect
@@ -561,12 +578,14 @@ npx expo doctor
 #### App Store Rejection
 
 **Common reasons**:
+
 - Missing privacy policy
 - Inappropriate content rating
 - UI/UX not following guidelines
 - Crash on launch
 
 **Solutions**:
+
 - Test thoroughly on real devices
 - Follow Apple Human Interface Guidelines
 - Include comprehensive metadata
@@ -575,12 +594,14 @@ npx expo doctor
 #### Play Store Rejection
 
 **Common reasons**:
+
 - Incorrect target SDK version
 - Missing permissions rationale
 - Privacy policy issues
 - Content rating mismatch
 
 **Solutions**:
+
 - Update `android.compileSdkVersion` to latest
 - Add permission descriptions in `app.json`
 - Ensure content rating matches actual content
@@ -590,6 +611,7 @@ npx expo doctor
 #### Large Bundle Size
 
 **Solutions**:
+
 ```bash
 # Analyze bundle size
 npx expo export --dump-assetmap
@@ -608,6 +630,7 @@ npx expo export --dump-assetmap
 #### Slow Build Times
 
 **Solutions**:
+
 - Use EAS cache: `"cache": { "disabled": false }`
 - Optimize dependencies
 - Remove unused assets

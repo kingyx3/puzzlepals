@@ -1,7 +1,14 @@
 // Home screen showing puzzle packs
 
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+} from 'react-native';
 import { PackCard } from '../components/PackCard';
 import { allPacks } from '../data/packs';
 import { PuzzleMeta } from '../types';
@@ -12,7 +19,10 @@ interface HomeScreenProps {
   onOpenSettings: () => void;
 }
 
-export const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectPuzzle, onOpenSettings }) => {
+export const HomeScreen: React.FC<HomeScreenProps> = ({
+  onSelectPuzzle,
+  onOpenSettings,
+}) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -20,8 +30,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectPuzzle, onOpenSe
           <Text style={styles.title}>🧩 PuzzlePals</Text>
           <Text style={styles.subtitle}>Choose your puzzle adventure!</Text>
         </View>
-        <TouchableOpacity 
-          style={styles.settingsButton} 
+        <TouchableOpacity
+          style={styles.settingsButton}
           onPress={onOpenSettings}
           accessible={true}
           accessibilityRole="button"
@@ -31,9 +41,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectPuzzle, onOpenSe
           <Text style={styles.settingsButtonText}>⚙️</Text>
         </TouchableOpacity>
       </View>
-      
-      <ScrollView 
-        style={styles.scrollView} 
+
+      <ScrollView
+        style={styles.scrollView}
         contentContainerStyle={styles.content}
         accessible={false}
         accessibilityLabel="Puzzle packs list"

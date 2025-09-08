@@ -1,11 +1,11 @@
 // Enhanced accessibility features for inclusive gaming
 
 import React, { useEffect, useRef } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
   Modal,
   SafeAreaView,
   ScrollView,
@@ -31,27 +31,27 @@ interface AccessibilitySettings {
   autoDescribePieces: boolean;
 }
 
-export const AccessibilityEnhancements: React.FC<AccessibilityEnhancementsProps> = ({
-  visible,
-  onClose,
-}) => {
+export const AccessibilityEnhancements: React.FC<
+  AccessibilityEnhancementsProps
+> = ({ visible, onClose }) => {
   const { currentPuzzle } = useGameStore();
   const settingsStore = useSettingsStore();
   const speechUtteranceRef = useRef<Speech.SpeechOptions | null>(null);
-  
+
   // Local accessibility settings state
-  const [accessibilitySettings, setAccessibilitySettings] = React.useState<AccessibilitySettings>({
-    voiceGuidance: false,
-    highContrast: false,
-    largeButtons: false,
-    oneHandedMode: false,
-    reduceMotion: settingsStore.reducedMotion,
-    autoDescribePieces: false,
-  });
+  const [accessibilitySettings, setAccessibilitySettings] =
+    React.useState<AccessibilitySettings>({
+      voiceGuidance: false,
+      highContrast: false,
+      largeButtons: false,
+      oneHandedMode: false,
+      reduceMotion: settingsStore.reducedMotion,
+      autoDescribePieces: false,
+    });
 
   const updateSetting = (key: keyof AccessibilitySettings, value: boolean) => {
-    setAccessibilitySettings(prev => ({ ...prev, [key]: value }));
-    
+    setAccessibilitySettings((prev) => ({ ...prev, [key]: value }));
+
     // Update global settings where applicable
     if (key === 'reduceMotion') {
       settingsStore.updateSettings({ reducedMotion: value });
@@ -61,10 +61,10 @@ export const AccessibilityEnhancements: React.FC<AccessibilityEnhancementsProps>
   // Voice guidance functions
   const speakText = async (text: string) => {
     if (!accessibilitySettings.voiceGuidance) return;
-    
+
     // Stop any current speech
     Speech.stop();
-    
+
     // Speech.speak returns void, not SpeechOptions
     Speech.speak(text, {
       language: 'en',
@@ -72,7 +72,7 @@ export const AccessibilityEnhancements: React.FC<AccessibilityEnhancementsProps>
       rate: 0.8,
       voice: undefined, // Use system default
     });
-    
+
     // Store the options instead for reference if needed
     speechUtteranceRef.current = {
       language: 'en',
@@ -84,52 +84,57 @@ export const AccessibilityEnhancements: React.FC<AccessibilityEnhancementsProps>
 
   const describePiece = (piece: Piece) => {
     if (!piece || !currentPuzzle) return '';
-    
+
     const { board } = currentPuzzle;
     const totalPieces = board.cols * board.rows;
-    const pieceNumber = (piece.row * board.cols) + piece.col + 1;
-    
+    const pieceNumber = piece.row * board.cols + piece.col + 1;
+
     let description = `Piece ${pieceNumber} of ${totalPieces}. `;
-    
+
     // Describe piece position
     if (piece.col === 0) description += 'Left edge. ';
     else if (piece.col === board.cols - 1) description += 'Right edge. ';
     else description += 'Middle column. ';
-    
+
     if (piece.row === 0) description += 'Top edge. ';
     else if (piece.row === board.rows - 1) description += 'Bottom edge. ';
     else description += 'Middle row. ';
-    
+
     // Describe piece type
-    const isCorner = (piece.row === 0 || piece.row === board.rows - 1) && 
-                    (piece.col === 0 || piece.col === board.cols - 1);
-    const isEdge = !isCorner && (piece.row === 0 || piece.row === board.rows - 1 || 
-                                piece.col === 0 || piece.col === board.cols - 1);
-    
+    const isCorner =
+      (piece.row === 0 || piece.row === board.rows - 1) &&
+      (piece.col === 0 || piece.col === board.cols - 1);
+    const isEdge =
+      !isCorner &&
+      (piece.row === 0 ||
+        piece.row === board.rows - 1 ||
+        piece.col === 0 ||
+        piece.col === board.cols - 1);
+
     if (isCorner) description += 'Corner piece. ';
     else if (isEdge) description += 'Edge piece. ';
     else description += 'Interior piece. ';
-    
+
     // Describe placement status
     if (piece.placed) {
       description += 'Correctly placed.';
     } else {
       description += 'Not yet placed.';
     }
-    
+
     return description;
   };
 
   const describePuzzleState = () => {
     if (!currentPuzzle) return;
-    
+
     const { board } = currentPuzzle;
     const completedCount = board.completedCount;
     const totalPieces = board.cols * board.rows;
     const remainingCount = totalPieces - completedCount;
-    
+
     let description = `Puzzle progress: ${completedCount} pieces placed, ${remainingCount} remaining. `;
-    
+
     if (completedCount === 0) {
       description += 'Starting fresh! Look for corner pieces first.';
     } else if (completedCount < totalPieces * 0.25) {
@@ -141,35 +146,39 @@ export const AccessibilityEnhancements: React.FC<AccessibilityEnhancementsProps>
     } else {
       description += 'Puzzle complete! Excellent job!';
     }
-    
+
     speakText(description);
   };
 
   const provideHint = () => {
     if (!currentPuzzle) return;
-    
+
     const { board } = currentPuzzle;
-    const unplacedPieces = Object.values(board.pieces).filter(p => !p.placed);
-    
+    const unplacedPieces = Object.values(board.pieces).filter((p) => !p.placed);
+
     if (unplacedPieces.length === 0) {
       speakText('Puzzle is complete!');
       return;
     }
-    
+
     // Find a good next piece to work on
-    const cornerPieces = unplacedPieces.filter(p => 
-      (p.row === 0 || p.row === board.rows - 1) && 
-      (p.col === 0 || p.col === board.cols - 1)
+    const cornerPieces = unplacedPieces.filter(
+      (p) =>
+        (p.row === 0 || p.row === board.rows - 1) &&
+        (p.col === 0 || p.col === board.cols - 1)
     );
-    
-    const edgePieces = unplacedPieces.filter(p => 
-      p.row === 0 || p.row === board.rows - 1 || 
-      p.col === 0 || p.col === board.cols - 1
+
+    const edgePieces = unplacedPieces.filter(
+      (p) =>
+        p.row === 0 ||
+        p.row === board.rows - 1 ||
+        p.col === 0 ||
+        p.col === board.cols - 1
     );
-    
+
     let hintPiece: Piece | null = null;
     let hintText = '';
-    
+
     if (cornerPieces.length > 0) {
       hintPiece = cornerPieces[0];
       hintText = 'Try working on a corner piece next. ';
@@ -180,7 +189,7 @@ export const AccessibilityEnhancements: React.FC<AccessibilityEnhancementsProps>
       hintPiece = unplacedPieces[0];
       hintText = 'Work on an interior piece. ';
     }
-    
+
     if (hintPiece) {
       hintText += describePiece(hintPiece);
       speakText(hintText);
@@ -202,16 +211,26 @@ export const AccessibilityEnhancements: React.FC<AccessibilityEnhancementsProps>
       onRequestClose={onClose}
     >
       <SafeAreaView style={styles.overlay}>
-        <View style={[styles.panel, accessibilitySettings.highContrast && styles.highContrast]}>
+        <View
+          style={[
+            styles.panel,
+            accessibilitySettings.highContrast && styles.highContrast,
+          ]}
+        >
           <View style={styles.header}>
-            <Text style={[styles.title, accessibilitySettings.highContrast && styles.highContrastText]}>
+            <Text
+              style={[
+                styles.title,
+                accessibilitySettings.highContrast && styles.highContrastText,
+              ]}
+            >
               Accessibility Settings
             </Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[
-                styles.closeButton, 
-                accessibilitySettings.largeButtons && styles.largeButton
-              ]} 
+                styles.closeButton,
+                accessibilitySettings.largeButtons && styles.largeButton,
+              ]}
               onPress={onClose}
               accessible={true}
               accessibilityLabel="Close accessibility settings"
@@ -223,38 +242,71 @@ export const AccessibilityEnhancements: React.FC<AccessibilityEnhancementsProps>
           <ScrollView style={styles.content}>
             {/* Voice Guidance Section */}
             <View style={styles.section}>
-              <Text style={[styles.sectionTitle, accessibilitySettings.highContrast && styles.highContrastText]}>
+              <Text
+                style={[
+                  styles.sectionTitle,
+                  accessibilitySettings.highContrast && styles.highContrastText,
+                ]}
+              >
                 🔊 Voice Guidance
               </Text>
-              
+
               <View style={styles.settingRow}>
                 <View style={styles.settingInfo}>
-                  <Text style={[styles.settingTitle, accessibilitySettings.highContrast && styles.highContrastText]}>
+                  <Text
+                    style={[
+                      styles.settingTitle,
+                      accessibilitySettings.highContrast &&
+                        styles.highContrastText,
+                    ]}
+                  >
                     Enable Voice Guidance
                   </Text>
-                  <Text style={[styles.settingDescription, accessibilitySettings.highContrast && styles.highContrastText]}>
+                  <Text
+                    style={[
+                      styles.settingDescription,
+                      accessibilitySettings.highContrast &&
+                        styles.highContrastText,
+                    ]}
+                  >
                     Hear descriptions of puzzle pieces and progress
                   </Text>
                 </View>
                 <Switch
                   value={accessibilitySettings.voiceGuidance}
-                  onValueChange={(value) => updateSetting('voiceGuidance', value)}
+                  onValueChange={(value) =>
+                    updateSetting('voiceGuidance', value)
+                  }
                   accessibilityLabel="Toggle voice guidance"
                 />
               </View>
 
               <View style={styles.settingRow}>
                 <View style={styles.settingInfo}>
-                  <Text style={[styles.settingTitle, accessibilitySettings.highContrast && styles.highContrastText]}>
+                  <Text
+                    style={[
+                      styles.settingTitle,
+                      accessibilitySettings.highContrast &&
+                        styles.highContrastText,
+                    ]}
+                  >
                     Auto-Describe Pieces
                   </Text>
-                  <Text style={[styles.settingDescription, accessibilitySettings.highContrast && styles.highContrastText]}>
+                  <Text
+                    style={[
+                      styles.settingDescription,
+                      accessibilitySettings.highContrast &&
+                        styles.highContrastText,
+                    ]}
+                  >
                     Automatically describe puzzle state when opening
                   </Text>
                 </View>
                 <Switch
                   value={accessibilitySettings.autoDescribePieces}
-                  onValueChange={(value) => updateSetting('autoDescribePieces', value)}
+                  onValueChange={(value) =>
+                    updateSetting('autoDescribePieces', value)
+                  }
                   accessibilityLabel="Toggle automatic piece descriptions"
                 />
               </View>
@@ -264,19 +316,21 @@ export const AccessibilityEnhancements: React.FC<AccessibilityEnhancementsProps>
                   <TouchableOpacity
                     style={[
                       styles.voiceButton,
-                      accessibilitySettings.largeButtons && styles.largeButton
+                      accessibilitySettings.largeButtons && styles.largeButton,
                     ]}
                     onPress={describePuzzleState}
                     accessible={true}
                     accessibilityLabel="Describe current puzzle state"
                   >
-                    <Text style={styles.voiceButtonText}>📊 Describe Progress</Text>
+                    <Text style={styles.voiceButtonText}>
+                      📊 Describe Progress
+                    </Text>
                   </TouchableOpacity>
-                  
+
                   <TouchableOpacity
                     style={[
                       styles.voiceButton,
-                      accessibilitySettings.largeButtons && styles.largeButton
+                      accessibilitySettings.largeButtons && styles.largeButton,
                     ]}
                     onPress={provideHint}
                     accessible={true}
@@ -290,38 +344,71 @@ export const AccessibilityEnhancements: React.FC<AccessibilityEnhancementsProps>
 
             {/* Visual Accessibility Section */}
             <View style={styles.section}>
-              <Text style={[styles.sectionTitle, accessibilitySettings.highContrast && styles.highContrastText]}>
+              <Text
+                style={[
+                  styles.sectionTitle,
+                  accessibilitySettings.highContrast && styles.highContrastText,
+                ]}
+              >
                 👁 Visual Accessibility
               </Text>
-              
+
               <View style={styles.settingRow}>
                 <View style={styles.settingInfo}>
-                  <Text style={[styles.settingTitle, accessibilitySettings.highContrast && styles.highContrastText]}>
+                  <Text
+                    style={[
+                      styles.settingTitle,
+                      accessibilitySettings.highContrast &&
+                        styles.highContrastText,
+                    ]}
+                  >
                     High Contrast Mode
                   </Text>
-                  <Text style={[styles.settingDescription, accessibilitySettings.highContrast && styles.highContrastText]}>
+                  <Text
+                    style={[
+                      styles.settingDescription,
+                      accessibilitySettings.highContrast &&
+                        styles.highContrastText,
+                    ]}
+                  >
                     Increase contrast for better visibility
                   </Text>
                 </View>
                 <Switch
                   value={accessibilitySettings.highContrast}
-                  onValueChange={(value) => updateSetting('highContrast', value)}
+                  onValueChange={(value) =>
+                    updateSetting('highContrast', value)
+                  }
                   accessibilityLabel="Toggle high contrast mode"
                 />
               </View>
 
               <View style={styles.settingRow}>
                 <View style={styles.settingInfo}>
-                  <Text style={[styles.settingTitle, accessibilitySettings.highContrast && styles.highContrastText]}>
+                  <Text
+                    style={[
+                      styles.settingTitle,
+                      accessibilitySettings.highContrast &&
+                        styles.highContrastText,
+                    ]}
+                  >
                     Reduce Motion
                   </Text>
-                  <Text style={[styles.settingDescription, accessibilitySettings.highContrast && styles.highContrastText]}>
+                  <Text
+                    style={[
+                      styles.settingDescription,
+                      accessibilitySettings.highContrast &&
+                        styles.highContrastText,
+                    ]}
+                  >
                     Minimize animations and visual effects
                   </Text>
                 </View>
                 <Switch
                   value={accessibilitySettings.reduceMotion}
-                  onValueChange={(value) => updateSetting('reduceMotion', value)}
+                  onValueChange={(value) =>
+                    updateSetting('reduceMotion', value)
+                  }
                   accessibilityLabel="Toggle reduced motion"
                 />
               </View>
@@ -329,38 +416,71 @@ export const AccessibilityEnhancements: React.FC<AccessibilityEnhancementsProps>
 
             {/* Motor Accessibility Section */}
             <View style={styles.section}>
-              <Text style={[styles.sectionTitle, accessibilitySettings.highContrast && styles.highContrastText]}>
+              <Text
+                style={[
+                  styles.sectionTitle,
+                  accessibilitySettings.highContrast && styles.highContrastText,
+                ]}
+              >
                 ✋ Motor Accessibility
               </Text>
-              
+
               <View style={styles.settingRow}>
                 <View style={styles.settingInfo}>
-                  <Text style={[styles.settingTitle, accessibilitySettings.highContrast && styles.highContrastText]}>
+                  <Text
+                    style={[
+                      styles.settingTitle,
+                      accessibilitySettings.highContrast &&
+                        styles.highContrastText,
+                    ]}
+                  >
                     Large Buttons
                   </Text>
-                  <Text style={[styles.settingDescription, accessibilitySettings.highContrast && styles.highContrastText]}>
+                  <Text
+                    style={[
+                      styles.settingDescription,
+                      accessibilitySettings.highContrast &&
+                        styles.highContrastText,
+                    ]}
+                  >
                     Larger touch targets for easier interaction
                   </Text>
                 </View>
                 <Switch
                   value={accessibilitySettings.largeButtons}
-                  onValueChange={(value) => updateSetting('largeButtons', value)}
+                  onValueChange={(value) =>
+                    updateSetting('largeButtons', value)
+                  }
                   accessibilityLabel="Toggle large buttons"
                 />
               </View>
 
               <View style={styles.settingRow}>
                 <View style={styles.settingInfo}>
-                  <Text style={[styles.settingTitle, accessibilitySettings.highContrast && styles.highContrastText]}>
+                  <Text
+                    style={[
+                      styles.settingTitle,
+                      accessibilitySettings.highContrast &&
+                        styles.highContrastText,
+                    ]}
+                  >
                     One-Handed Mode
                   </Text>
-                  <Text style={[styles.settingDescription, accessibilitySettings.highContrast && styles.highContrastText]}>
+                  <Text
+                    style={[
+                      styles.settingDescription,
+                      accessibilitySettings.highContrast &&
+                        styles.highContrastText,
+                    ]}
+                  >
                     Optimize layout for single-handed use
                   </Text>
                 </View>
                 <Switch
                   value={accessibilitySettings.oneHandedMode}
-                  onValueChange={(value) => updateSetting('oneHandedMode', value)}
+                  onValueChange={(value) =>
+                    updateSetting('oneHandedMode', value)
+                  }
                   accessibilityLabel="Toggle one-handed mode"
                 />
               </View>

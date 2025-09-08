@@ -46,6 +46,7 @@ Add AdMob configuration to your app.json:
 ### 3. Configure Native Projects (Bare React Native)
 
 #### Android (android/app/src/main/AndroidManifest.xml):
+
 ```xml
 <application>
     <!-- AdMob App ID -->
@@ -56,6 +57,7 @@ Add AdMob configuration to your app.json:
 ```
 
 #### iOS (ios/PuzzlePals/Info.plist):
+
 ```xml
 <key>GADApplicationIdentifier</key>
 <string>ca-app-pub-YOUR_IOS_APP_ID~YOUR_IOS_APP_ID</string>
@@ -68,76 +70,76 @@ Add AdMob configuration to your app.json:
 In `src/services/monetization.ts`, replace the `showInterstitialAd` function:
 
 ```typescript
-import { 
-  InterstitialAd, 
-  AdEventType, 
-  TestIds 
+import {
+  InterstitialAd,
+  AdEventType,
+  TestIds,
 } from 'react-native-google-mobile-ads';
 
 async function showInterstitialAd(): Promise<AdResult> {
   // Use test ads in development, real ads in production
-  const adUnitId = __DEV__ 
-    ? TestIds.INTERSTITIAL 
+  const adUnitId = __DEV__
+    ? TestIds.INTERSTITIAL
     : Platform.select({
         ios: 'ca-app-pub-YOUR_PUBLISHER_ID/YOUR_IOS_INTERSTITIAL_ID',
         android: 'ca-app-pub-YOUR_PUBLISHER_ID/YOUR_ANDROID_INTERSTITIAL_ID',
       });
 
   const interstitial = InterstitialAd.createForAdRequest(adUnitId!);
-  
+
   return new Promise((resolve) => {
     let adShown = false;
     let skipTimer: NodeJS.Timeout;
-    
+
     // Ad loaded successfully
     interstitial.addAdEventListener(AdEventType.LOADED, () => {
       console.log('AdMob: Interstitial ad loaded');
       interstitial.show();
     });
-    
+
     // Ad displayed
     interstitial.addAdEventListener(AdEventType.OPENED, () => {
       console.log('AdMob: Interstitial ad opened');
       adShown = true;
-      
+
       // Track skip availability (skip button appears after 5 seconds)
       skipTimer = setTimeout(() => {
         console.log('AdMob: Skip button now available');
       }, 5000);
     });
-    
+
     // Ad closed (completed or skipped)
     interstitial.addAdEventListener(AdEventType.CLOSED, () => {
       console.log('AdMob: Interstitial ad closed');
       clearTimeout(skipTimer);
-      resolve({ 
-        success: true, 
+      resolve({
+        success: true,
         revenue: 0.02, // Update with real eCPM data
-        skipped: false // AdMob doesn't directly track skips
+        skipped: false, // AdMob doesn't directly track skips
       });
     });
-    
+
     // Ad failed to load
     interstitial.addAdEventListener(AdEventType.ERROR, (error) => {
       console.log('AdMob: Interstitial ad failed:', error);
       clearTimeout(skipTimer);
-      resolve({ 
-        success: false, 
-        error: error.message 
+      resolve({
+        success: false,
+        error: error.message,
       });
     });
-    
+
     // Start loading the ad
     interstitial.load();
-    
+
     // Timeout fallback
     setTimeout(() => {
       if (!adShown) {
         console.log('AdMob: Ad load timeout');
         clearTimeout(skipTimer);
-        resolve({ 
-          success: false, 
-          error: 'Ad load timeout' 
+        resolve({
+          success: false,
+          error: 'Ad load timeout',
         });
       }
     }, config.adTimeout);
@@ -157,10 +159,10 @@ export default function App() {
     // Initialize Google Mobile Ads SDK
     mobileAds()
       .initialize()
-      .then(adapterStatuses => {
+      .then((adapterStatuses) => {
         console.log('AdMob initialized:', adapterStatuses);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('AdMob initialization failed:', error);
       });
   }, []);
@@ -193,13 +195,17 @@ export default function App() {
 ## Testing
 
 ### Test Ads
+
 Always use test ad unit IDs during development:
+
 - Interstitial: `TestIds.INTERSTITIAL`
 - Banner: `TestIds.BANNER`
 - Rewarded: `TestIds.REWARDED`
 
 ### Real Device Testing
+
 Test on real devices before release:
+
 1. Use test ads to verify integration
 2. Test ad loading and display
 3. Test skip functionality
@@ -209,11 +215,13 @@ Test on real devices before release:
 ## Compliance & Policies
 
 ### Google AdMob Policies
+
 - **Content Rating**: Ensure app is rated appropriately for kids
 - **COPPA Compliance**: Tag ad requests for child-directed treatment
 - **Ad Placement**: Follow placement policies (no accidental clicks)
 
 ### Child-Directed Content
+
 For apps targeting children under 13, add to ad requests:
 
 ```typescript
@@ -239,13 +247,16 @@ const requestConfig = {
 ## Monitoring & Analytics
 
 ### Key Metrics to Track
+
 - **Fill Rate**: Percentage of ad requests that return ads
 - **eCPM**: Effective cost per mille (revenue per 1000 impressions)
 - **Click-Through Rate**: Ad engagement metrics
 - **User Retention**: Impact of ads on user experience
 
 ### AdMob Console
+
 Monitor performance at: [https://apps.admob.com](https://apps.admob.com)
+
 - Revenue reports
 - Ad unit performance
 - User metrics
@@ -254,13 +265,16 @@ Monitor performance at: [https://apps.admob.com](https://apps.admob.com)
 ## Troubleshooting
 
 ### Common Issues
+
 1. **Ads not loading**: Check network, ad unit IDs, and app registration
 2. **App crashes**: Verify SDK initialization and error handling
 3. **Policy violations**: Review AdMob policies and content guidelines
 4. **Low fill rates**: Consider ad mediation or different ad networks
 
 ### Debug Logs
+
 Enable verbose logging for troubleshooting:
+
 ```typescript
 import { mobileAds } from 'react-native-google-mobile-ads';
 
