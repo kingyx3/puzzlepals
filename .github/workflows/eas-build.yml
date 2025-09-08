@@ -2,10 +2,10 @@ name: EAS Build and Submit
 
 on:
   push:
-    branches: [main]
+    branches: [develop, main]
     tags: ['v*']
   pull_request:
-    branches: [main]
+    branches: [develop, main]
 
 jobs:
   test:
@@ -32,7 +32,15 @@ jobs:
 
   build:
     needs: test
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            platform: android
+          - os: macos-latest
+            platform: ios
+    runs-on: ${{ matrix.os }}
     if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
@@ -45,6 +53,10 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
         
+      - name: Setup Android SDK
+        if: matrix.platform == 'android'
+        uses: android-actions/setup-android@v3
+        
       - name: Setup Expo
         uses: expo/expo-github-action@v8
         with:
@@ -54,18 +66,48 @@ jobs:
       - name: Install EAS CLI
         run: npm install -g eas-cli
           
-      - name: EAS Build (Preview)
-        if: github.ref == 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/')
-        run: eas build --platform all --profile preview --non-interactive
+      - name: EAS Build (Preview APK) - Develop Branch
+        if: github.ref == 'refs/heads/develop' && matrix.platform == 'android'
+        run: eas build --platform android --profile preview --local --non-interactive
         
-      - name: EAS Build (Production) 
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: eas build --platform all --profile production --non-interactive
+      - name: EAS Build (Production Android) - Main Branch
+        if: (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && matrix.platform == 'android'
+        run: eas build --platform android --profile production --local --non-interactive
+        
+      - name: EAS Build (Production iOS) - Main Branch
+        if: (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && matrix.platform == 'ios'
+        run: eas build --platform ios --profile production --local --non-interactive
+        
+      - name: Upload Android APK Artifacts (Preview)
+        if: github.ref == 'refs/heads/develop' && matrix.platform == 'android'
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-preview-apk
+          path: "*.apk"
+          retention-days: 30
+          
+      - name: Upload Android Build Artifacts (Production)
+        if: (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && matrix.platform == 'android'
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-production-builds
+          path: |
+            *.apk
+            *.aab
+          retention-days: 90
+          
+      - name: Upload iOS Build Artifacts (Production)
+        if: (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && matrix.platform == 'ios'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-production-builds
+          path: "*.ipa"
+          retention-days: 90
 
   submit:
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v4
       
@@ -86,5 +128,22 @@ jobs:
       - name: Install EAS CLI
         run: npm install -g eas-cli
         
-      - name: EAS Submit to Stores
-        run: eas submit --platform all --profile production --non-interactive
+      - name: Download Android Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: android-production-builds
+          path: ./android-builds/
+          
+      - name: Download iOS Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-production-builds
+          path: ./ios-builds/
+        continue-on-error: true
+        
+      - name: EAS Submit Android to Google Play
+        run: eas submit --platform android --profile production --non-interactive --path ./android-builds/
+        
+      - name: EAS Submit iOS to App Store
+        if: hashFiles('./ios-builds/*.ipa') != ''
+        run: eas submit --platform ios --profile production --non-interactive --path ./ios-builds/
