@@ -18,7 +18,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.puzzlepals.app",
-      "buildNumber": "1",
+      "buildNumber": "2",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to create custom puzzles from your photos.",
         "NSPhotoLibraryUsageDescription": "This app accesses your photo library to create custom puzzles.",
