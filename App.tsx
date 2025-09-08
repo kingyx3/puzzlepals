@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { GameScreen } from './src/screens/GameScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
@@ -62,7 +63,7 @@ export default function App() {
   };
 
   return (
-    <>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       {currentScreen === 'home' && (
         <HomeScreen 
           onSelectPuzzle={handleSelectPuzzle} 
@@ -87,7 +88,7 @@ export default function App() {
       )}
       
       <StatusBar style="auto" />
-    </>
+    </GestureHandlerRootView>
   );
 }
 
