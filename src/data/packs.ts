@@ -3,11 +3,11 @@
 import { PuzzlePack, PuzzleMeta } from '../types';
 
 // Animal pack assets
-const animalsCover = require('../../assets/packs/animals/cover.jpg');
-const lionImage = require('../../assets/packs/animals/lion.jpg');
-const pandaImage = require('../../assets/packs/animals/panda.jpg');
-const elephantImage = require('../../assets/packs/animals/elephant.jpg');
-const eagleImage = require('../../assets/packs/animals/eagle.jpg');
+const animalsCover = require('../../assets/packs/animals/animals_forest.jpg');
+const lionImage = require('../../assets/packs/animals/animals_forest_lion.jpg');
+const pandaImage = require('../../assets/packs/animals/animals_forest_monkey.jpg');
+const elephantImage = require('../../assets/packs/animals/animals_forest_elephant.jpg');
+const eagleImage = require('../../assets/packs/animals/animals_forest_zebra.jpg');
 
 export const AnimalsPack: PuzzlePack = {
   id: 'animals',
