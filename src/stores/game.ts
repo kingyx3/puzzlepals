@@ -51,6 +51,8 @@ interface GameState {
   
   clearHint: () => void;
   
+  clearHighlights: () => void;
+  
   autoPlacePiece: (pieceId: string) => void;
 }
 
@@ -101,12 +103,22 @@ export const useGameStore = create<GameState>((set, get) => ({
       ...state.currentPuzzle.board,
       pieces: updatedPieces,
     });
+
+    // Check if the piece being moved is hovering over its target location
+    const movedPiece = updatedPieces[pieceId];
+    const isHovering = !movedPiece.placed && isWithinSnapThreshold(movedPiece);
+    
+    // Update highlighted pieces based on hover state
+    const newHighlightedPieces = isHovering 
+      ? [pieceId] // Only highlight the current piece when hovering
+      : state.highlightedPieces.filter(id => id !== pieceId); // Remove from highlights if not hovering
     
     set({
       currentPuzzle: {
         ...state.currentPuzzle,
         board: updatedBoard,
       },
+      highlightedPieces: newHighlightedPieces,
     });
   },
   
@@ -118,7 +130,14 @@ export const useGameStore = create<GameState>((set, get) => ({
     if (!piece || piece.placed) return false;
     
     const shouldSnap = isWithinSnapThreshold(piece);
-    if (!shouldSnap) return false;
+    if (!shouldSnap) {
+      // Clear highlight if piece is not within snap threshold when drag ends
+      const newHighlightedPieces = state.highlightedPieces.filter(id => id !== pieceId);
+      set({
+        highlightedPieces: newHighlightedPieces,
+      });
+      return false;
+    }
     
     // Snap the piece to target
     const snappedPiece = snapToTarget(piece);
@@ -132,11 +151,15 @@ export const useGameStore = create<GameState>((set, get) => ({
       pieces: updatedPieces,
     });
     
+    // Clear highlight when piece is successfully snapped
+    const newHighlightedPieces = state.highlightedPieces.filter(id => id !== pieceId);
+    
     set({
       currentPuzzle: {
         ...state.currentPuzzle,
         board: updatedBoard,
       },
+      highlightedPieces: newHighlightedPieces,
     });
     
     return true;
@@ -277,6 +300,12 @@ export const useGameStore = create<GameState>((set, get) => ({
         ...state.currentPuzzle,
         currentHint: undefined,
       },
+    });
+  },
+  
+  clearHighlights: () => {
+    set({
+      highlightedPieces: [],
     });
   },
   
