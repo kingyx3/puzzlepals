@@ -474,53 +474,35 @@ Thanks for playing PuzzlePals! 🧩
 
 ### GitHub Actions Setup
 
-Create `.github/workflows/eas-build.yml`:
+The project uses local EAS builds via GitHub Actions for better control and cost efficiency. The workflow is configured to:
 
+- **Develop branch**: Build preview APKs for testing
+- **Main branch**: Build production releases and submit to app stores
+- **Local builds**: All builds run locally in GitHub Actions (no data sent to EAS cloud servers)
+
+Current workflow (`.github/workflows/eas-build.yml`) includes:
+
+**Key Features:**
+- Local EAS builds using `--local` flag (no cloud dependency)
+- Cross-platform builds (Android on Ubuntu, iOS on macOS)
+- Automatic artifact uploads for easy download
+- Store submission integration for production releases
+
+**Workflow Triggers:**
 ```yaml
-name: EAS Build
-
 on:
   push:
-    branches: [main]
-    tags: ['v*']
+    branches: [develop, main]  # Local builds for both branches
+    tags: ['v*']              # Production releases
   pull_request:
-    branches: [main]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: yarn
-          
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-        
-      - name: Setup Expo
-        uses: expo/expo-github-action@v8
-        with:
-          expo-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
-          
-      - name: Run tests
-        run: yarn test
-        
-      - name: EAS Build (Preview)
-        if: github.event_name == 'pull_request'
-        run: eas build --platform all --profile preview --non-interactive
-        
-      - name: EAS Build (Production) 
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: eas build --platform all --profile production --non-interactive
-        
-      - name: EAS Submit
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: eas submit --platform all --profile production --non-interactive
+    branches: [develop, main]
 ```
+
+**Build Matrix:**
+- **Android builds**: Run on Ubuntu with Android SDK
+- **iOS builds**: Run on macOS with Xcode (production only)
+- **Preview builds**: Android APK only (develop branch)
+- **Production builds**: Both platforms (main branch)
 
 ### Environment Variables
 
