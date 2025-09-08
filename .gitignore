@@ -41,3 +41,7 @@ yarn-error.*
 # Deployment secrets
 secrets/
 google-service-account.json
+
+# EAS credentials (keep README.md)
+.eas/*
+!.eas/README.md
