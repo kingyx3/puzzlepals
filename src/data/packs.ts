@@ -1,19 +1,23 @@
-// Sample puzzle packs and data
+// Puzzle packs and data with organized assets
 
 import { PuzzlePack, PuzzleMeta } from '../types';
 
-// For now, we'll use placeholder assets - replace with actual images
-const placeholderImage = require('../../assets/adaptive-icon.png'); // Using the existing adaptive icon as placeholder
+// Animal pack assets
+const animalsCover = require('../../assets/packs/animals/cover.jpg');
+const lionImage = require('../../assets/packs/animals/lion.jpg');
+const pandaImage = require('../../assets/packs/animals/panda.jpg');
+const elephantImage = require('../../assets/packs/animals/elephant.jpg');
+const eagleImage = require('../../assets/packs/animals/eagle.jpg');
 
 export const AnimalsPack: PuzzlePack = {
   id: 'animals',
   titleKey: 'packs.animals',
-  coverAsset: placeholderImage,
+  coverAsset: animalsCover,
   puzzles: [
     {
       id: 'animals-lion',
       titleKey: 'puzzles.lion',
-      imageAsset: placeholderImage,
+      imageAsset: lionImage,
       defaultDifficulty: 'AGES_3_5',
       educationalContent: {
         facts: ['Lions live in groups called prides', 'Male lions have manes'],
@@ -27,7 +31,7 @@ export const AnimalsPack: PuzzlePack = {
     {
       id: 'animals-panda',
       titleKey: 'puzzles.panda',
-      imageAsset: placeholderImage,
+      imageAsset: pandaImage,
       defaultDifficulty: 'AGES_6_8',
       educationalContent: {
         facts: [
@@ -44,7 +48,7 @@ export const AnimalsPack: PuzzlePack = {
     {
       id: 'animals-elephant',
       titleKey: 'puzzles.elephant',
-      imageAsset: placeholderImage,
+      imageAsset: elephantImage,
       defaultDifficulty: 'AGES_9_10',
       educationalContent: {
         facts: [
@@ -61,7 +65,7 @@ export const AnimalsPack: PuzzlePack = {
     {
       id: 'animals-eagle',
       titleKey: 'puzzles.eagle',
-      imageAsset: placeholderImage,
+      imageAsset: eagleImage,
       defaultDifficulty: 'AGES_11_PLUS',
       educationalContent: {
         facts: [
@@ -78,59 +82,72 @@ export const AnimalsPack: PuzzlePack = {
   ],
 };
 
+// Vehicle pack assets
+const vehiclesCover = require('../../assets/packs/vehicles/cover.jpg');
+const carImage = require('../../assets/packs/vehicles/car.jpg');
+const airplaneImage = require('../../assets/packs/vehicles/airplane.jpg');
+
 export const VehiclesPack: PuzzlePack = {
   id: 'vehicles',
   titleKey: 'packs.vehicles',
-  coverAsset: placeholderImage,
+  coverAsset: vehiclesCover,
   puzzles: [
     {
       id: 'vehicles-car',
       titleKey: 'puzzles.car',
-      imageAsset: placeholderImage,
+      imageAsset: carImage,
       defaultDifficulty: 'AGES_3_5',
     },
     {
       id: 'vehicles-airplane',
       titleKey: 'puzzles.airplane',
-      imageAsset: placeholderImage,
+      imageAsset: airplaneImage,
       defaultDifficulty: 'AGES_6_8',
     },
   ],
 };
 
+// Advanced pack assets
+const advancedCover = require('../../assets/packs/advanced/cover.jpg');
+const natureImage = require('../../assets/packs/advanced/nature.jpg');
+const landscapeImage = require('../../assets/packs/advanced/landscape.jpg');
+const cityscapeImage = require('../../assets/packs/advanced/cityscape.jpg');
+const masterpieceImage = require('../../assets/packs/advanced/masterpiece.jpg');
+const ultimateImage = require('../../assets/packs/advanced/ultimate.jpg');
+
 export const AdvancedPack: PuzzlePack = {
   id: 'advanced',
   titleKey: 'packs.advanced',
-  coverAsset: placeholderImage,
+  coverAsset: advancedCover,
   puzzles: [
     {
       id: 'advanced-nature',
       titleKey: 'puzzles.nature',
-      imageAsset: placeholderImage,
+      imageAsset: natureImage,
       defaultDifficulty: 'EASY',
     },
     {
       id: 'advanced-landscape',
       titleKey: 'puzzles.landscape',
-      imageAsset: placeholderImage,
+      imageAsset: landscapeImage,
       defaultDifficulty: 'MEDIUM',
     },
     {
       id: 'advanced-cityscape',
       titleKey: 'puzzles.cityscape',
-      imageAsset: placeholderImage,
+      imageAsset: cityscapeImage,
       defaultDifficulty: 'HARD',
     },
     {
       id: 'advanced-masterpiece',
       titleKey: 'puzzles.masterpiece',
-      imageAsset: placeholderImage,
+      imageAsset: masterpieceImage,
       defaultDifficulty: 'EXPERT',
     },
     {
       id: 'advanced-ultimate',
       titleKey: 'puzzles.ultimate',
-      imageAsset: placeholderImage,
+      imageAsset: ultimateImage,
       defaultDifficulty: 'MASTER',
     },
   ],
