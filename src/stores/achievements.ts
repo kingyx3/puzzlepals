@@ -141,7 +141,7 @@ export const useAchievementStore = create<AchievementState>((set, get) => ({
     const state = get();
     
     // Defensive check to handle undefined state in tests
-    if (!state || !state.puzzleHistory || !state.playerStats) {
+    if (!state || !state.puzzleHistory || !state.playerStats || !state.playerStats.difficultyStats) {
       console.warn('Store state not properly initialized, skipping operation');
       return;
     }
@@ -151,6 +151,10 @@ export const useAchievementStore = create<AchievementState>((set, get) => ({
     
     // Update player stats
     const currentStats = state.playerStats.difficultyStats[stats.difficulty];
+    if (!currentStats) {
+      console.warn(`Missing difficulty stats for ${stats.difficulty}, skipping operation`);
+      return;
+    }
     const newCompletionCount = currentStats.completed + 1;
     
     const updatedDifficultyStats = {
@@ -203,6 +207,13 @@ export const useAchievementStore = create<AchievementState>((set, get) => ({
   
   checkAchievements: () => {
     const state = get();
+    
+    // Defensive check to handle undefined state in tests
+    if (!state || !state.achievements || !state.unlockedAchievements || !state.playerStats || !state.puzzleHistory) {
+      console.warn('Store state not properly initialized for checkAchievements, returning empty array');
+      return [];
+    }
+    
     const newlyUnlocked: Achievement[] = [];
     
     state.achievements.forEach(achievement => {

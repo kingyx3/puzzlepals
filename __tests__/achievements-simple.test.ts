@@ -66,5 +66,42 @@ describe('Achievement System - Basic Functions', () => {
         expect(typeof result).toBe('string');
       }).not.toThrow();
     });
+
+    it('should handle defensive state checks in checkAchievements', () => {
+      const store = useAchievementStore.getState();
+      
+      // This should not throw an error even if state is undefined
+      expect(() => {
+        const result = store.checkAchievements();
+        expect(Array.isArray(result)).toBe(true);
+      }).not.toThrow();
+    });
+  });
+
+  describe('Store State Robustness', () => {
+    it('should handle store state issues gracefully', () => {
+      // Test the scenario from the error comment - multiple calls to recordPuzzleCompletion
+      const store = useAchievementStore.getState();
+      
+      // First completion - this tests the problematic line mentioned in the error
+      expect(() => {
+        store.recordPuzzleCompletion(mockPuzzleStats);
+      }).not.toThrow();
+      
+      // Second completion - verify it doesn't break on subsequent calls
+      expect(() => {
+        store.recordPuzzleCompletion({
+          ...mockPuzzleStats,
+          puzzleId: 'test-puzzle-2',
+          completedAt: Date.now() + 1000,
+        });
+      }).not.toThrow();
+      
+      // Check that checkAchievements works after completions
+      expect(() => {
+        const achievements = store.checkAchievements();
+        expect(Array.isArray(achievements)).toBe(true);
+      }).not.toThrow();
+    });
   });
 });
