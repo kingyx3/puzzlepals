@@ -92,7 +92,7 @@ const PieceItem: React.FC<PieceItemProps> = ({ piece, index, imageAsset, boardCo
       { translateX: translateX.value },
       { translateY: translateY.value },
       { scale: scale.value },
-    ],
+    ] as any, // Type assertion to fix React Native transform compatibility
   }));
 
   return (
