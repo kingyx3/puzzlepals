@@ -40,7 +40,7 @@ export const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({
       onRequestClose={onClose}
       {...getAccessibilityProps({
         label: `Full reference image for ${puzzleTitle}`,
-        role: 'dialog',
+        role: 'image',
       })}
     >
       <View style={styles.overlay}>
