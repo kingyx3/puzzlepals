@@ -7,11 +7,5 @@ module.exports = {
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   collectCoverageFrom: ['src/**/*.{ts,tsx,js,jsx}', '!src/**/*.d.ts'],
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-    '\\.(jpg|jpeg|png|gif|svg)$': 'identity-obj-proxy',
-  },
-  transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|expo|@expo)/)',
-  ],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 };

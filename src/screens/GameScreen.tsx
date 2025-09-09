@@ -16,6 +16,7 @@ import { PieceOrganizer } from '../components/PieceOrganizer';
 import { AccessibilityEnhancements } from '../components/AccessibilityEnhancements';
 import { VisualEffects } from '../components/VisualEffects';
 import { AchievementDisplay } from '../components/AchievementDisplay';
+import { ImagePreviewModal } from '../components/ImagePreviewModal';
 import { useGameStore } from '../stores/game';
 import { useAchievementStore } from '../stores/achievements';
 import { PuzzleMeta, Difficulty } from '../types';
@@ -36,6 +37,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
   const [showSortingPanel, setShowSortingPanel] = useState(false);
   const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false);
   const [showAchievementPanel, setShowAchievementPanel] = useState(false);
+  const [showImagePreview, setShowImagePreview] = useState(false);
   const [currentSorting, setCurrentSorting] = useState<SortingCriteria>('none');
   const [snapEffectTrigger, setSnapEffectTrigger] = useState(false);
   const [completionEffectTrigger, setCompletionEffectTrigger] = useState(false);
@@ -174,6 +176,16 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
         
         <View style={styles.rightControls}>
           <TouchableOpacity 
+            style={styles.previewButton} 
+            onPress={() => setShowImagePreview(true)}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="View reference image"
+            accessibilityHint="Opens a full-size view of the completed puzzle image for reference"
+          >
+            <Text style={styles.buttonText}>🖼️</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
             style={styles.achievementButton} 
             onPress={() => setShowAchievementPanel(true)}
             accessible={true}
@@ -292,6 +304,16 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
         visible={showAccessibilityPanel}
         onClose={() => setShowAccessibilityPanel(false)}
       />
+
+      {/* Image Preview Modal */}
+      {currentPuzzle && (
+        <ImagePreviewModal
+          visible={showImagePreview}
+          onClose={() => setShowImagePreview(false)}
+          imageAsset={currentPuzzle.board.imageAsset}
+          puzzleTitle={puzzle.titleKey}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -354,6 +376,14 @@ const styles = StyleSheet.create({
   achievementButton: {
     padding: spacing.sm,
     backgroundColor: colors.warning,
+    borderRadius: layout.touchTarget / 2,
+    minWidth: layout.touchTarget,
+    alignItems: 'center',
+    marginLeft: spacing.xs,
+  },
+  previewButton: {
+    padding: spacing.sm,
+    backgroundColor: colors.success,
     borderRadius: layout.touchTarget / 2,
     minWidth: layout.touchTarget,
     alignItems: 'center',

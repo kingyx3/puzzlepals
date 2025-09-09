@@ -75,7 +75,7 @@ export const Piece: React.FC<PieceProps> = memo(({
     transform: [
       { translateX: translateX.value },
       { translateY: translateY.value },
-    ],
+    ] as any, // Type assertion to fix React Native transform compatibility
   }));
 
   const pieceStyle = [
