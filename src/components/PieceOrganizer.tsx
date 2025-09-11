@@ -147,6 +147,12 @@ const PieceItem: React.FC<PieceItemProps> = ({
                     width: piece.width * scaleRatio,
                     height: piece.height * scaleRatio,
                   }}
+                  boardWidth={miniatureSize * boardCols}
+                  boardHeight={miniatureSize * boardRows}
+                  totalCols={boardCols}
+                  totalRows={boardRows}
+                  pieceCol={piece.col}
+                  pieceRow={piece.row}
                 />
               </View>
             ) : (

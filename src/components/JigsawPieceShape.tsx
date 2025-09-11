@@ -11,6 +11,13 @@ interface JigsawPieceShapeProps {
   edges: EdgeShape;
   imageAsset: number | string;
   style?: object;
+  // Add cropping parameters
+  boardWidth?: number;
+  boardHeight?: number;
+  totalCols?: number;
+  totalRows?: number;
+  pieceCol?: number;
+  pieceRow?: number;
 }
 
 export const JigsawPieceShape: React.FC<JigsawPieceShapeProps> = ({
@@ -19,9 +26,25 @@ export const JigsawPieceShape: React.FC<JigsawPieceShapeProps> = ({
   edges,
   imageAsset,
   style,
+  boardWidth = 400,
+  boardHeight = 400,
+  totalCols = 2,
+  totalRows = 2,
+  pieceCol = 0,
+  pieceRow = 0,
 }) => {
   const clipPath = generateJigsawPath(width, height, edges);
   const clipId = `jigsaw-clip-${Math.random().toString(36).substr(2, 9)}`;
+
+  // Calculate image cropping for jigsaw pieces
+  const scaleX = boardWidth / totalCols;
+  const scaleY = boardHeight / totalRows;
+  const scale = Math.max(scaleX, scaleY);
+  
+  const scaledImageWidth = scale * totalCols;
+  const scaledImageHeight = scale * totalRows;
+  const offsetX = -pieceCol * scale;
+  const offsetY = -pieceRow * scale;
 
   return (
     <View style={style}>
@@ -37,8 +60,10 @@ export const JigsawPieceShape: React.FC<JigsawPieceShapeProps> = ({
           href={
             typeof imageAsset === 'number' ? imageAsset : { uri: imageAsset }
           }
-          width={width}
-          height={height}
+          width={scaledImageWidth}
+          height={scaledImageHeight}
+          x={offsetX}
+          y={offsetY}
           clipPath={`url(#${clipId})`}
         />
 
