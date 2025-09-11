@@ -36,20 +36,20 @@ export const PieceSortingPanel: React.FC<PieceSortingPanelProps> = ({
 
     const { board } = currentPuzzle;
     const organized = organizePiecesByType(board);
-    const unplacedPieces = Object.values(board.pieces).filter(p => !p.placed);
-    
+    const unplacedPieces = Object.values(board.pieces).filter((p) => !p.placed);
+
     return {
       corners: {
         total: organized.corners.length,
-        remaining: organized.corners.filter(p => !p.placed).length,
+        remaining: organized.corners.filter((p) => !p.placed).length,
       },
       edges: {
         total: organized.edges.length,
-        remaining: organized.edges.filter(p => !p.placed).length,
+        remaining: organized.edges.filter((p) => !p.placed).length,
       },
       interior: {
         total: organized.interior.length,
-        remaining: organized.interior.filter(p => !p.placed).length,
+        remaining: organized.interior.filter((p) => !p.placed).length,
       },
       totalRemaining: unplacedPieces.length,
     };
@@ -86,19 +86,31 @@ export const PieceSortingPanel: React.FC<PieceSortingPanelProps> = ({
               <Text style={styles.sectionTitle}>Remaining Pieces</Text>
               <View style={styles.statsContainer}>
                 <View style={styles.statItem}>
-                  <Text style={styles.statNumber}>{sortedPiecesAnalysis.corners.remaining}</Text>
+                  <Text style={styles.statNumber}>
+                    {sortedPiecesAnalysis.corners.remaining}
+                  </Text>
                   <Text style={styles.statLabel}>Corners</Text>
-                  <Text style={styles.statTotal}>of {sortedPiecesAnalysis.corners.total}</Text>
+                  <Text style={styles.statTotal}>
+                    of {sortedPiecesAnalysis.corners.total}
+                  </Text>
                 </View>
                 <View style={styles.statItem}>
-                  <Text style={styles.statNumber}>{sortedPiecesAnalysis.edges.remaining}</Text>
+                  <Text style={styles.statNumber}>
+                    {sortedPiecesAnalysis.edges.remaining}
+                  </Text>
                   <Text style={styles.statLabel}>Edges</Text>
-                  <Text style={styles.statTotal}>of {sortedPiecesAnalysis.edges.total}</Text>
+                  <Text style={styles.statTotal}>
+                    of {sortedPiecesAnalysis.edges.total}
+                  </Text>
                 </View>
                 <View style={styles.statItem}>
-                  <Text style={styles.statNumber}>{sortedPiecesAnalysis.interior.remaining}</Text>
+                  <Text style={styles.statNumber}>
+                    {sortedPiecesAnalysis.interior.remaining}
+                  </Text>
                   <Text style={styles.statLabel}>Interior</Text>
-                  <Text style={styles.statTotal}>of {sortedPiecesAnalysis.interior.total}</Text>
+                  <Text style={styles.statTotal}>
+                    of {sortedPiecesAnalysis.interior.total}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -106,9 +118,12 @@ export const PieceSortingPanel: React.FC<PieceSortingPanelProps> = ({
             {/* Sorting Options */}
             <View style={styles.sortingSection}>
               <Text style={styles.sectionTitle}>Sorting Options</Text>
-              
+
               <TouchableOpacity
-                style={[styles.sortOption, currentSort === 'type' && styles.selectedOption]}
+                style={[
+                  styles.sortOption,
+                  currentSort === 'type' && styles.selectedOption,
+                ]}
                 onPress={() => handleSortSelection('type')}
               >
                 <View style={styles.optionContent}>
@@ -117,11 +132,16 @@ export const PieceSortingPanel: React.FC<PieceSortingPanelProps> = ({
                     Group corners, edges, and interior pieces
                   </Text>
                 </View>
-                {currentSort === 'type' && <Text style={styles.selectedIcon}>✓</Text>}
+                {currentSort === 'type' && (
+                  <Text style={styles.selectedIcon}>✓</Text>
+                )}
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.sortOption, currentSort === 'color' && styles.selectedOption]}
+                style={[
+                  styles.sortOption,
+                  currentSort === 'color' && styles.selectedOption,
+                ]}
                 onPress={() => handleSortSelection('color')}
               >
                 <View style={styles.optionContent}>
@@ -130,24 +150,36 @@ export const PieceSortingPanel: React.FC<PieceSortingPanelProps> = ({
                     Sort by dominant colors in piece areas
                   </Text>
                 </View>
-                {currentSort === 'color' && <Text style={styles.selectedIcon}>✓</Text>}
+                {currentSort === 'color' && (
+                  <Text style={styles.selectedIcon}>✓</Text>
+                )}
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.sortOption, currentSort === 'progress' && styles.selectedOption]}
+                style={[
+                  styles.sortOption,
+                  currentSort === 'progress' && styles.selectedOption,
+                ]}
                 onPress={() => handleSortSelection('progress')}
               >
                 <View style={styles.optionContent}>
-                  <Text style={styles.optionTitle}>📊 By Placement Progress</Text>
+                  <Text style={styles.optionTitle}>
+                    📊 By Placement Progress
+                  </Text>
                   <Text style={styles.optionDescription}>
                     Show pieces closest to correct position first
                   </Text>
                 </View>
-                {currentSort === 'progress' && <Text style={styles.selectedIcon}>✓</Text>}
+                {currentSort === 'progress' && (
+                  <Text style={styles.selectedIcon}>✓</Text>
+                )}
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.sortOption, currentSort === 'none' && styles.selectedOption]}
+                style={[
+                  styles.sortOption,
+                  currentSort === 'none' && styles.selectedOption,
+                ]}
                 onPress={() => handleSortSelection('none')}
               >
                 <View style={styles.optionContent}>
@@ -156,17 +188,27 @@ export const PieceSortingPanel: React.FC<PieceSortingPanelProps> = ({
                     Pieces arranged randomly as intended
                   </Text>
                 </View>
-                {currentSort === 'none' && <Text style={styles.selectedIcon}>✓</Text>}
+                {currentSort === 'none' && (
+                  <Text style={styles.selectedIcon}>✓</Text>
+                )}
               </TouchableOpacity>
             </View>
 
             {/* Tips */}
             <View style={styles.tipsSection}>
               <Text style={styles.sectionTitle}>💡 Solving Tips</Text>
-              <Text style={styles.tipText}>• Start with corners - they're the easiest to identify</Text>
-              <Text style={styles.tipText}>• Build the edges next to create a frame</Text>
-              <Text style={styles.tipText}>• Group similar colors or patterns together</Text>
-              <Text style={styles.tipText}>• Use hints when you're stuck, but try first!</Text>
+              <Text style={styles.tipText}>
+                • Start with corners - they're the easiest to identify
+              </Text>
+              <Text style={styles.tipText}>
+                • Build the edges next to create a frame
+              </Text>
+              <Text style={styles.tipText}>
+                • Group similar colors or patterns together
+              </Text>
+              <Text style={styles.tipText}>
+                • Use hints when you're stuck, but try first!
+              </Text>
             </View>
           </ScrollView>
         </View>

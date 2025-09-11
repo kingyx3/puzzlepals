@@ -1,7 +1,13 @@
 // Error boundary component for graceful error handling
 
 import React, { Component, ReactNode } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native';
 import { colors, spacing, typography, borderRadius, layout } from '../theme';
 
 interface ErrorBoundaryState {
@@ -16,7 +22,10 @@ interface ErrorBoundaryProps {
   onError?: (error: Error, errorInfo: string) => void;
 }
 
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
@@ -67,7 +76,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             <Text style={styles.errorMessage}>
               Don't worry! This happens sometimes. Let's try again!
             </Text>
-            
+
             <TouchableOpacity
               style={styles.retryButton}
               onPress={this.handleRetry}
@@ -81,8 +90,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
             {__DEV__ && (
               <View style={styles.debugInfo}>
-                <Text style={styles.debugTitle}>Debug Info (Development Only):</Text>
-                <Text style={styles.debugText} numberOfLines={5} ellipsizeMode="tail">
+                <Text style={styles.debugTitle}>
+                  Debug Info (Development Only):
+                </Text>
+                <Text
+                  style={styles.debugText}
+                  numberOfLines={5}
+                  ellipsizeMode="tail"
+                >
                   {this.state.error?.toString()}
                 </Text>
               </View>

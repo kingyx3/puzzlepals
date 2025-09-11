@@ -52,7 +52,10 @@ export function getProgressAccessibility(current: number, total: number) {
 /**
  * Kid-friendly announcement for screen readers
  */
-export function announceToScreenReader(message: string, priority: 'low' | 'high' = 'low') {
+export function announceToScreenReader(
+  message: string,
+  priority: 'low' | 'high' = 'low'
+) {
   // In a real app, this would use AccessibilityInfo.announceForAccessibility
   console.log(`[Accessibility Announcement - ${priority}]: ${message}`);
 }
@@ -62,7 +65,7 @@ export function announceToScreenReader(message: string, priority: 'low' | 'high'
  */
 export function validateTouchTarget(width: number, height: number): boolean {
   const KID_FRIENDLY_TARGET = 48; // Enhanced for kids
-  
+
   return width >= KID_FRIENDLY_TARGET && height >= KID_FRIENDLY_TARGET;
 }
 

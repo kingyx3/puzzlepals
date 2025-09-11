@@ -49,10 +49,10 @@ The ads system is configurable via `updateMonetizationConfig()`:
 
 ```typescript
 updateMonetizationConfig({
-  adsEnabled: true,           // Enable/disable ads globally
-  premiumPurchased: false,    // Premium status (skips ads)
-  adFrequency: 1,            // Show ad before EVERY puzzle
-  adTimeout: 30000           // 30 second timeout for blocking ads
+  adsEnabled: true, // Enable/disable ads globally
+  premiumPurchased: false, // Premium status (skips ads)
+  adFrequency: 1, // Show ad before EVERY puzzle
+  adTimeout: 30000, // 30 second timeout for blocking ads
 });
 ```
 
@@ -74,6 +74,7 @@ yarn test __tests__/monetization.test.ts
 ```
 
 Test scenarios covered:
+
 - Blocking ad behavior (game waits for completion)
 - Ad frequency logic (every puzzle)
 - Skip functionality after 5 seconds
@@ -95,16 +96,19 @@ When ads are working correctly, you'll see:
 ```
 
 For skipped ads:
+
 ```
 ⏭️ [SIMULATION] Ad was skipped by user
 ```
 
 For premium users:
+
 ```
 📊 Monetization config updated: { premiumPurchased: true }
 ```
 
 When ads timeout:
+
 ```
 ❌ [SIMULATION] Ad failed to load
 ```
@@ -117,7 +121,7 @@ The current simulation code in `showInterstitialAd()` function is designed to be
 
 - Proper async/await structure
 - Event handling (loaded, opened, closed, error)
-- Skip tracking after 5 seconds  
+- Skip tracking after 5 seconds
 - Timeout protection (30 seconds)
 - Comprehensive error handling
 
@@ -143,6 +147,7 @@ See GOOGLE_ADMOB_SETUP.md for detailed implementation instructions.
 ### Parental Controls
 
 The system respects the app's parental control settings:
+
 - Math-based verification required for premium purchases
 - Parents can disable ads via premium upgrade ($5)
 - Transparent about when and why ads are shown
@@ -168,8 +173,9 @@ The system respects the app's parental control settings:
 ### Debug Mode
 
 Enable verbose logging by checking console output:
+
 - 🎬 = Ad loading started
-- ✅ = Ad displayed successfully  
+- ✅ = Ad displayed successfully
 - ❌ = Ad failed to load
 - ⏭️ = Ad was skipped by user
 - ⏰ = Ad timed out

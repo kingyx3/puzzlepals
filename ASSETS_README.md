@@ -53,16 +53,19 @@ Currently, all images are using the same placeholder (adaptive-icon.png) copied 
 ### Asset Guidelines
 
 **Animals Pack**:
+
 - **Lion**: Friendly cartoon or real lion image, bright and colorful
 - **Panda**: Cute panda in natural setting or cartoon style
 - **Elephant**: Family-friendly elephant image, preferably with baby elephant
 - **Eagle**: Majestic eagle in flight or perched, clear details for puzzle pieces
 
 **Vehicles Pack**:
+
 - **Car**: Colorful, modern car suitable for children (bright colors preferred)
 - **Airplane**: Commercial airplane or cartoon plane, clear against sky background
 
 **Advanced Pack**:
+
 - **Nature**: Beautiful landscape with flowers, trees, or garden scenes
 - **Landscape**: Mountain, lake, or scenic countryside view
 - **Cityscape**: Kid-friendly city view with colorful buildings
@@ -80,6 +83,7 @@ Currently, all images are using the same placeholder (adaptive-icon.png) copied 
 ### Testing
 
 After replacing assets:
+
 1. Run `npx expo start --web --offline`
 2. Navigate to each puzzle pack
 3. Verify cover images display correctly

@@ -1,11 +1,11 @@
 // Enhanced achievement system with better engagement features
 
 import React from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  Modal, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
@@ -18,15 +18,19 @@ interface AchievementDisplayProps {
   onClose: () => void;
 }
 
-export const AchievementDisplay: React.FC<AchievementDisplayProps> = ({ visible, onClose }) => {
-  const { achievements, unlockedAchievements, playerStats } = useAchievementStore();
+export const AchievementDisplay: React.FC<AchievementDisplayProps> = ({
+  visible,
+  onClose,
+}) => {
+  const { achievements, unlockedAchievements, playerStats } =
+    useAchievementStore();
 
-  const unlockedAchievementsData = achievements.filter(achievement => 
+  const unlockedAchievementsData = achievements.filter((achievement) =>
     unlockedAchievements.includes(achievement.id)
   );
 
-  const lockedAchievements = achievements.filter(achievement => 
-    !unlockedAchievements.includes(achievement.id)
+  const lockedAchievements = achievements.filter(
+    (achievement) => !unlockedAchievements.includes(achievement.id)
   );
 
   // Helper functions to get display text from keys
@@ -55,11 +59,15 @@ export const AchievementDisplay: React.FC<AchievementDisplayProps> = ({ visible,
       'achievements.speed_demon_desc': 'Complete a puzzle in under 2 minutes',
       'achievements.streak_champion_desc': 'Maintain a 7-day streak',
       'achievements.hint_free_desc': 'Complete a puzzle without hints',
-      'achievements.difficulty_climber_desc': 'Complete puzzles on all difficulties',
-      'achievements.perfectionist_desc': 'Complete 10 puzzles with 100% accuracy',
+      'achievements.difficulty_climber_desc':
+        'Complete puzzles on all difficulties',
+      'achievements.perfectionist_desc':
+        'Complete 10 puzzles with 100% accuracy',
       'achievements.explorer_desc': 'Try all puzzle packs',
     };
-    return descriptionMap[achievement.descriptionKey] || achievement.descriptionKey;
+    return (
+      descriptionMap[achievement.descriptionKey] || achievement.descriptionKey
+    );
   };
 
   const getProgressText = (achievement: Achievement) => {
@@ -67,7 +75,11 @@ export const AchievementDisplay: React.FC<AchievementDisplayProps> = ({ visible,
       case 'puzzle_master':
         return `${playerStats.totalPuzzlesCompleted}/100 puzzles`;
       case 'speed_demon':
-        const fastestTime = Math.min(...Object.values(playerStats.difficultyStats).map(stat => stat.bestTime));
+        const fastestTime = Math.min(
+          ...Object.values(playerStats.difficultyStats).map(
+            (stat) => stat.bestTime
+          )
+        );
         return fastestTime < 2 * 60 * 1000 ? 'Completed!' : 'Keep practicing!';
       case 'streak_champion':
         return `${playerStats.currentStreak} day streak`;
@@ -90,7 +102,7 @@ export const AchievementDisplay: React.FC<AchievementDisplayProps> = ({ visible,
       perfectionist: '💎',
       explorer: '🗺️',
     };
-    
+
     return isUnlocked ? icons[achievementId] || '🏆' : '🔒';
   };
 
@@ -110,27 +122,39 @@ export const AchievementDisplay: React.FC<AchievementDisplayProps> = ({ visible,
             </TouchableOpacity>
           </View>
 
-          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            style={styles.content}
+            showsVerticalScrollIndicator={false}
+          >
             {/* Player Stats Summary */}
             <View style={styles.statsSection}>
               <Text style={styles.sectionTitle}>Your Progress</Text>
               <View style={styles.statsGrid}>
                 <View style={styles.statCard}>
-                  <Text style={styles.statNumber}>{playerStats.totalPuzzlesCompleted}</Text>
+                  <Text style={styles.statNumber}>
+                    {playerStats.totalPuzzlesCompleted}
+                  </Text>
                   <Text style={styles.statLabel}>Puzzles Completed</Text>
                 </View>
                 <View style={styles.statCard}>
-                  <Text style={styles.statNumber}>{playerStats.currentStreak}</Text>
+                  <Text style={styles.statNumber}>
+                    {playerStats.currentStreak}
+                  </Text>
                   <Text style={styles.statLabel}>Current Streak</Text>
                 </View>
                 <View style={styles.statCard}>
                   <Text style={styles.statNumber}>
-                    {Math.floor(playerStats.averageCompletionTime / (60 * 1000))}m
+                    {Math.floor(
+                      playerStats.averageCompletionTime / (60 * 1000)
+                    )}
+                    m
                   </Text>
                   <Text style={styles.statLabel}>Avg. Time</Text>
                 </View>
                 <View style={styles.statCard}>
-                  <Text style={styles.statNumber}>{unlockedAchievementsData.length}</Text>
+                  <Text style={styles.statNumber}>
+                    {unlockedAchievementsData.length}
+                  </Text>
                   <Text style={styles.statLabel}>Achievements</Text>
                 </View>
               </View>
@@ -139,17 +163,26 @@ export const AchievementDisplay: React.FC<AchievementDisplayProps> = ({ visible,
             {/* Unlocked Achievements */}
             {unlockedAchievementsData.length > 0 && (
               <View style={styles.achievementsSection}>
-                <Text style={styles.sectionTitle}>🎉 Unlocked Achievements</Text>
+                <Text style={styles.sectionTitle}>
+                  🎉 Unlocked Achievements
+                </Text>
                 {unlockedAchievementsData.map((achievement) => (
-                  <View key={achievement.id} style={[styles.achievementCard, styles.unlockedCard]}>
+                  <View
+                    key={achievement.id}
+                    style={[styles.achievementCard, styles.unlockedCard]}
+                  >
                     <View style={styles.achievementIcon}>
                       <Text style={styles.achievementIconText}>
                         {getAchievementIcon(achievement.id, true)}
                       </Text>
                     </View>
                     <View style={styles.achievementContent}>
-                      <Text style={styles.achievementTitle}>{getAchievementTitle(achievement)}</Text>
-                      <Text style={styles.achievementDescription}>{getAchievementDescription(achievement)}</Text>
+                      <Text style={styles.achievementTitle}>
+                        {getAchievementTitle(achievement)}
+                      </Text>
+                      <Text style={styles.achievementDescription}>
+                        {getAchievementDescription(achievement)}
+                      </Text>
                       <Text style={styles.achievementProgress}>
                         {getProgressText(achievement)}
                       </Text>
@@ -164,17 +197,27 @@ export const AchievementDisplay: React.FC<AchievementDisplayProps> = ({ visible,
               <View style={styles.achievementsSection}>
                 <Text style={styles.sectionTitle}>🎯 Keep Going</Text>
                 {lockedAchievements.map((achievement) => (
-                  <View key={achievement.id} style={[styles.achievementCard, styles.lockedCard]}>
+                  <View
+                    key={achievement.id}
+                    style={[styles.achievementCard, styles.lockedCard]}
+                  >
                     <View style={styles.achievementIcon}>
                       <Text style={styles.achievementIconText}>
                         {getAchievementIcon(achievement.id, false)}
                       </Text>
                     </View>
                     <View style={styles.achievementContent}>
-                      <Text style={[styles.achievementTitle, styles.lockedTitle]}>
+                      <Text
+                        style={[styles.achievementTitle, styles.lockedTitle]}
+                      >
                         {getAchievementTitle(achievement)}
                       </Text>
-                      <Text style={[styles.achievementDescription, styles.lockedDescription]}>
+                      <Text
+                        style={[
+                          styles.achievementDescription,
+                          styles.lockedDescription,
+                        ]}
+                      >
                         {getAchievementDescription(achievement)}
                       </Text>
                       <Text style={styles.achievementProgress}>
@@ -189,10 +232,18 @@ export const AchievementDisplay: React.FC<AchievementDisplayProps> = ({ visible,
             {/* Tips Section */}
             <View style={styles.tipsSection}>
               <Text style={styles.sectionTitle}>💡 Achievement Tips</Text>
-              <Text style={styles.tipText}>• Complete puzzles daily to maintain your streak</Text>
-              <Text style={styles.tipText}>• Try harder difficulties for bonus achievements</Text>
-              <Text style={styles.tipText}>• Challenge yourself to use fewer hints</Text>
-              <Text style={styles.tipText}>• Speed runs unlock special achievements</Text>
+              <Text style={styles.tipText}>
+                • Complete puzzles daily to maintain your streak
+              </Text>
+              <Text style={styles.tipText}>
+                • Try harder difficulties for bonus achievements
+              </Text>
+              <Text style={styles.tipText}>
+                • Challenge yourself to use fewer hints
+              </Text>
+              <Text style={styles.tipText}>
+                • Speed runs unlock special achievements
+              </Text>
             </View>
           </ScrollView>
         </View>

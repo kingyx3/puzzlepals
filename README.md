@@ -526,7 +526,7 @@ export const Analytics = {
 ✅ **IMPLEMENTED**: Ads integration now active!
 
 - **Ads Service**: `src/services/monetization.ts` - Full implementation with simulation
-- **Integration Point**: App.tsx - Ads display right before puzzle starts  
+- **Integration Point**: App.tsx - Ads display right before puzzle starts
 - **Frequency Control**: Configurable ad frequency (default: every 3rd puzzle)
 - **Premium Support**: Premium users automatically skip ads
 - **Error Handling**: Non-blocking - game starts even if ads fail
@@ -554,7 +554,9 @@ export async function restorePurchases(): Promise<PurchaseResult[]> {
 
 // ✅ WORKING: Utility functions
 export function isPremiumUser(): boolean;
-export function updateMonetizationConfig(updates: Partial<MonetizationConfig>): void;
+export function updateMonetizationConfig(
+  updates: Partial<MonetizationConfig>
+): void;
 export function getMonetizationStats(): object;
 ```
 

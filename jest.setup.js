@@ -1,7 +1,7 @@
 // Jest setup file for React Native and Expo environment
 
 // Mock React Native modules that don't work in Node environment
-global.window = {}; 
+global.window = {};
 global.document = {};
 global.navigator = { userAgent: 'node.js' };
 
@@ -17,7 +17,7 @@ global.console = {
 jest.mock('react-native', () => ({
   Platform: { OS: 'ios', select: jest.fn() },
   Dimensions: { get: jest.fn(() => ({ width: 375, height: 667 })) },
-  StyleSheet: { create: jest.fn(x => x) },
+  StyleSheet: { create: jest.fn((x) => x) },
   View: 'View',
   Text: 'Text',
   TouchableOpacity: 'TouchableOpacity',
@@ -77,10 +77,13 @@ jest.mock('react-native-reanimated', () => ({
 jest.mock('zustand', () => ({
   create: jest.fn((fn) => {
     const state = fn(jest.fn(), jest.fn());
-    return Object.assign(jest.fn(() => state), {
-      setState: jest.fn((newState) => Object.assign(state, newState)),
-      getState: jest.fn(() => state),
-    });
+    return Object.assign(
+      jest.fn(() => state),
+      {
+        setState: jest.fn((newState) => Object.assign(state, newState)),
+        getState: jest.fn(() => state),
+      }
+    );
   }),
 }));
 

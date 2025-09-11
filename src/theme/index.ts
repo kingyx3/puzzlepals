@@ -6,30 +6,30 @@ export const colors = {
   primaryDark: '#4A7BDC',
   secondary: '#FFB86B', // Warm orange
   secondaryDark: '#E69A4C',
-  
+
   // Background colors
   background: '#FFFDF7', // Warm white
   surface: '#FFFFFF',
   surfaceVariant: '#F5F3FF',
-  
+
   // Content colors
   onBackground: '#2C2C2C',
   onSurface: '#2C2C2C',
   onPrimary: '#FFFFFF',
   onSecondary: '#2C2C2C',
-  
+
   // Semantic colors
   success: '#4CAF50',
   onSuccess: '#FFFFFF',
   warning: '#FF9800',
   error: '#F44336',
   info: '#2196F3',
-  
+
   // Utility colors
   disabled: '#9AA0A6',
   outline: '#E0E0E0',
   shadow: 'rgba(0, 0, 0, 0.1)',
-  
+
   // Celebration colors
   confetti: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57', '#FF9FF3'],
 } as const;
@@ -60,14 +60,14 @@ export const typography = {
   xl: 20,
   xxl: 24,
   xxxl: 28,
-  
+
   // Line heights
   lineHeight: {
     tight: 1.2,
     normal: 1.4,
     relaxed: 1.6,
   },
-  
+
   // Font weights
   weight: {
     normal: '400' as const,
@@ -81,14 +81,14 @@ export const layout = {
   // Touch targets - minimum 44pt for accessibility (increased for kids)
   touchTarget: 48, // Increased from 44 for kid-friendly design
   touchTargetLarge: 56, // For primary actions
-  
+
   // Game area dimensions
   minPuzzleSize: 200,
   maxPuzzleSize: 400,
-  
+
   // Snap threshold for puzzle pieces
   snapThreshold: 30,
-  
+
   // Animation durations
   animation: {
     fast: 150,
@@ -96,7 +96,7 @@ export const layout = {
     slow: 500,
     celebration: 1000, // For completion celebrations
   },
-  
+
   // Kid-friendly spacing
   kidFriendlySpacing: {
     betweenButtons: 16, // Minimum space between interactive elements

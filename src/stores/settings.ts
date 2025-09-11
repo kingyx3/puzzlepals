@@ -23,23 +23,23 @@ const defaultSettings: GameSettings = {
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
   ...defaultSettings,
-  
+
   updateSettings: (updates) => {
     set(updates);
   },
-  
+
   toggleSound: () => {
     set({ soundEnabled: !get().soundEnabled });
   },
-  
+
   toggleHaptic: () => {
     set({ hapticEnabled: !get().hapticEnabled });
   },
-  
+
   setDifficulty: (difficulty) => {
     set({ defaultDifficulty: difficulty });
   },
-  
+
   resetSettings: () => {
     set(defaultSettings);
   },
