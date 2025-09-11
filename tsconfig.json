@@ -2,9 +2,11 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "jsx": "react-jsx",
-    "lib": ["esnext"],
+    "lib": [
+      "esnext"
+    ],
     "target": "esnext",
-    "module": "esnext", 
+    "module": "esnext",
     "moduleResolution": "node",
     "allowJs": true,
     "noEmit": true,
@@ -17,7 +19,9 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "noFallthroughCasesInSwitch": true,
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": [
+      "node_modules/@types"
+    ]
   },
   "include": [
     "src/**/*",
@@ -29,5 +33,6 @@
     ".expo",
     "dist",
     "web-build"
-  ]
+  ],
+  "extends": "expo/tsconfig.base"
 }
