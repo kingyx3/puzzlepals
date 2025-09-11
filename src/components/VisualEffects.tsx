@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import Animated, { 
-  useSharedValue, 
-  useAnimatedStyle, 
-  withSpring, 
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
   withSequence,
   withDelay,
   useAnimatedProps,
@@ -18,7 +18,12 @@ interface VisualEffectsProps {
   canvasHeight: number;
   snapEffectTrigger?: boolean;
   completionTrigger?: boolean;
-  hintHighlights?: Array<{ x: number; y: number; width: number; height: number }>;
+  hintHighlights?: Array<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }>;
 }
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -34,11 +39,11 @@ export const VisualEffects: React.FC<VisualEffectsProps> = ({
   // Snap effect animation values
   const snapScale = useSharedValue(0);
   const snapOpacity = useSharedValue(0);
-  
+
   // Completion effect animation values
   const completionProgress = useSharedValue(0);
   const sparkleProgress = useSharedValue(0);
-  
+
   // Hint highlight animation
   const hintPulse = useSharedValue(0);
 
@@ -113,13 +118,20 @@ export const VisualEffects: React.FC<VisualEffectsProps> = ({
 
   // Animated props for hint highlight border
   const hintBorderProps = useAnimatedProps(() => ({
-    strokeWidth: 2 + (hintPulse.value * 4),
+    strokeWidth: 2 + hintPulse.value * 4,
     strokeOpacity: hintPulse.value,
   }));
 
   return (
-    <View style={[styles.container, { width: canvasWidth, height: canvasHeight }]} pointerEvents="none">
-      <Svg width={canvasWidth} height={canvasHeight} style={StyleSheet.absoluteFillObject}>
+    <View
+      style={[styles.container, { width: canvasWidth, height: canvasHeight }]}
+      pointerEvents="none"
+    >
+      <Svg
+        width={canvasWidth}
+        height={canvasHeight}
+        style={StyleSheet.absoluteFillObject}
+      >
         {/* Snap effect - expanding circle */}
         <AnimatedCircle
           cx={canvasWidth / 2}
@@ -144,23 +156,24 @@ export const VisualEffects: React.FC<VisualEffectsProps> = ({
         ))}
 
         {/* Completion sparkles */}
-        {completionTrigger && [...Array(8)].map((_, index) => {
-          const angle = (index / 8) * 2 * Math.PI;
-          const radius = Math.min(canvasWidth, canvasHeight) / 3;
-          const x = canvasWidth / 2 + Math.cos(angle) * radius;
-          const y = canvasHeight / 2 + Math.sin(angle) * radius;
-          
-          return (
-            <AnimatedCircle
-              key={`sparkle-${index}`}
-              cx={x}
-              cy={y}
-              r="4"
-              fill={colors.warning}
-              animatedProps={sparkleProps}
-            />
-          );
-        })}
+        {completionTrigger &&
+          [...Array(8)].map((_, index) => {
+            const angle = (index / 8) * 2 * Math.PI;
+            const radius = Math.min(canvasWidth, canvasHeight) / 3;
+            const x = canvasWidth / 2 + Math.cos(angle) * radius;
+            const y = canvasHeight / 2 + Math.sin(angle) * radius;
+
+            return (
+              <AnimatedCircle
+                key={`sparkle-${index}`}
+                cx={x}
+                cy={y}
+                r="4"
+                fill={colors.warning}
+                animatedProps={sparkleProps}
+              />
+            );
+          })}
       </Svg>
 
       {/* Snap effect overlay */}
@@ -179,7 +192,7 @@ export const VisualEffects: React.FC<VisualEffectsProps> = ({
                 styles.sparkle,
                 {
                   transform: [
-                    { rotate: `${(index * 30)}deg` },
+                    { rotate: `${index * 30}deg` },
                     { translateY: -50 },
                   ],
                 },

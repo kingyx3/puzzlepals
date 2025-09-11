@@ -1,22 +1,54 @@
 // Tests for core puzzle functionality
 
-import { difficultyToGrid, createBoard, isWithinSnapThreshold, shouldUseJigsawEdges } from '../src/engine/jigsaw';
+import {
+  difficultyToGrid,
+  createBoard,
+  isWithinSnapThreshold,
+  shouldUseJigsawEdges,
+} from '../src/engine/jigsaw';
 import { Difficulty } from '../src/types';
 
 describe('Puzzle Engine', () => {
   describe('difficultyToGrid', () => {
     it('should convert difficulty levels to correct grid dimensions', () => {
-      expect(difficultyToGrid('AGES_3_5' as Difficulty)).toEqual({ cols: 2, rows: 2 });
-      expect(difficultyToGrid('AGES_6_8' as Difficulty)).toEqual({ cols: 3, rows: 3 });
-      expect(difficultyToGrid('AGES_9_10' as Difficulty)).toEqual({ cols: 4, rows: 4 });
-      expect(difficultyToGrid('AGES_11_PLUS' as Difficulty)).toEqual({ cols: 6, rows: 6 });
-      
+      expect(difficultyToGrid('AGES_3_5' as Difficulty)).toEqual({
+        cols: 2,
+        rows: 2,
+      });
+      expect(difficultyToGrid('AGES_6_8' as Difficulty)).toEqual({
+        cols: 3,
+        rows: 3,
+      });
+      expect(difficultyToGrid('AGES_9_10' as Difficulty)).toEqual({
+        cols: 4,
+        rows: 4,
+      });
+      expect(difficultyToGrid('AGES_11_PLUS' as Difficulty)).toEqual({
+        cols: 6,
+        rows: 6,
+      });
+
       // Test new difficulty levels
-      expect(difficultyToGrid('EASY' as Difficulty)).toEqual({ cols: 4, rows: 4 });
-      expect(difficultyToGrid('MEDIUM' as Difficulty)).toEqual({ cols: 6, rows: 6 });
-      expect(difficultyToGrid('HARD' as Difficulty)).toEqual({ cols: 8, rows: 8 });
-      expect(difficultyToGrid('EXPERT' as Difficulty)).toEqual({ cols: 10, rows: 10 });
-      expect(difficultyToGrid('MASTER' as Difficulty)).toEqual({ cols: 12, rows: 8 });
+      expect(difficultyToGrid('EASY' as Difficulty)).toEqual({
+        cols: 4,
+        rows: 4,
+      });
+      expect(difficultyToGrid('MEDIUM' as Difficulty)).toEqual({
+        cols: 6,
+        rows: 6,
+      });
+      expect(difficultyToGrid('HARD' as Difficulty)).toEqual({
+        cols: 8,
+        rows: 8,
+      });
+      expect(difficultyToGrid('EXPERT' as Difficulty)).toEqual({
+        cols: 10,
+        rows: 10,
+      });
+      expect(difficultyToGrid('MASTER' as Difficulty)).toEqual({
+        cols: 12,
+        rows: 8,
+      });
     });
   });
 
@@ -37,7 +69,7 @@ describe('Puzzle Engine', () => {
   describe('createBoard', () => {
     it('should create a board with correct number of pieces', () => {
       const board = createBoard(123, 2, 2, 400, 400, 'AGES_3_5');
-      
+
       expect(board.cols).toBe(2);
       expect(board.rows).toBe(2);
       expect(board.width).toBe(400);
@@ -50,8 +82,8 @@ describe('Puzzle Engine', () => {
     it('should create pieces with correct target positions', () => {
       const board = createBoard(123, 2, 2, 400, 400, 'AGES_3_5');
       const pieces = Object.values(board.pieces);
-      
-      pieces.forEach(piece => {
+
+      pieces.forEach((piece) => {
         expect(piece.targetX).toBeGreaterThanOrEqual(0);
         expect(piece.targetY).toBeGreaterThanOrEqual(0);
         expect(piece.width).toBeGreaterThan(0);
@@ -64,8 +96,8 @@ describe('Puzzle Engine', () => {
     it('should create square pieces for easy difficulties', () => {
       const board = createBoard(123, 2, 2, 400, 400, 'AGES_3_5');
       const pieces = Object.values(board.pieces);
-      
-      pieces.forEach(piece => {
+
+      pieces.forEach((piece) => {
         expect(piece.shape).toBe('SQUARE');
         expect(piece.edges).toBeUndefined();
       });
@@ -74,8 +106,8 @@ describe('Puzzle Engine', () => {
     it('should create jigsaw pieces for hard difficulties', () => {
       const board = createBoard(123, 6, 6, 400, 400, 'MEDIUM');
       const pieces = Object.values(board.pieces);
-      
-      pieces.forEach(piece => {
+
+      pieces.forEach((piece) => {
         expect(piece.shape).toBe('JIGSAW');
         expect(piece.edges).toBeDefined();
         expect(piece.edges).toHaveProperty('top');

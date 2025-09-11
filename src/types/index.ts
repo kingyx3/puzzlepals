@@ -1,15 +1,15 @@
 // Core TypeScript types for PuzzlePals
 
-export type Difficulty = 
-  | 'AGES_3_5'      // 2x2 = 4 pieces (square pieces)
-  | 'AGES_6_8'      // 3x3 = 9 pieces (square pieces) 
-  | 'AGES_9_10'     // 4x4 = 16 pieces (square pieces)
-  | 'AGES_11_PLUS'  // 6x6 = 36 pieces (jigsaw edges)
-  | 'EASY'          // 4x4 = 16 pieces (square pieces)
-  | 'MEDIUM'        // 6x6 = 36 pieces (jigsaw edges)
-  | 'HARD'          // 8x8 = 64 pieces (jigsaw edges)
-  | 'EXPERT'        // 10x10 = 100 pieces (jigsaw edges)
-  | 'MASTER';       // 12x8 = 96 pieces (jigsaw edges)
+export type Difficulty =
+  | 'AGES_3_5' // 2x2 = 4 pieces (square pieces)
+  | 'AGES_6_8' // 3x3 = 9 pieces (square pieces)
+  | 'AGES_9_10' // 4x4 = 16 pieces (square pieces)
+  | 'AGES_11_PLUS' // 6x6 = 36 pieces (jigsaw edges)
+  | 'EASY' // 4x4 = 16 pieces (square pieces)
+  | 'MEDIUM' // 6x6 = 36 pieces (jigsaw edges)
+  | 'HARD' // 8x8 = 64 pieces (jigsaw edges)
+  | 'EXPERT' // 10x10 = 100 pieces (jigsaw edges)
+  | 'MASTER'; // 12x8 = 96 pieces (jigsaw edges)
 
 export interface PuzzlePack {
   id: string; // e.g. 'animals'

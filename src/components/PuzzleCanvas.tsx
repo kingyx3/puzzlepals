@@ -15,53 +15,68 @@ interface PuzzleCanvasProps {
   onPieceSnap?: () => void;
 }
 
-export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({ onPuzzleComplete, onPieceSnap }) => {
-  const { 
-    currentPuzzle, 
-    movePiece, 
-    trySnapPiece, 
-    bringToFront, 
-    showGhostImage, 
-    highlightedPieces 
+export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({
+  onPuzzleComplete,
+  onPieceSnap,
+}) => {
+  const {
+    currentPuzzle,
+    movePiece,
+    trySnapPiece,
+    bringToFront,
+    showGhostImage,
+    highlightedPieces,
   } = useGameStore();
   const { hapticEnabled, soundEnabled } = useSettingsStore();
-  
-  const handlePieceMove = useCallback((pieceId: string, x: number, y: number) => {
-    movePiece(pieceId, x, y);
-  }, [movePiece]);
-  
-  const handlePieceMoveEnd = useCallback(async (pieceId: string) => {
-    const wasSnapped = trySnapPiece(pieceId);
-    
-    if (wasSnapped) {
-      if (hapticEnabled) {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+  const handlePieceMove = useCallback(
+    (pieceId: string, x: number, y: number) => {
+      movePiece(pieceId, x, y);
+    },
+    [movePiece]
+  );
+
+  const handlePieceMoveEnd = useCallback(
+    async (pieceId: string) => {
+      const wasSnapped = trySnapPiece(pieceId);
+
+      if (wasSnapped) {
+        if (hapticEnabled) {
+          await Haptics.notificationAsync(
+            Haptics.NotificationFeedbackType.Success
+          );
+        }
+        if (soundEnabled) {
+          await playSnapSound();
+        }
+        // Trigger visual snap effect
+        onPieceSnap?.();
       }
-      if (soundEnabled) {
-        await playSnapSound();
-      }
-      // Trigger visual snap effect
-      onPieceSnap?.();
-    }
-  }, [trySnapPiece, hapticEnabled, soundEnabled, onPieceSnap]);
-  
-  const handleBringToFront = useCallback((pieceId: string) => {
-    bringToFront(pieceId);
-  }, [bringToFront]);
-  
+    },
+    [trySnapPiece, hapticEnabled, soundEnabled, onPieceSnap]
+  );
+
+  const handleBringToFront = useCallback(
+    (pieceId: string) => {
+      bringToFront(pieceId);
+    },
+    [bringToFront]
+  );
+
   // Check for puzzle completion
   useEffect(() => {
     if (currentPuzzle?.board.isCompleted && onPuzzleComplete) {
       // Record completion stats for achievements
       const completionTime = Date.now() - currentPuzzle.startTime;
-      const { recordPuzzleCompletion, getEfficiencyScore } = useAchievementStore.getState();
-      
+      const { recordPuzzleCompletion, getEfficiencyScore } =
+        useAchievementStore.getState();
+
       const efficiency = getEfficiencyScore(
         completionTime,
         currentPuzzle.hintsUsed,
         currentPuzzle.difficulty
       );
-      
+
       recordPuzzleCompletion({
         puzzleId: currentPuzzle.puzzle.id,
         difficulty: currentPuzzle.difficulty,
@@ -70,35 +85,52 @@ export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({ onPuzzleComplete, on
         completedAt: Date.now(),
         efficiency,
       });
-      
+
       if (soundEnabled) {
         playCelebrationSound();
       }
       onPuzzleComplete();
     }
-  }, [currentPuzzle?.board.isCompleted, currentPuzzle?.startTime, currentPuzzle?.hintsUsed, currentPuzzle?.difficulty, currentPuzzle?.puzzle.id, onPuzzleComplete, soundEnabled]);
-  
+  }, [
+    currentPuzzle?.board.isCompleted,
+    currentPuzzle?.startTime,
+    currentPuzzle?.hintsUsed,
+    currentPuzzle?.difficulty,
+    currentPuzzle?.puzzle.id,
+    onPuzzleComplete,
+    soundEnabled,
+  ]);
+
   if (!currentPuzzle) {
     return null;
   }
-  
+
   const { board } = currentPuzzle;
   const pieces = Object.values(board.pieces);
-  
+
   return (
     <View style={styles.container}>
-      <View style={[styles.canvas, { width: board.width, height: board.height }]}>
+      <View
+        style={[styles.canvas, { width: board.width, height: board.height }]}
+      >
         {/* Ghost image overlay for hints */}
         {showGhostImage && (
           <View style={styles.ghostImageContainer}>
             <Image
-              source={typeof board.imageAsset === 'number' ? board.imageAsset : { uri: board.imageAsset }}
-              style={[styles.ghostImage, { width: board.width, height: board.height }]}
+              source={
+                typeof board.imageAsset === 'number'
+                  ? board.imageAsset
+                  : { uri: board.imageAsset }
+              }
+              style={[
+                styles.ghostImage,
+                { width: board.width, height: board.height },
+              ]}
               resizeMode="cover"
             />
           </View>
         )}
-        
+
         {/* Render puzzle outline/grid */}
         <View style={styles.puzzleArea}>
           {pieces.map((piece) => (
@@ -112,12 +144,13 @@ export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({ onPuzzleComplete, on
                   width: piece.width,
                   height: piece.height,
                 },
-                highlightedPieces.includes(piece.id) && styles.highlightedTarget,
+                highlightedPieces.includes(piece.id) &&
+                  styles.highlightedTarget,
               ]}
             />
           ))}
         </View>
-        
+
         {/* Render puzzle pieces */}
         {pieces.map((piece) => (
           <Piece

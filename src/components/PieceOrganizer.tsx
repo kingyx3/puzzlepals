@@ -9,13 +9,16 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import Animated, { 
-  useAnimatedGestureHandler, 
-  useAnimatedStyle, 
-  useSharedValue, 
+import {
+  PanGestureHandler,
+  PanGestureHandlerGestureEvent,
+} from 'react-native-gesture-handler';
+import Animated, {
+  useAnimatedGestureHandler,
+  useAnimatedStyle,
+  useSharedValue,
   runOnJS,
-  withSpring
+  withSpring,
 } from 'react-native-reanimated';
 import { useGameStore } from '../stores/game';
 import { organizePiecesByType } from '../engine/hints';
@@ -36,36 +39,56 @@ interface PieceItemProps {
   boardRows: number;
 }
 
-const PieceItem: React.FC<PieceItemProps> = ({ piece, index, imageAsset, boardCols, boardRows }) => {
+const PieceItem: React.FC<PieceItemProps> = ({
+  piece,
+  index,
+  imageAsset,
+  boardCols,
+  boardRows,
+}) => {
   const { movePiece, bringToFront } = useGameStore();
-  
+
   // Animation values for dragging
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
-  
+
   const miniatureSize = 40; // Fixed size for miniature pieces
   const scaleRatio = miniatureSize / Math.max(piece.width, piece.height);
 
   const handlePress = () => {
-    // Bring piece to front and move it to center for easy access
+    // Bring piece to front and move it to center of canvas for easy access
     bringToFront(piece.id);
-    // Move to a staging area in the center-bottom of the canvas
-    movePiece(piece.id, piece.targetX, piece.targetY + 100);
+    // Move to center of the puzzle canvas rather than just offset
+    const canvasCenter = {
+      x: piece.targetX + piece.width * 2, // Position to the right of target for visibility
+      y: piece.targetY - 50, // Position slightly above target for better staging
+    };
+    movePiece(piece.id, canvasCenter.x, canvasCenter.y);
   };
 
-  const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, {
-    startX: number;
-    startY: number;
-  }>({
+  const gestureHandler = useAnimatedGestureHandler<
+    PanGestureHandlerGestureEvent,
+    {
+      startX: number;
+      startY: number;
+    }
+  >({
     onStart: (_, context) => {
       context.startX = translateX.value;
       context.startY = translateY.value;
       scale.value = withSpring(1.2); // Slightly enlarge when picked up
     },
     onActive: (event, context) => {
-      translateX.value = context.startX + event.translationX;
-      translateY.value = context.startY + event.translationY;
+      // Use smooth spring animations for better performance
+      translateX.value = withSpring(context.startX + event.translationX, {
+        damping: 15,
+        stiffness: 150,
+      });
+      translateY.value = withSpring(context.startY + event.translationY, {
+        damping: 15,
+        stiffness: 150,
+      });
     },
     onEnd: (event) => {
       // If dragged upward significantly, move to main canvas
@@ -74,14 +97,22 @@ const PieceItem: React.FC<PieceItemProps> = ({ piece, index, imageAsset, boardCo
         translateX.value = withSpring(0);
         translateY.value = withSpring(0);
         scale.value = withSpring(1);
-        
-        // Move piece to canvas staging area
+
+        // Move piece to canvas staging area with better positioning
         runOnJS(bringToFront)(piece.id);
-        runOnJS(movePiece)(piece.id, piece.targetX, piece.targetY + 100);
+        const stagingX = piece.targetX + piece.width * 1.5;
+        const stagingY = piece.targetY - 30;
+        runOnJS(movePiece)(piece.id, stagingX, stagingY);
       } else {
-        // Return to original position
-        translateX.value = withSpring(0);
-        translateY.value = withSpring(0);
+        // Return to original position with smooth animation
+        translateX.value = withSpring(0, {
+          damping: 20,
+          stiffness: 200,
+        });
+        translateY.value = withSpring(0, {
+          damping: 20,
+          stiffness: 200,
+        });
         scale.value = withSpring(1);
       }
     },
@@ -99,7 +130,7 @@ const PieceItem: React.FC<PieceItemProps> = ({ piece, index, imageAsset, boardCo
     <View style={styles.pieceItemContainer}>
       <PanGestureHandler onGestureEvent={gestureHandler}>
         <Animated.View style={[styles.pieceItem, animatedStyle]}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.piecePreview}
             onPress={handlePress}
             activeOpacity={0.7}
@@ -111,7 +142,7 @@ const PieceItem: React.FC<PieceItemProps> = ({ piece, index, imageAsset, boardCo
                   height={miniatureSize}
                   edges={piece.edges}
                   imageAsset={imageAsset}
-                  style={{ 
+                  style={{
                     transform: [{ scale: scaleRatio }],
                     width: piece.width * scaleRatio,
                     height: piece.height * scaleRatio,
@@ -121,34 +152,50 @@ const PieceItem: React.FC<PieceItemProps> = ({ piece, index, imageAsset, boardCo
             ) : (
               <View style={styles.miniaturePieceContainer}>
                 {/* Render square piece with actual image content */}
-                <View style={[styles.squarePiecePreview, {
-                  width: miniatureSize,
-                  height: miniatureSize,
-                }]}>
+                <View
+                  style={[
+                    styles.squarePiecePreview,
+                    {
+                      width: miniatureSize,
+                      height: miniatureSize,
+                    },
+                  ]}
+                >
                   <View style={styles.imageClipContainer}>
                     {/* Show the actual portion of the image this piece represents */}
-                    <View style={[styles.clippedImage, {
-                      width: miniatureSize * boardCols,
-                      height: miniatureSize * boardRows,
-                      left: -piece.col * miniatureSize,
-                      top: -piece.row * miniatureSize,
-                    }]}>
+                    <View
+                      style={[
+                        styles.clippedImage,
+                        {
+                          width: miniatureSize * boardCols,
+                          height: miniatureSize * boardRows,
+                          left: -piece.col * miniatureSize,
+                          top: -piece.row * miniatureSize,
+                        },
+                      ]}
+                    >
                       {typeof imageAsset === 'number' ? (
-                        <Image 
+                        <Image
                           source={imageAsset}
-                          style={[styles.fullImage, {
-                            width: miniatureSize * boardCols,
-                            height: miniatureSize * boardRows,
-                          }]}
+                          style={[
+                            styles.fullImage,
+                            {
+                              width: miniatureSize * boardCols,
+                              height: miniatureSize * boardRows,
+                            },
+                          ]}
                           resizeMode="cover"
                         />
                       ) : (
-                        <Image 
+                        <Image
                           source={{ uri: imageAsset }}
-                          style={[styles.fullImage, {
-                            width: miniatureSize * boardCols,
-                            height: miniatureSize * boardRows,
-                          }]}
+                          style={[
+                            styles.fullImage,
+                            {
+                              width: miniatureSize * boardCols,
+                              height: miniatureSize * boardRows,
+                            },
+                          ]}
                           resizeMode="cover"
                         />
                       )}
@@ -175,13 +222,16 @@ export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
   sortingCriteria,
 }) => {
   const { currentPuzzle } = useGameStore();
-  
+
   const organizedPieces = useMemo(() => {
     if (!currentPuzzle) return null;
-    
+
     const { board } = currentPuzzle;
-    const unplacedPieces = Object.values(board.pieces).filter(piece => !piece.placed);
-    
+    // Only show pieces that are not placed and are positioned in carousel area (off-screen or in staging)
+    const unplacedPieces = Object.values(board.pieces).filter(
+      (piece) => !piece.placed && (piece.x < 0 || piece.y > board.height)
+    );
+
     switch (sortingCriteria) {
       case 'type': {
         const organized = organizePiecesByType(board);
@@ -190,19 +240,25 @@ export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
           sections: [
             {
               title: 'Corners',
-              pieces: organized.corners.filter(p => !p.placed),
+              pieces: organized.corners.filter(
+                (p) => !p.placed && (p.x < 0 || p.y > board.height)
+              ),
               color: colors.warning,
               icon: '📐',
             },
             {
-              title: 'Edges', 
-              pieces: organized.edges.filter(p => !p.placed),
+              title: 'Edges',
+              pieces: organized.edges.filter(
+                (p) => !p.placed && (p.x < 0 || p.y > board.height)
+              ),
               color: colors.secondary,
               icon: '📏',
             },
             {
               title: 'Interior',
-              pieces: organized.interior.filter(p => !p.placed),
+              pieces: organized.interior.filter(
+                (p) => !p.placed && (p.x < 0 || p.y > board.height)
+              ),
               color: colors.primary,
               icon: '🔳',
             },
@@ -229,8 +285,12 @@ export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
             {
               title: 'Closest to Target',
               pieces: unplacedPieces.sort((a, b) => {
-                const distA = Math.sqrt(Math.pow(a.x - a.targetX, 2) + Math.pow(a.y - a.targetY, 2));
-                const distB = Math.sqrt(Math.pow(b.x - b.targetX, 2) + Math.pow(b.y - b.targetY, 2));
+                const distA = Math.sqrt(
+                  Math.pow(a.x - a.targetX, 2) + Math.pow(a.y - a.targetY, 2)
+                );
+                const distB = Math.sqrt(
+                  Math.pow(b.x - b.targetX, 2) + Math.pow(b.y - b.targetY, 2)
+                );
                 return distA - distB;
               }),
               color: colors.success,
@@ -257,20 +317,24 @@ export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
     return null;
   }
 
-  const totalPieces = organizedPieces.sections.reduce((sum, section) => sum + section.pieces.length, 0);
+  const totalPieces = organizedPieces.sections.reduce(
+    (sum, section) => sum + section.pieces.length,
+    0
+  );
   const { board } = currentPuzzle;
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>🧩 Puzzle Pieces Carousel</Text>
         <Text style={styles.subtitle}>
-          {totalPieces} pieces remaining • Tap to bring to staging area • Drag up to move to puzzle
+          {totalPieces} pieces remaining • Tap to bring to staging area • Drag
+          up to move to puzzle
         </Text>
       </View>
-      
-      <ScrollView 
-        horizontal 
+
+      <ScrollView
+        horizontal
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}
         showsHorizontalScrollIndicator={false}
@@ -281,14 +345,16 @@ export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
       >
         {organizedPieces.sections.map((section, sectionIndex) => (
           <View key={sectionIndex} style={styles.section}>
-            <View style={[styles.sectionHeader, { borderLeftColor: section.color }]}>
+            <View
+              style={[styles.sectionHeader, { borderLeftColor: section.color }]}
+            >
               <Text style={styles.sectionTitle}>
                 {section.icon} {section.title}
               </Text>
               <Text style={styles.sectionCount}>{section.pieces.length}</Text>
             </View>
-            
-            <ScrollView 
+
+            <ScrollView
               horizontal
               style={styles.piecesContainer}
               contentContainerStyle={styles.piecesContent}

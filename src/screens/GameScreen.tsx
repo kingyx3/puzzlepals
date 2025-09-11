@@ -1,17 +1,20 @@
 // Game screen with puzzle canvas and controls
 
 import React, { useState, useCallback } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  SafeAreaView, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
   Dimensions,
-  Alert 
+  Alert,
 } from 'react-native';
 import { PuzzleCanvas } from '../components/PuzzleCanvas';
-import { PieceSortingPanel, SortingCriteria } from '../components/PieceSortingPanel';
+import {
+  PieceSortingPanel,
+  SortingCriteria,
+} from '../components/PieceSortingPanel';
 import { PieceOrganizer } from '../components/PieceOrganizer';
 import { AccessibilityEnhancements } from '../components/AccessibilityEnhancements';
 import { VisualEffects } from '../components/VisualEffects';
@@ -21,7 +24,10 @@ import { useGameStore } from '../stores/game';
 import { useAchievementStore } from '../stores/achievements';
 import { PuzzleMeta, Difficulty } from '../types';
 import { colors, spacing, typography, layout } from '../theme';
-import { getAccessibilityProps, getProgressAccessibility } from '../utils/accessibility';
+import {
+  getAccessibilityProps,
+  getProgressAccessibility,
+} from '../utils/accessibility';
 
 interface GameScreenProps {
   puzzle: PuzzleMeta;
@@ -29,8 +35,13 @@ interface GameScreenProps {
   onExit: () => void;
 }
 
-export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onExit }) => {
-  const { startPuzzle, currentPuzzle, resetPuzzle, exitPuzzle, useHint } = useGameStore();
+export const GameScreen: React.FC<GameScreenProps> = ({
+  puzzle,
+  difficulty,
+  onExit,
+}) => {
+  const { startPuzzle, currentPuzzle, resetPuzzle, exitPuzzle, useHint } =
+    useGameStore();
   const { getRecommendedDifficulty } = useAchievementStore();
   const [showCelebration, setShowCelebration] = useState(false);
   const [hintMessage, setHintMessage] = useState<string | null>(null);
@@ -41,32 +52,32 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
   const [currentSorting, setCurrentSorting] = useState<SortingCriteria>('none');
   const [snapEffectTrigger, setSnapEffectTrigger] = useState(false);
   const [completionEffectTrigger, setCompletionEffectTrigger] = useState(false);
-  
+
   // Initialize puzzle when component mounts
   React.useEffect(() => {
     const screenWidth = Dimensions.get('window').width;
     const screenHeight = Dimensions.get('window').height;
-    
+
     // Calculate canvas size (leaving space for controls and piece organizer)
     const maxWidth = screenWidth - spacing.xl * 2;
     const maxHeight = screenHeight * 0.5; // Reduced from 0.6 to make room for piece organizer
     const canvasSize = Math.min(maxWidth, maxHeight, layout.maxPuzzleSize);
-    
-    startPuzzle(puzzle, difficulty, { 
-      width: canvasSize, 
-      height: canvasSize 
+
+    startPuzzle(puzzle, difficulty, {
+      width: canvasSize,
+      height: canvasSize,
     });
   }, [puzzle, difficulty, startPuzzle]);
-  
+
   const handlePuzzleComplete = useCallback(() => {
     setShowCelebration(true);
-    setCompletionEffectTrigger(prev => !prev); // Trigger completion visual effect
-    
+    setCompletionEffectTrigger((prev) => !prev); // Trigger completion visual effect
+
     // Show celebration for a few seconds
     setTimeout(() => {
       setShowCelebration(false);
     }, 3000);
-    
+
     // Suggest next difficulty if player is performing well
     setTimeout(() => {
       const recommendedDifficulty = getRecommendedDifficulty();
@@ -82,7 +93,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
       }
     }, 4000);
   }, [difficulty, getRecommendedDifficulty]);
-  
+
   const handleHint = useCallback(() => {
     const hintResult = useHint();
     if (hintResult?.message) {
@@ -93,7 +104,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
   }, [useHint]);
 
   const handlePieceSnap = useCallback(() => {
-    setSnapEffectTrigger(prev => !prev); // Trigger snap visual effect
+    setSnapEffectTrigger((prev) => !prev); // Trigger snap visual effect
   }, []);
 
   const handleSortingChange = useCallback((criteria: SortingCriteria) => {
@@ -101,32 +112,31 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
     // Here you could implement the actual sorting logic
     // For now, we'll just track the preference
   }, []);
-  
+
   const handleReset = useCallback(() => {
-    Alert.alert(
-      'Reset Puzzle',
-      'Are you sure you want to start over?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Reset', style: 'destructive', onPress: resetPuzzle },
-      ]
-    );
+    Alert.alert('Reset Puzzle', 'Are you sure you want to start over?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Reset', style: 'destructive', onPress: resetPuzzle },
+    ]);
   }, [resetPuzzle]);
-  
+
   const handleExit = useCallback(() => {
     Alert.alert(
       'Exit Puzzle',
       'Your progress will be saved. Exit to home screen?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Exit', onPress: () => {
-          exitPuzzle();
-          onExit();
-        }},
+        {
+          text: 'Exit',
+          onPress: () => {
+            exitPuzzle();
+            onExit();
+          },
+        },
       ]
     );
   }, [exitPuzzle, onExit]);
-  
+
   if (!currentPuzzle) {
     return (
       <SafeAreaView style={styles.container}>
@@ -134,19 +144,21 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
       </SafeAreaView>
     );
   }
-  
-  const progress = currentPuzzle.board.completedCount / (currentPuzzle.board.cols * currentPuzzle.board.rows);
+
+  const progress =
+    currentPuzzle.board.completedCount /
+    (currentPuzzle.board.cols * currentPuzzle.board.rows);
   const progressAccessibility = getProgressAccessibility(
     currentPuzzle.board.completedCount,
     currentPuzzle.board.cols * currentPuzzle.board.rows
   );
-  
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header with enhanced controls */}
       <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.exitButton} 
+        <TouchableOpacity
+          style={styles.exitButton}
           onPress={handleExit}
           {...getAccessibilityProps({
             label: 'Exit puzzle and go back',
@@ -156,27 +168,28 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
         >
           <Text style={styles.buttonText}>← Back</Text>
         </TouchableOpacity>
-        
+
         <View style={styles.titleSection}>
-          <Text 
+          <Text
             style={styles.puzzleTitle}
             accessible={true}
             accessibilityRole="header"
           >
             {puzzle.titleKey}
           </Text>
-          <Text 
+          <Text
             style={styles.progressText}
             accessible={true}
             accessibilityLabel={`Progress: ${currentPuzzle.board.completedCount} pieces placed out of ${currentPuzzle.board.cols * currentPuzzle.board.rows} total pieces`}
           >
-            {currentPuzzle.board.completedCount} / {currentPuzzle.board.cols * currentPuzzle.board.rows}
+            {currentPuzzle.board.completedCount} /{' '}
+            {currentPuzzle.board.cols * currentPuzzle.board.rows}
           </Text>
         </View>
-        
+
         <View style={styles.rightControls}>
-          <TouchableOpacity 
-            style={styles.previewButton} 
+          <TouchableOpacity
+            style={styles.previewButton}
             onPress={() => setShowImagePreview(true)}
             accessible={true}
             accessibilityRole="button"
@@ -185,8 +198,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
           >
             <Text style={styles.buttonText}>🖼️</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.achievementButton} 
+          <TouchableOpacity
+            style={styles.achievementButton}
             onPress={() => setShowAchievementPanel(true)}
             accessible={true}
             accessibilityRole="button"
@@ -195,8 +208,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
           >
             <Text style={styles.buttonText}>🏆</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.accessibilityButton} 
+          <TouchableOpacity
+            style={styles.accessibilityButton}
             onPress={() => setShowAccessibilityPanel(true)}
             accessible={true}
             accessibilityRole="button"
@@ -205,8 +218,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
           >
             <Text style={styles.buttonText}>♿</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.hintButton} 
+          <TouchableOpacity
+            style={styles.hintButton}
             onPress={handleHint}
             accessible={true}
             accessibilityRole="button"
@@ -217,10 +230,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
           </TouchableOpacity>
         </View>
       </View>
-      
+
       {/* Enhanced progress bar with additional info */}
       <View style={styles.progressContainer}>
-        <View 
+        <View
           style={styles.progressBar}
           {...getAccessibilityProps({
             label: progressAccessibility.label,
@@ -228,7 +241,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
           })}
           accessibilityValue={progressAccessibility.value}
         >
-          <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
+          <View
+            style={[styles.progressFill, { width: `${progress * 100}%` }]}
+          />
         </View>
         <View style={styles.progressStats}>
           <Text style={styles.progressStatsText}>
@@ -241,17 +256,20 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
           )}
         </View>
       </View>
-      
+
       {/* Hint message */}
       {hintMessage && (
         <View style={styles.hintMessageContainer}>
           <Text style={styles.hintMessageText}>{hintMessage}</Text>
         </View>
       )}
-      
+
       {/* Puzzle canvas with visual effects */}
       <View style={styles.gameArea}>
-        <PuzzleCanvas onPuzzleComplete={handlePuzzleComplete} onPieceSnap={handlePieceSnap} />
+        <PuzzleCanvas
+          onPuzzleComplete={handlePuzzleComplete}
+          onPieceSnap={handlePieceSnap}
+        />
         {currentPuzzle && (
           <VisualEffects
             canvasWidth={currentPuzzle.board.width}
@@ -261,22 +279,23 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
           />
         )}
       </View>
-      
+
       {/* Piece organizer under the puzzle */}
-      <PieceOrganizer
-        sortingCriteria={currentSorting}
-      />
-      
+      <PieceOrganizer sortingCriteria={currentSorting} />
+
       {/* Enhanced bottom controls */}
       <View style={styles.bottomControls}>
-        <TouchableOpacity style={styles.sortButton} onPress={() => setShowSortingPanel(true)}>
+        <TouchableOpacity
+          style={styles.sortButton}
+          onPress={() => setShowSortingPanel(true)}
+        >
           <Text style={styles.sortButtonText}>🧩 Sort Pieces</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
           <Text style={styles.resetButtonText}>🔄 Reset</Text>
         </TouchableOpacity>
       </View>
-      
+
       {/* Celebration overlay */}
       {showCelebration && (
         <View style={styles.celebration}>
@@ -284,13 +303,13 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
           <Text style={styles.celebrationSubtext}>Great job!</Text>
         </View>
       )}
-      
+
       {/* Achievement Display Panel */}
       <AchievementDisplay
         visible={showAchievementPanel}
         onClose={() => setShowAchievementPanel(false)}
       />
-      
+
       {/* Piece Sorting Panel */}
       <PieceSortingPanel
         visible={showSortingPanel}
@@ -298,7 +317,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ puzzle, difficulty, onEx
         onSortChange={handleSortingChange}
         currentSort={currentSorting}
       />
-      
+
       {/* Accessibility Enhancements Panel */}
       <AccessibilityEnhancements
         visible={showAccessibilityPanel}

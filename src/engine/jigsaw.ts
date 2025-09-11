@@ -1,23 +1,33 @@
 // Core jigsaw puzzle engine
 
-import { Difficulty, Piece, BoardState, Rectangle, Position, EdgeShape } from '../types';
+import {
+  Difficulty,
+  Piece,
+  BoardState,
+  Rectangle,
+  Position,
+  EdgeShape,
+} from '../types';
 import { distance, getRectCenter } from './geometry';
 import { layout } from '../theme';
 
 /**
  * Convert difficulty level to grid dimensions
  */
-export function difficultyToGrid(difficulty: Difficulty): { cols: number; rows: number } {
+export function difficultyToGrid(difficulty: Difficulty): {
+  cols: number;
+  rows: number;
+} {
   const gridMap = {
-    AGES_3_5: { cols: 2, rows: 2 },     // 4 pieces (square)
-    AGES_6_8: { cols: 3, rows: 3 },     // 9 pieces (square)
-    AGES_9_10: { cols: 4, rows: 4 },    // 16 pieces (square)
+    AGES_3_5: { cols: 2, rows: 2 }, // 4 pieces (square)
+    AGES_6_8: { cols: 3, rows: 3 }, // 9 pieces (square)
+    AGES_9_10: { cols: 4, rows: 4 }, // 16 pieces (square)
     AGES_11_PLUS: { cols: 6, rows: 6 }, // 36 pieces (jigsaw)
-    EASY: { cols: 4, rows: 4 },         // 16 pieces (square)
-    MEDIUM: { cols: 6, rows: 6 },       // 36 pieces (jigsaw)
-    HARD: { cols: 8, rows: 8 },         // 64 pieces (jigsaw)
-    EXPERT: { cols: 10, rows: 10 },     // 100 pieces (jigsaw)
-    MASTER: { cols: 12, rows: 8 },      // 96 pieces (jigsaw)
+    EASY: { cols: 4, rows: 4 }, // 16 pieces (square)
+    MEDIUM: { cols: 6, rows: 6 }, // 36 pieces (jigsaw)
+    HARD: { cols: 8, rows: 8 }, // 64 pieces (jigsaw)
+    EXPERT: { cols: 10, rows: 10 }, // 100 pieces (jigsaw)
+    MASTER: { cols: 12, rows: 8 }, // 96 pieces (jigsaw)
   };
   return gridMap[difficulty];
 }
@@ -26,7 +36,13 @@ export function difficultyToGrid(difficulty: Difficulty): { cols: number; rows: 
  * Determine if difficulty level should use jigsaw edges
  */
 export function shouldUseJigsawEdges(difficulty: Difficulty): boolean {
-  const jigsawDifficulties: Difficulty[] = ['AGES_11_PLUS', 'MEDIUM', 'HARD', 'EXPERT', 'MASTER'];
+  const jigsawDifficulties: Difficulty[] = [
+    'AGES_11_PLUS',
+    'MEDIUM',
+    'HARD',
+    'EXPERT',
+    'MASTER',
+  ];
   return jigsawDifficulties.includes(difficulty);
 }
 
@@ -48,16 +64,16 @@ export function generateJigsawEdges(
 
   return {
     // Top edge: flat if top row, otherwise random in/out
-    top: row === 0 ? 'flat' : (random(1) < 0.5 ? 'in' : 'out'),
-    
+    top: row === 0 ? 'flat' : random(1) < 0.5 ? 'in' : 'out',
+
     // Right edge: flat if rightmost column, otherwise random in/out
-    right: col === cols - 1 ? 'flat' : (random(2) < 0.5 ? 'in' : 'out'),
-    
+    right: col === cols - 1 ? 'flat' : random(2) < 0.5 ? 'in' : 'out',
+
     // Bottom edge: flat if bottom row, otherwise random in/out
-    bottom: row === rows - 1 ? 'flat' : (random(3) < 0.5 ? 'in' : 'out'),
-    
+    bottom: row === rows - 1 ? 'flat' : random(3) < 0.5 ? 'in' : 'out',
+
     // Left edge: flat if leftmost column, otherwise random in/out
-    left: col === 0 ? 'flat' : (random(4) < 0.5 ? 'in' : 'out'),
+    left: col === 0 ? 'flat' : random(4) < 0.5 ? 'in' : 'out',
   };
 }
 
@@ -76,14 +92,14 @@ export function harmonizeJigsawEdges(
     for (let col = 0; col < cols; col++) {
       const pieceId = `piece_${row}_${col}`;
       const piece = harmonizedPieces[pieceId];
-      
+
       if (!piece || !piece.edges) continue;
 
       // Harmonize with right neighbor
       if (col < cols - 1) {
         const rightPieceId = `piece_${row}_${col + 1}`;
         const rightPiece = harmonizedPieces[rightPieceId];
-        
+
         if (rightPiece && rightPiece.edges) {
           // Right piece's left edge should be opposite of current piece's right edge
           if (piece.edges.right === 'in') {
@@ -98,7 +114,7 @@ export function harmonizeJigsawEdges(
       if (row < rows - 1) {
         const bottomPieceId = `piece_${row + 1}_${col}`;
         const bottomPiece = harmonizedPieces[bottomPieceId];
-        
+
         if (bottomPiece && bottomPiece.edges) {
           // Bottom piece's top edge should be opposite of current piece's bottom edge
           if (piece.edges.bottom === 'in') {
@@ -126,12 +142,12 @@ export function computeTargetRects(
 ): Rectangle[] {
   const availableWidth = canvasWidth - padding * 2;
   const availableHeight = canvasHeight - padding * 2;
-  
+
   const pieceWidth = availableWidth / cols;
   const pieceHeight = availableHeight / rows;
-  
+
   const rects: Rectangle[] = [];
-  
+
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
       rects.push({
@@ -142,7 +158,7 @@ export function computeTargetRects(
       });
     }
   }
-  
+
   return rects;
 }
 
@@ -161,15 +177,15 @@ export function createPiecesFromRects(
 ): Record<string, Piece> {
   const pieces: Record<string, Piece> = {};
   const useJigsaw = shouldUseJigsawEdges(difficulty);
-  
+
   targetRects.forEach((rect, index) => {
     const col = index % cols;
     const row = Math.floor(index / cols);
     const pieceId = `piece_${row}_${col}`;
-    
+
     // Start pieces in a shuffled position around the staging area
     const startPos = getRandomStartPosition(rect, canvasWidth, canvasHeight);
-    
+
     const piece: Piece = {
       id: pieceId,
       col,
@@ -192,45 +208,33 @@ export function createPiecesFromRects(
 
     pieces[pieceId] = piece;
   });
-  
+
   // Harmonize jigsaw edges between neighboring pieces
   if (useJigsaw) {
     return harmonizeJigsawEdges(pieces, cols, rows);
   }
-  
+
   return pieces;
 }
 
 /**
- * Get a random starting position for a piece (outside the puzzle area)
+ * Get a starting position for a piece in the carousel area (not on the puzzle board)
  */
 function getRandomStartPosition(
   targetRect: Rectangle,
   canvasWidth: number,
   canvasHeight: number
 ): Position {
-  // Define staging areas around the puzzle
-  const stagingAreas = [
-    // Bottom staging area
-    {
-      x: 0,
-      y: canvasHeight * 0.7,
-      width: canvasWidth,
-      height: canvasHeight * 0.3,
-    },
-  ];
-  
-  // For now, use the bottom staging area
-  const stagingArea = stagingAreas[0];
-  
+  // Position pieces off-screen in the carousel area initially
+  // This ensures they don't block the puzzle board and appear in the carousel component
   return {
-    x: stagingArea.x + Math.random() * (stagingArea.width - targetRect.width),
-    y: stagingArea.y + Math.random() * (stagingArea.height - targetRect.height),
+    x: -targetRect.width - 20, // Position off-screen to the left
+    y: canvasHeight + 50, // Position below the canvas in carousel area
   };
 }
 
 /**
- * Shuffle pieces to random positions
+ * Shuffle pieces to carousel positions (not on the puzzle board)
  */
 export function shufflePieces(
   pieces: Record<string, Piece>,
@@ -238,10 +242,16 @@ export function shufflePieces(
   canvasHeight: number
 ): Record<string, Piece> {
   const shuffled = { ...pieces };
-  
-  Object.values(shuffled).forEach(piece => {
+
+  Object.values(shuffled).forEach((piece) => {
+    // Position pieces in carousel area, not on the puzzle board
     const startPos = getRandomStartPosition(
-      { x: piece.targetX, y: piece.targetY, width: piece.width, height: piece.height },
+      {
+        x: piece.targetX,
+        y: piece.targetY,
+        width: piece.width,
+        height: piece.height,
+      },
       canvasWidth,
       canvasHeight
     );
@@ -250,7 +260,7 @@ export function shufflePieces(
     piece.placed = false;
     piece.zIndex = 1;
   });
-  
+
   return shuffled;
 }
 
@@ -267,54 +277,56 @@ export function isWithinSnapThreshold(
     width: piece.width,
     height: piece.height,
   };
-  
+
   const targetRect = {
     x: piece.targetX,
     y: piece.targetY,
     width: piece.width,
     height: piece.height,
   };
-  
+
   // Primary check - center-to-center distance
   const pieceCenter = getRectCenter(pieceRect);
   const targetCenter = getRectCenter(targetRect);
   const centerDistance = distance(pieceCenter, targetCenter);
-  
+
   if (centerDistance <= threshold) {
     return true;
   }
-  
+
   // Only apply enhanced magnetic zones if base threshold is reasonably large
   if (threshold < 15) {
     return false; // For small thresholds, use only center-to-center distance
   }
-  
+
   // Enhanced magnetic zone - check edge alignment
   const magneticThreshold = threshold * 1.2;
-  
+
   // Check for edge alignment (horizontal or vertical)
-  const horizontalOverlap = Math.min(pieceRect.x + pieceRect.width, targetRect.x + targetRect.width) - 
-                           Math.max(pieceRect.x, targetRect.x);
-  const verticalOverlap = Math.min(pieceRect.y + pieceRect.height, targetRect.y + targetRect.height) - 
-                         Math.max(pieceRect.y, targetRect.y);
-  
+  const horizontalOverlap =
+    Math.min(pieceRect.x + pieceRect.width, targetRect.x + targetRect.width) -
+    Math.max(pieceRect.x, targetRect.x);
+  const verticalOverlap =
+    Math.min(pieceRect.y + pieceRect.height, targetRect.y + targetRect.height) -
+    Math.max(pieceRect.y, targetRect.y);
+
   // If there's significant overlap in one dimension and the other dimension is close
   const overlapThreshold = Math.min(piece.width, piece.height) * 0.6;
-  
+
   if (horizontalOverlap > overlapThreshold) {
     const verticalDistance = Math.abs(pieceCenter.y - targetCenter.y);
     if (verticalDistance <= magneticThreshold) {
       return true;
     }
   }
-  
+
   if (verticalOverlap > overlapThreshold) {
     const horizontalDistance = Math.abs(pieceCenter.x - targetCenter.x);
     if (horizontalDistance <= magneticThreshold) {
       return true;
     }
   }
-  
+
   return false;
 }
 
@@ -335,7 +347,7 @@ export function calculateSnapPosition(piece: Piece): { x: number; y: number } {
  */
 export function snapToTarget(piece: Piece): Piece {
   const snapPosition = calculateSnapPosition(piece);
-  
+
   return {
     ...piece,
     x: snapPosition.x,
@@ -358,9 +370,24 @@ export function createBoard(
   padding: number = 20,
   seed: number = 123
 ): BoardState {
-  const targetRects = computeTargetRects(cols, rows, canvasWidth, canvasHeight, padding);
-  const pieces = createPiecesFromRects(imageAsset, targetRects, cols, rows, canvasWidth, canvasHeight, difficulty, seed);
-  
+  const targetRects = computeTargetRects(
+    cols,
+    rows,
+    canvasWidth,
+    canvasHeight,
+    padding
+  );
+  const pieces = createPiecesFromRects(
+    imageAsset,
+    targetRects,
+    cols,
+    rows,
+    canvasWidth,
+    canvasHeight,
+    difficulty,
+    seed
+  );
+
   return {
     pieces,
     cols,
@@ -378,7 +405,9 @@ export function createBoard(
  */
 export function checkPuzzleCompletion(board: BoardState): boolean {
   const totalPieces = board.cols * board.rows;
-  const placedPieces = Object.values(board.pieces).filter(piece => piece.placed).length;
+  const placedPieces = Object.values(board.pieces).filter(
+    (piece) => piece.placed
+  ).length;
   return placedPieces === totalPieces;
 }
 
@@ -386,9 +415,11 @@ export function checkPuzzleCompletion(board: BoardState): boolean {
  * Update board completion status
  */
 export function updateBoardCompletion(board: BoardState): BoardState {
-  const completedCount = Object.values(board.pieces).filter(piece => piece.placed).length;
+  const completedCount = Object.values(board.pieces).filter(
+    (piece) => piece.placed
+  ).length;
   const isCompleted = completedCount === board.cols * board.rows;
-  
+
   return {
     ...board,
     completedCount,

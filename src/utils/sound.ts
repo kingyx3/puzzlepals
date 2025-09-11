@@ -19,7 +19,7 @@ export async function initializeSounds(): Promise<void> {
       shouldDuckAndroid: true,
       playThroughEarpieceAndroid: false,
     });
-    
+
     console.log('Audio system initialized');
   } catch (error) {
     console.warn('Failed to initialize audio:', error);
@@ -34,7 +34,7 @@ export async function playSnapSound(): Promise<void> {
     // In a real implementation, you would play an actual sound file
     // For now, we'll just log the action
     console.log('🎵 Playing snap sound');
-    
+
     // Example of how you would load and play a sound:
     // if (!snapSound) {
     //   snapSound = await Audio.Sound.createAsync(require('../../assets/sounds/snap.mp3'));
@@ -52,7 +52,7 @@ export async function playCelebrationSound(): Promise<void> {
   try {
     // In a real implementation, you would play an actual sound file
     console.log('🎉 Playing celebration sound');
-    
+
     // Example of how you would load and play a sound:
     // if (!celebrationSound) {
     //   celebrationSound = await Audio.Sound.createAsync(require('../../assets/sounds/celebration.mp3'));

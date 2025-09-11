@@ -70,7 +70,11 @@ export const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({
             showsVerticalScrollIndicator={false}
           >
             <Image
-              source={typeof imageAsset === 'number' ? imageAsset : { uri: imageAsset }}
+              source={
+                typeof imageAsset === 'number'
+                  ? imageAsset
+                  : { uri: imageAsset }
+              }
               style={[
                 styles.image,
                 {

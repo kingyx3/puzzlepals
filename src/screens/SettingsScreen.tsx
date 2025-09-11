@@ -1,17 +1,21 @@
 // Settings screen with premium upgrade and app preferences
 
 import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  SafeAreaView, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
   ScrollView,
   Switch,
-  Alert 
+  Alert,
 } from 'react-native';
-import { purchasePremium, isPremiumUser, restorePurchases } from '../services/monetization';
+import {
+  purchasePremium,
+  isPremiumUser,
+  restorePurchases,
+} from '../services/monetization';
 import { colors, spacing, typography, layout } from '../theme';
 
 interface SettingsScreenProps {
@@ -60,8 +64,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onExit }) => {
     setIsRestoring(true);
     try {
       const results = await restorePurchases();
-      const hasSuccessfulRestore = results.some(result => result.success);
-      
+      const hasSuccessfulRestore = results.some((result) => result.success);
+
       if (hasSuccessfulRestore) {
         setIsPremium(true);
         Alert.alert(
@@ -90,8 +94,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onExit }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton} 
+        <TouchableOpacity
+          style={styles.backButton}
           onPress={onExit}
           accessible={true}
           accessibilityRole="button"
@@ -100,25 +104,26 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onExit }) => {
         >
           <Text style={styles.backButtonText}>← Back</Text>
         </TouchableOpacity>
-        <Text 
-          style={styles.title}
-          accessible={true}
-          accessibilityRole="header"
-        >
+        <Text style={styles.title} accessible={true} accessibilityRole="header">
           Settings
         </Text>
         <View style={styles.headerSpacer} />
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
+      >
         {/* Premium Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Premium</Text>
-          
+
           {isPremium ? (
             <View style={styles.premiumStatus}>
               <Text style={styles.premiumStatusText}>✨ Premium Active</Text>
-              <Text style={styles.premiumStatusSubtext}>Enjoy ad-free puzzles!</Text>
+              <Text style={styles.premiumStatusSubtext}>
+                Enjoy ad-free puzzles!
+              </Text>
             </View>
           ) : (
             <View style={styles.premiumOffer}>
@@ -129,9 +134,12 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onExit }) => {
                   Enjoy uninterrupted puzzle fun!{'\n'}
                   One-time purchase, no subscriptions.
                 </Text>
-                
-                <TouchableOpacity 
-                  style={[styles.purchaseButton, isPurchasing && styles.purchaseButtonDisabled]}
+
+                <TouchableOpacity
+                  style={[
+                    styles.purchaseButton,
+                    isPurchasing && styles.purchaseButtonDisabled,
+                  ]}
                   onPress={handlePremiumPurchase}
                   disabled={isPurchasing}
                 >
@@ -140,8 +148,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onExit }) => {
                   </Text>
                 </TouchableOpacity>
               </View>
-              
-              <TouchableOpacity 
+
+              <TouchableOpacity
                 style={styles.restoreButton}
                 onPress={handleRestorePurchases}
                 disabled={isRestoring}
@@ -157,11 +165,13 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onExit }) => {
         {/* App Preferences Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>App Preferences</Text>
-          
+
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
               <Text style={styles.settingLabel}>Sound Effects</Text>
-              <Text style={styles.settingDescription}>Play sounds when pieces snap</Text>
+              <Text style={styles.settingDescription}>
+                Play sounds when pieces snap
+              </Text>
             </View>
             <Switch
               value={soundEnabled}
@@ -170,14 +180,20 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onExit }) => {
               thumbColor={soundEnabled ? colors.onPrimary : colors.onSurface}
               accessible={true}
               accessibilityLabel="Toggle sound effects"
-              accessibilityHint={soundEnabled ? "Sound effects are currently on" : "Sound effects are currently off"}
+              accessibilityHint={
+                soundEnabled
+                  ? 'Sound effects are currently on'
+                  : 'Sound effects are currently off'
+              }
             />
           </View>
 
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
               <Text style={styles.settingLabel}>Haptic Feedback</Text>
-              <Text style={styles.settingDescription}>Feel vibrations when pieces connect</Text>
+              <Text style={styles.settingDescription}>
+                Feel vibrations when pieces connect
+              </Text>
             </View>
             <Switch
               value={hapticsEnabled}
@@ -186,7 +202,11 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onExit }) => {
               thumbColor={hapticsEnabled ? colors.onPrimary : colors.onSurface}
               accessible={true}
               accessibilityLabel="Toggle haptic feedback"
-              accessibilityHint={hapticsEnabled ? "Haptic feedback is currently on" : "Haptic feedback is currently off"}
+              accessibilityHint={
+                hapticsEnabled
+                  ? 'Haptic feedback is currently on'
+                  : 'Haptic feedback is currently off'
+              }
             />
           </View>
         </View>
@@ -194,12 +214,12 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onExit }) => {
         {/* Info Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>About</Text>
-          
+
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Version</Text>
             <Text style={styles.infoValue}>1.0.0</Text>
           </View>
-          
+
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Created with ❤️ for kids</Text>
             <Text style={styles.infoValue}>🧩 PuzzlePals</Text>
