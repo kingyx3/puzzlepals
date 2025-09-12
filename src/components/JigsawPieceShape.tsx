@@ -1,7 +1,7 @@
 // SVG component for rendering jigsaw piece shapes
 
 import React from 'react';
-import { View } from 'react-native';
+import { View, ImageSourcePropType } from 'react-native';
 import Svg, { Path, ClipPath, Defs, Image as SvgImage } from 'react-native-svg';
 import { EdgeShape } from '../types';
 
@@ -9,7 +9,7 @@ interface JigsawPieceShapeProps {
   width: number;
   height: number;
   edges: EdgeShape;
-  imageAsset: number | string;
+  imageAsset: ImageSourcePropType;
   style?: object;
   // Add cropping parameters
   boardWidth?: number;
@@ -57,9 +57,7 @@ export const JigsawPieceShape: React.FC<JigsawPieceShapeProps> = ({
 
         {/* Background image clipped to jigsaw shape */}
         <SvgImage
-          href={
-            typeof imageAsset === 'number' ? imageAsset : { uri: imageAsset }
-          }
+          href={imageAsset}
           width={scaledImageWidth}
           height={scaledImageHeight}
           x={offsetX}
