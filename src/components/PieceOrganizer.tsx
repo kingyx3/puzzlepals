@@ -54,7 +54,7 @@ const PieceItem: React.FC<PieceItemProps> = ({
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
 
-  const miniatureSize = 40; // Fixed size for miniature pieces
+  const miniatureSize = 48; // Increased to meet Android touch target guidelines (minimum 48dp)
   const scaleRatio = miniatureSize / Math.max(piece.width, piece.height);
 
   const handlePress = () => {
@@ -81,19 +81,22 @@ const PieceItem: React.FC<PieceItemProps> = ({
       scale.value = withSpring(1.2); // Slightly enlarge when picked up
     },
     onActive: (event, context) => {
-      // Use smooth spring animations for better performance
-      translateX.value = withSpring(context.startX + event.translationX, {
-        damping: 15,
-        stiffness: 150,
-      });
-      translateY.value = withSpring(context.startY + event.translationY, {
-        damping: 15,
-        stiffness: 150,
-      });
+      // Only respond to significant vertical movement to avoid conflicts with horizontal scroll
+      if (Math.abs(event.translationY) > Math.abs(event.translationX)) {
+        // Use smooth spring animations for better performance
+        translateX.value = withSpring(context.startX + event.translationX, {
+          damping: 15,
+          stiffness: 150,
+        });
+        translateY.value = withSpring(context.startY + event.translationY, {
+          damping: 15,
+          stiffness: 150,
+        });
+      }
     },
     onEnd: (event) => {
       // If dragged upward significantly, move to main canvas
-      if (event.translationY < -100) {
+      if (event.translationY < -80) { // Reduced threshold for easier activation on mobile
         // Reset position and move piece to canvas
         translateX.value = withSpring(0);
         translateY.value = withSpring(0);
@@ -129,12 +132,23 @@ const PieceItem: React.FC<PieceItemProps> = ({
 
   return (
     <View style={styles.pieceItemContainer}>
-      <PanGestureHandler onGestureEvent={gestureHandler}>
+      <PanGestureHandler 
+        onGestureEvent={gestureHandler}
+        shouldCancelWhenOutside={false}
+        activeOffsetX={[-20, 20]} // Allow horizontal scrolling to work
+        activeOffsetY={[-10, 10]} // Activate gesture on vertical movement
+        failOffsetX={[-40, 40]} // Fail if too much horizontal movement
+      >
         <Animated.View style={[styles.pieceItem, animatedStyle]}>
           <TouchableOpacity
             style={styles.piecePreview}
             onPress={handlePress}
             activeOpacity={0.7}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} // Expand touch area for easier selection on mobile
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel={`Puzzle piece ${index + 1}, position ${piece.row}-${piece.col}`}
+            accessibilityHint="Tap to bring piece to staging area, or drag up to move to puzzle"
           >
             {piece.shape === 'JIGSAW' && piece.edges ? (
               <View style={styles.miniaturePieceContainer}>
@@ -333,8 +347,12 @@ export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
         showsHorizontalScrollIndicator={false}
         pagingEnabled={false}
         decelerationRate="fast"
-        snapToInterval={140}
+        snapToInterval={150} // Increased snap interval to accommodate larger pieces
         snapToAlignment="start"
+        // Android-specific optimizations
+        nestedScrollEnabled={true}
+        removeClippedSubviews={false}
+        scrollEventThrottle={16}
       >
         {organizedPieces.sections.map((section, sectionIndex) => (
           <View key={sectionIndex} style={styles.section}>
@@ -376,7 +394,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderTopWidth: 2,
     borderTopColor: colors.primary,
-    maxHeight: 150, // Slightly increased height for better carousel appearance
+    maxHeight: 170, // Increased height to accommodate larger pieces (48px + padding)
+    minHeight: 120, // Add minimum height to prevent collapse on small screens
     shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
@@ -413,7 +432,7 @@ const styles = StyleSheet.create({
   },
   section: {
     marginRight: spacing.lg,
-    minWidth: 130,
+    minWidth: 140, // Increased width to accommodate larger pieces
     backgroundColor: colors.background,
     borderRadius: spacing.sm,
     padding: spacing.sm,
@@ -456,7 +475,7 @@ const styles = StyleSheet.create({
     fontWeight: typography.weight.bold,
   },
   piecesContainer: {
-    maxHeight: 70,
+    maxHeight: 90, // Increased height to accommodate larger pieces
   },
   piecesContent: {
     paddingRight: spacing.md,
@@ -469,8 +488,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   piecePreview: {
-    width: 44,
-    height: 44,
+    width: 48, // Increased to meet Android accessibility guidelines
+    height: 48, // Increased to meet Android accessibility guidelines
     backgroundColor: colors.background,
     borderRadius: spacing.sm,
     borderWidth: 2,
@@ -486,11 +505,14 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.2,
     shadowRadius: 2,
-    elevation: 2,
+    elevation: 3, // Increased elevation for better Android touch feedback
+    // Add minimum touch target padding for Android
+    minWidth: 48,
+    minHeight: 48,
   },
   miniaturePieceContainer: {
-    width: 44,
-    height: 44,
+    width: 48, // Updated to match new size
+    height: 48, // Updated to match new size
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
@@ -545,7 +567,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   pieceNumber: {
-    fontSize: 10,
+    fontSize: 11, // Slightly larger for better visibility on mobile
     color: 'white',
     fontWeight: typography.weight.bold,
     textAlign: 'center',
