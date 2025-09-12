@@ -1,7 +1,7 @@
 // Individual puzzle piece component
 
 import React, { memo } from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -16,6 +16,39 @@ import Animated, {
 import { Piece as PieceType } from '../types';
 import { JigsawPieceShape } from './JigsawPieceShape';
 
+/**
+ * Calculate image positioning and scaling for cropping to show only the piece's portion
+ */
+function calculateImageCrop(
+  piece: PieceType,
+  boardWidth: number,
+  boardHeight: number,
+  totalCols: number,
+  totalRows: number
+) {
+  // Calculate the scale factor to fit the entire source image within the board
+  const scaleX = boardWidth / totalCols;
+  const scaleY = boardHeight / totalRows;
+  
+  // Use the larger scale to ensure the image covers the entire board
+  const scale = Math.max(scaleX, scaleY);
+  
+  // Calculate the scaled image dimensions
+  const scaledImageWidth = scale * totalCols;
+  const scaledImageHeight = scale * totalRows;
+  
+  // Calculate the offset needed to show only this piece's portion
+  const offsetX = -piece.col * scale;
+  const offsetY = -piece.row * scale;
+  
+  return {
+    width: scaledImageWidth,
+    height: scaledImageHeight,
+    left: offsetX,
+    top: offsetY,
+  };
+}
+
 interface PieceProps {
   piece: PieceType;
   imageAsset: number;
@@ -24,6 +57,11 @@ interface PieceProps {
   onBringToFront: (pieceId: string) => void;
   disabled?: boolean;
   highlighted?: boolean;
+  // Add board dimensions for image cropping
+  boardWidth?: number;
+  boardHeight?: number;
+  totalCols?: number;
+  totalRows?: number;
 }
 
 export const Piece: React.FC<PieceProps> = memo(
@@ -35,6 +73,10 @@ export const Piece: React.FC<PieceProps> = memo(
     onBringToFront,
     disabled = false,
     highlighted = false,
+    boardWidth = 400,
+    boardHeight = 400,
+    totalCols = 2,
+    totalRows = 2,
   }) => {
     // Only re-initialize shared values when piece position changes or when piece is reset
     const translateX = useSharedValue(piece.x);
@@ -109,6 +151,15 @@ export const Piece: React.FC<PieceProps> = memo(
       animatedStyle,
     ];
 
+    // Calculate image cropping for this piece
+    const imageCrop = calculateImageCrop(
+      piece,
+      boardWidth,
+      boardHeight,
+      totalCols,
+      totalRows
+    );
+
     if (disabled || piece.placed) {
       // Static piece (no gesture handling)
       return (
@@ -120,13 +171,31 @@ export const Piece: React.FC<PieceProps> = memo(
               edges={piece.edges}
               imageAsset={imageAsset}
               style={{ opacity: piece.placed ? 1 : 0.8 }}
+              // Pass cropping info for jigsaw pieces
+              boardWidth={boardWidth}
+              boardHeight={boardHeight}
+              totalCols={totalCols}
+              totalRows={totalRows}
+              pieceCol={piece.col}
+              pieceRow={piece.row}
             />
           ) : (
-            <Image
-              source={imageAsset}
-              style={[styles.image, { opacity: piece.placed ? 1 : 0.8 }]}
-              resizeMode="cover"
-            />
+            <View style={styles.imageContainer}>
+              <Image
+                source={imageAsset}
+                style={[
+                  styles.croppedImage,
+                  {
+                    width: imageCrop.width,
+                    height: imageCrop.height,
+                    left: imageCrop.left,
+                    top: imageCrop.top,
+                    opacity: piece.placed ? 1 : 0.8,
+                  },
+                ]}
+                resizeMode="cover"
+              />
+            </View>
           )}
           {piece.placed && <Animated.View style={styles.placedOverlay} />}
         </Animated.View>
@@ -142,13 +211,30 @@ export const Piece: React.FC<PieceProps> = memo(
               height={piece.height}
               edges={piece.edges}
               imageAsset={imageAsset}
+              // Pass cropping info for jigsaw pieces
+              boardWidth={boardWidth}
+              boardHeight={boardHeight}
+              totalCols={totalCols}
+              totalRows={totalRows}
+              pieceCol={piece.col}
+              pieceRow={piece.row}
             />
           ) : (
-            <Image
-              source={imageAsset}
-              style={styles.image}
-              resizeMode="cover"
-            />
+            <View style={styles.imageContainer}>
+              <Image
+                source={imageAsset}
+                style={[
+                  styles.croppedImage,
+                  {
+                    width: imageCrop.width,
+                    height: imageCrop.height,
+                    left: imageCrop.left,
+                    top: imageCrop.top,
+                  },
+                ]}
+                resizeMode="cover"
+              />
+            </View>
           )}
         </Animated.View>
       </PanGestureHandler>
@@ -169,10 +255,19 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  imageContainer: {
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+    borderRadius: 4,
+  },
   image: {
     width: '100%',
     height: '100%',
     borderRadius: 4,
+  },
+  croppedImage: {
+    position: 'absolute',
   },
   placedOverlay: {
     ...StyleSheet.absoluteFillObject,

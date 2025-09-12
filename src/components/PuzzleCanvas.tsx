@@ -161,6 +161,10 @@ export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({
             onMoveEnd={handlePieceMoveEnd}
             onBringToFront={handleBringToFront}
             highlighted={highlightedPieces.includes(piece.id)}
+            boardWidth={board.width}
+            boardHeight={board.height}
+            totalCols={board.cols}
+            totalRows={board.rows}
           />
         ))}
       </View>
