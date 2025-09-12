@@ -6,10 +6,9 @@ import { PuzzleMeta, Difficulty } from '../src/types';
 // Mock puzzle data
 const mockPuzzle: PuzzleMeta = {
   id: 'test-puzzle',
-  pack: 'test',
   titleKey: 'Test Puzzle',
   imageAsset: 1,
-  difficulty: 'AGES_3_5',
+  defaultDifficulty: 'AGES_3_5',
 };
 
 describe('Piece Movement Improvements', () => {
