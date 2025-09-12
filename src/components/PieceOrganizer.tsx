@@ -8,6 +8,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  ImageSourcePropType,
 } from 'react-native';
 import {
   PanGestureHandler,
@@ -34,7 +35,7 @@ interface PieceOrganizerProps {
 interface PieceItemProps {
   piece: PieceType;
   index: number;
-  imageAsset: string | number;
+  imageAsset: ImageSourcePropType;
   boardCols: number;
   boardRows: number;
 }
