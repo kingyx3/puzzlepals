@@ -27,6 +27,7 @@ import { colors, spacing, typography } from '../theme';
 import { SortingCriteria } from './PieceSortingPanel';
 import { Piece as PieceType } from '../types';
 import { JigsawPieceShape } from './JigsawPieceShape';
+import { getMobilePieceSize, getMobileTouchTargetSize, isMobileDevice } from '../utils/device';
 
 interface PieceOrganizerProps {
   sortingCriteria: SortingCriteria;
@@ -54,7 +55,11 @@ const PieceItem: React.FC<PieceItemProps> = ({
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
 
-  const miniatureSize = 40; // Fixed size for miniature pieces
+  // Mobile-responsive sizing
+  const isMobile = isMobileDevice();
+  const pieceSize = getMobilePieceSize();
+  const touchTargetSize = getMobileTouchTargetSize();
+  const miniatureSize = pieceSize; // Use mobile-responsive size instead of fixed 40px
   const scaleRatio = miniatureSize / Math.max(piece.width, piece.height);
 
   const handlePress = () => {
@@ -132,12 +137,25 @@ const PieceItem: React.FC<PieceItemProps> = ({
       <PanGestureHandler onGestureEvent={gestureHandler}>
         <Animated.View style={[styles.pieceItem, animatedStyle]}>
           <TouchableOpacity
-            style={styles.piecePreview}
+            style={[
+              styles.piecePreview,
+              isMobile && styles.mobileePiecePreview,
+              {
+                width: touchTargetSize,
+                height: touchTargetSize,
+              }
+            ]}
             onPress={handlePress}
             activeOpacity={0.7}
           >
             {piece.shape === 'JIGSAW' && piece.edges ? (
-              <View style={styles.miniaturePieceContainer}>
+              <View style={[
+                styles.miniaturePieceContainer,
+                {
+                  width: touchTargetSize,
+                  height: touchTargetSize,
+                }
+              ]}>
                 <JigsawPieceShape
                   width={miniatureSize}
                   height={miniatureSize}
@@ -157,7 +175,13 @@ const PieceItem: React.FC<PieceItemProps> = ({
                 />
               </View>
             ) : (
-              <View style={styles.miniaturePieceContainer}>
+              <View style={[
+                styles.miniaturePieceContainer,
+                {
+                  width: touchTargetSize,
+                  height: touchTargetSize,
+                }
+              ]}>
                 {/* Simplified approach: render full image at small scale with overlay showing piece location */}
                 <View
                   style={[
@@ -196,13 +220,19 @@ const PieceItem: React.FC<PieceItemProps> = ({
                   
                   {/* Add piece number overlay */}
                   <View style={styles.pieceOverlay}>
-                    <Text style={styles.pieceNumber}>{index + 1}</Text>
+                    <Text style={[
+                      styles.pieceNumber,
+                      isMobile && styles.mobilePieceNumber
+                    ]}>{index + 1}</Text>
                   </View>
                 </View>
               </View>
             )}
           </TouchableOpacity>
-          <Text style={styles.pieceLabel}>
+          <Text style={[
+            styles.pieceLabel,
+            isMobile && styles.mobilePieceLabel
+          ]}>
             {piece.row}-{piece.col}
           </Text>
         </Animated.View>
@@ -215,6 +245,10 @@ export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
   sortingCriteria,
 }) => {
   const { currentPuzzle } = useGameStore();
+  
+  // Mobile-responsive sizing
+  const isMobile = isMobileDevice();
+  const touchTargetSize = getMobileTouchTargetSize();
 
   const organizedPieces = useMemo(() => {
     if (!currentPuzzle) return null;
@@ -317,10 +351,16 @@ export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
   const { board } = currentPuzzle;
 
   return (
-    <View style={styles.container}>
+    <View style={[
+      styles.container,
+      isMobile && styles.mobileContainer
+    ]}>
       <View style={styles.header}>
         <Text style={styles.title}>🧩 Puzzle Pieces Carousel</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[
+          styles.subtitle,
+          isMobile && styles.mobileSubtitle
+        ]}>
           {totalPieces} pieces remaining • Tap to bring to staging area • Drag
           up to move to puzzle
         </Text>
@@ -329,11 +369,14 @@ export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
       <ScrollView
         horizontal
         style={styles.scrollContainer}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          isMobile && styles.mobileScrollContent
+        ]}
         showsHorizontalScrollIndicator={false}
         pagingEnabled={false}
         decelerationRate="fast"
-        snapToInterval={140}
+        snapToInterval={isMobile ? touchTargetSize + spacing.md : 140}
         snapToAlignment="start"
       >
         {organizedPieces.sections.map((section, sectionIndex) => (
@@ -386,6 +429,9 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
+  mobileContainer: {
+    maxHeight: 180, // Increased height for mobile to accommodate larger pieces
+  },
   header: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -403,6 +449,9 @@ const styles = StyleSheet.create({
     color: colors.secondary,
     marginTop: spacing.xs / 2,
   },
+  mobileSubtitle: {
+    fontSize: typography.xs, // Smaller on mobile to fit better
+  },
   scrollContainer: {
     flex: 1,
   },
@@ -410,6 +459,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
     alignItems: 'center',
+  },
+  mobileScrollContent: {
+    paddingHorizontal: spacing.lg, // More padding on mobile for easier scrolling
   },
   section: {
     marginRight: spacing.lg,
@@ -488,6 +540,13 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
+  mobileePiecePreview: {
+    borderWidth: 3, // Thicker border for better visibility on mobile
+    borderRadius: spacing.md, // Larger border radius
+    shadowOpacity: 0.3, // More prominent shadow
+    shadowRadius: 3,
+    elevation: 3,
+  },
   miniaturePieceContainer: {
     width: 44,
     height: 44,
@@ -550,6 +609,9 @@ const styles = StyleSheet.create({
     fontWeight: typography.weight.bold,
     textAlign: 'center',
   },
+  mobilePieceNumber: {
+    fontSize: 12, // Larger text for mobile
+  },
   simplePiecePreview: {
     width: '100%',
     height: '100%',
@@ -566,5 +628,9 @@ const styles = StyleSheet.create({
     fontSize: typography.xs,
     color: colors.secondary,
     textAlign: 'center',
+  },
+  mobilePieceLabel: {
+    fontSize: typography.sm, // Larger label text for mobile
+    fontWeight: typography.weight.medium,
   },
 });
