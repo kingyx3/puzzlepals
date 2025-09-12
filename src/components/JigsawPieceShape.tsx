@@ -1,7 +1,7 @@
 // SVG component for rendering jigsaw piece shapes
 
 import React from 'react';
-import { View } from 'react-native';
+import { View, Image } from 'react-native';
 import Svg, { Path, ClipPath, Defs, Image as SvgImage } from 'react-native-svg';
 import { EdgeShape } from '../types';
 
@@ -37,14 +37,24 @@ export const JigsawPieceShape: React.FC<JigsawPieceShapeProps> = ({
   const clipId = `jigsaw-clip-${Math.random().toString(36).substr(2, 9)}`;
 
   // Calculate image cropping for jigsaw pieces
-  const scaleX = boardWidth / totalCols;
-  const scaleY = boardHeight / totalRows;
-  const scale = Math.max(scaleX, scaleY);
-  
-  const scaledImageWidth = scale * totalCols;
-  const scaledImageHeight = scale * totalRows;
-  const offsetX = -pieceCol * scale;
-  const offsetY = -pieceRow * scale;
+  const scaledImageWidth = boardWidth;
+  const scaledImageHeight = boardHeight;
+  const offsetX = -pieceCol * (boardWidth / totalCols);
+  const offsetY = -pieceRow * (boardHeight / totalRows);
+
+  // Get proper URI for the asset
+  const getImageUri = () => {
+    if (typeof imageAsset === 'number') {
+      try {
+        const resolvedAsset = Image.resolveAssetSource(imageAsset);
+        return resolvedAsset.uri;
+      } catch (e) {
+        console.warn('Failed to resolve asset source:', e);
+        return imageAsset.toString();
+      }
+    }
+    return imageAsset;
+  };
 
   return (
     <View style={style}>
@@ -57,9 +67,7 @@ export const JigsawPieceShape: React.FC<JigsawPieceShapeProps> = ({
 
         {/* Background image clipped to jigsaw shape */}
         <SvgImage
-          href={
-            typeof imageAsset === 'number' ? imageAsset : { uri: imageAsset }
-          }
+          href={getImageUri()}
           width={scaledImageWidth}
           height={scaledImageHeight}
           x={offsetX}
