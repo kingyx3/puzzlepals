@@ -8,6 +8,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  ImageSourcePropType,
 } from 'react-native';
 import {
   PanGestureHandler,
@@ -34,7 +35,7 @@ interface PieceOrganizerProps {
 interface PieceItemProps {
   piece: PieceType;
   index: number;
-  imageAsset: string | number;
+  imageAsset: ImageSourcePropType;
   boardCols: number;
   boardRows: number;
 }
@@ -157,7 +158,7 @@ const PieceItem: React.FC<PieceItemProps> = ({
               </View>
             ) : (
               <View style={styles.miniaturePieceContainer}>
-                {/* Render square piece with actual image content */}
+                {/* Simplified approach: render full image at small scale with overlay showing piece location */}
                 <View
                   style={[
                     styles.squarePiecePreview,
@@ -167,46 +168,32 @@ const PieceItem: React.FC<PieceItemProps> = ({
                     },
                   ]}
                 >
-                  <View style={styles.imageClipContainer}>
-                    {/* Show the actual portion of the image this piece represents */}
-                    <View
-                      style={[
-                        styles.clippedImage,
-                        {
-                          width: miniatureSize * boardCols,
-                          height: miniatureSize * boardRows,
-                          left: -piece.col * miniatureSize,
-                          top: -piece.row * miniatureSize,
-                        },
-                      ]}
-                    >
-                      {typeof imageAsset === 'number' ? (
-                        <Image
-                          source={imageAsset}
-                          style={[
-                            styles.fullImage,
-                            {
-                              width: miniatureSize * boardCols,
-                              height: miniatureSize * boardRows,
-                            },
-                          ]}
-                          resizeMode="cover"
-                        />
-                      ) : (
-                        <Image
-                          source={{ uri: imageAsset }}
-                          style={[
-                            styles.fullImage,
-                            {
-                              width: miniatureSize * boardCols,
-                              height: miniatureSize * boardRows,
-                            },
-                          ]}
-                          resizeMode="cover"
-                        />
-                      )}
-                    </View>
+                  {/* Show full image as background */}
+                  <Image
+                    source={imageAsset}
+                    style={[
+                      styles.fullImageSimple,
+                      {
+                        width: miniatureSize,
+                        height: miniatureSize,
+                      },
+                    ]}
+                    resizeMode="cover"
+                  />
+                  
+                  {/* Add semi-transparent overlay with grid lines to show piece location */}
+                  <View style={styles.pieceLocationOverlay}>
+                    <View style={[
+                      styles.gridOverlay,
+                      {
+                        borderLeftWidth: piece.col === 0 ? 2 : 1,
+                        borderTopWidth: piece.row === 0 ? 2 : 1,
+                        borderRightWidth: piece.col === boardCols - 1 ? 2 : 1,
+                        borderBottomWidth: piece.row === boardRows - 1 ? 2 : 1,
+                      }
+                    ]} />
                   </View>
+                  
                   {/* Add piece number overlay */}
                   <View style={styles.pieceOverlay}>
                     <Text style={styles.pieceNumber}>{index + 1}</Text>
@@ -512,12 +499,14 @@ const styles = StyleSheet.create({
     borderRadius: spacing.xs,
     overflow: 'hidden',
     position: 'relative',
+    backgroundColor: 'white', // Ensure white background for contrast
   },
   imageClipContainer: {
     width: '100%',
     height: '100%',
     overflow: 'hidden',
     position: 'relative',
+    backgroundColor: 'transparent', // Ensure container background is transparent
   },
   clippedImage: {
     position: 'absolute',
@@ -525,6 +514,24 @@ const styles = StyleSheet.create({
   fullImage: {
     width: '100%',
     height: '100%',
+  },
+  fullImageSimple: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
+  pieceLocationOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  gridOverlay: {
+    flex: 1,
+    borderColor: colors.primary,
+    borderStyle: 'solid',
   },
   pieceOverlay: {
     position: 'absolute',
