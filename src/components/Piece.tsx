@@ -26,20 +26,17 @@ function calculateImageCrop(
   totalCols: number,
   totalRows: number
 ) {
-  // Calculate the scale factor to fit the entire source image within the board
-  const scaleX = boardWidth / totalCols;
-  const scaleY = boardHeight / totalRows;
+  // Calculate the size of each piece
+  const pieceWidth = boardWidth / totalCols;
+  const pieceHeight = boardHeight / totalRows;
   
-  // Use the larger scale to ensure the image covers the entire board
-  const scale = Math.max(scaleX, scaleY);
+  // Scale the entire source image to match the board dimensions
+  const scaledImageWidth = boardWidth;
+  const scaledImageHeight = boardHeight;
   
-  // Calculate the scaled image dimensions
-  const scaledImageWidth = scale * totalCols;
-  const scaledImageHeight = scale * totalRows;
-  
-  // Calculate the offset needed to show only this piece's portion
-  const offsetX = -piece.col * scale;
-  const offsetY = -piece.row * scale;
+  // Calculate the offset to show only this piece's portion of the full image
+  const offsetX = -piece.col * pieceWidth;
+  const offsetY = -piece.row * pieceHeight;
   
   return {
     width: scaledImageWidth,
