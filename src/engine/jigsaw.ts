@@ -225,11 +225,11 @@ function getRandomStartPosition(
   canvasWidth: number,
   canvasHeight: number
 ): Position {
-  // Position pieces off-screen in the carousel area initially
-  // This ensures they don't block the puzzle board and appear in the carousel component
+  // Position pieces in the carousel staging area where they can be accessed
+  // Keep them off the main puzzle board but visible in the carousel component
   return {
-    x: -targetRect.width - 20, // Position off-screen to the left
-    y: canvasHeight + 50, // Position below the canvas in carousel area
+    x: -targetRect.width / 2, // Position slightly off-screen to the left, but accessible
+    y: canvasHeight + 20, // Position just below the canvas in carousel area
   };
 }
 
