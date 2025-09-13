@@ -9,7 +9,6 @@ import {
   borderRadius,
   typography,
   shadows,
-  layout,
 } from '../theme';
 import {
   getAccessibilityProps,
@@ -38,7 +37,7 @@ export const PackCard: React.FC<PackCardProps> = ({
     }, 150);
   };
 
-  // Get pack-specific gradient colors
+  // Get pack-specific gradient colors with enhanced styling
   const getPackGradient = (packId: string) => {
     switch (packId) {
       case 'animals':
@@ -52,20 +51,21 @@ export const PackCard: React.FC<PackCardProps> = ({
     }
   };
 
-  const packGradient = getPackGradient(pack.id);
+  // Get pack-specific header styling
+  const getPackHeaderStyle = (packId: string) => {
+    const gradient = getPackGradient(packId);
+    return {
+      backgroundColor: gradient[0],
+      borderBottomColor: gradient[1],
+    };
+  };
+
+  const headerStyle = getPackHeaderStyle(pack.id);
 
   return (
     <View style={[styles.container, style]}>
       {/* Header with enhanced visual appeal */}
-      <View
-        style={[
-          styles.header,
-          {
-            backgroundColor: packGradient[0],
-            borderBottomColor: packGradient[1],
-          },
-        ]}
-      >
+      <View style={[styles.header, headerStyle]}>
         <View style={styles.coverImageContainer}>
           <Image source={pack.coverAsset} style={styles.coverImage} />
         </View>
@@ -180,96 +180,114 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     ...shadows.lg,
     borderWidth: 1,
-    borderColor: colors.outline,
+    borderColor: colors.outlineVariant,
+    // Add subtle glow effect
+    shadowColor: colors.shadowColored,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: spacing.md,
-    borderBottomWidth: 3,
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
+    padding: spacing.lg,
+    paddingVertical: spacing.xl,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.outlineVariant,
+    // Create gradient-like effect
+    position: 'relative',
   },
   coverImageContainer: {
     ...shadows.md,
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius.lg,
     overflow: 'hidden',
+    backgroundColor: colors.surface,
+    padding: 4, // White padding around image
   },
   coverImage: {
-    width: 60,
-    height: 60,
+    width: 72, // Larger cover image
+    height: 72,
     borderRadius: borderRadius.md,
   },
   title: {
-    fontSize: typography.xl,
+    fontSize: typography.xxl,
     fontWeight: typography.weight.bold,
     color: colors.primary,
     flex: 1,
-    marginLeft: spacing.md,
-    textShadowColor: 'rgba(255, 255, 255, 0.5)',
+    marginLeft: spacing.lg,
+    textShadowColor: colors.primaryUltraLight,
     textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
+    textShadowRadius: 3,
+    letterSpacing: -0.3,
   },
   puzzlesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: layout.kidFriendlySpacing.cardGap,
-    padding: spacing.md,
+    gap: spacing.md,
+    padding: spacing.lg,
+    backgroundColor: colors.backgroundSecondary,
   },
   puzzleItem: {
     backgroundColor: colors.surface,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    minWidth: 120,
-    minHeight: layout.touchTargetXLarge + 40,
+    borderRadius: borderRadius.xl,
+    padding: spacing.lg,
+    minWidth: 140, // Larger puzzle cards
+    minHeight: 180,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     ...shadows.md,
     borderWidth: 2,
-    borderColor: colors.outline,
-    // Enhanced visual appeal
+    borderColor: colors.outlineVariant,
     transform: [{ scale: 1 }],
+    // Add subtle hover effect preparation
+    position: 'relative',
   },
   puzzleItemPressed: {
-    backgroundColor: colors.primaryLight,
+    backgroundColor: colors.primaryUltraLight,
     borderColor: colors.primary,
-    transform: [{ scale: 0.96 }],
-    ...shadows.xl,
-    shadowColor: colors.primary,
-    shadowOpacity: 0.3,
+    transform: [{ scale: 0.97 }],
+    ...shadows.lg,
+    shadowColor: colors.shadowColored,
   },
   puzzleImageContainer: {
     ...shadows.sm,
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius.lg,
     overflow: 'hidden',
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
+    backgroundColor: colors.surface,
+    padding: 3,
   },
   puzzleImage: {
-    width: 70,
-    height: 70,
+    width: 80, // Larger puzzle images
+    height: 80,
     borderRadius: borderRadius.md,
   },
   puzzleTitle: {
     fontSize: typography.md,
     fontWeight: typography.weight.semibold,
-    color: colors.onSurface,
+    color: colors.textPrimary,
     textAlign: 'center',
     marginBottom: spacing.sm,
     lineHeight: typography.md * typography.lineHeight.normal,
+    minHeight: typography.md * typography.lineHeight.normal * 2, // Ensure consistent height
   },
   difficultyBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     borderRadius: borderRadius.round,
-    minHeight: 28,
+    minHeight: 32,
+    minWidth: 60,
     alignItems: 'center',
     justifyContent: 'center',
     ...shadows.sm,
+    // Add subtle border for better definition
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   difficultyText: {
     fontSize: typography.sm,
     fontWeight: typography.weight.bold,
     color: colors.onPrimary,
     textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.1)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 1,
   },
 });
