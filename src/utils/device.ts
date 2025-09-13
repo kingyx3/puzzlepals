@@ -59,3 +59,43 @@ export function prefersReducedMotion(): boolean {
   // For now, return false as default
   return false;
 }
+
+/**
+ * Check if current device is mobile (small screen)
+ */
+export function isMobileDevice(): boolean {
+  const { width } = getScreenDimensions();
+  return width < 768; // Tablets and phones
+}
+
+/**
+ * Check if current device is a small mobile phone
+ */
+export function isSmallMobileDevice(): boolean {
+  const { width } = getScreenDimensions();
+  return width < 480; // Small phones
+}
+
+/**
+ * Get mobile-optimized touch target size
+ */
+export function getMobileTouchTargetSize(): number {
+  if (isSmallMobileDevice()) {
+    return 56; // Larger for small phones
+  } else if (isMobileDevice()) {
+    return 52; // Medium for tablets
+  }
+  return 48; // Default for desktop
+}
+
+/**
+ * Get mobile-optimized piece preview size
+ */
+export function getMobilePieceSize(): number {
+  if (isSmallMobileDevice()) {
+    return 60; // Much larger for small phones
+  } else if (isMobileDevice()) {
+    return 52; // Larger for tablets  
+  }
+  return 44; // Default for desktop
+}
