@@ -14,8 +14,8 @@ Use this checklist before deploying PuzzlePals to app stores:
 
 ## ✅ Code Quality
 
-- [ ] All tests pass: `yarn test`
-- [ ] No linting errors: `yarn lint`
+- [ ] All tests pass: `npm test`
+- [ ] No linting errors: `npm run lint`
 - [ ] TypeScript compiles: `npx tsc --noEmit`
 - [ ] No console errors in development
 - [ ] App runs successfully: `npx expo start --web --offline`
@@ -121,7 +121,7 @@ Use this checklist before deploying PuzzlePals to app stores:
 
 ```bash
 # Run full validation
-yarn test && yarn lint && npx tsc --noEmit
+npm test && npm run lint && npx tsc --noEmit
 
 # Build and submit (production)
 eas build --platform all --profile production

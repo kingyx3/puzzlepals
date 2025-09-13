@@ -27,7 +27,11 @@ import { colors, spacing, typography } from '../theme';
 import { SortingCriteria } from './PieceSortingPanel';
 import { Piece as PieceType } from '../types';
 import { JigsawPieceShape } from './JigsawPieceShape';
-import { getMobilePieceSize, getMobileTouchTargetSize, isMobileDevice } from '../utils/device';
+import {
+  getMobilePieceSize,
+  getMobileTouchTargetSize,
+  isMobileDevice,
+} from '../utils/device';
 
 interface PieceOrganizerProps {
   sortingCriteria: SortingCriteria;
@@ -143,19 +147,21 @@ const PieceItem: React.FC<PieceItemProps> = ({
               {
                 width: touchTargetSize,
                 height: touchTargetSize,
-              }
+              },
             ]}
             onPress={handlePress}
             activeOpacity={0.7}
           >
             {piece.shape === 'JIGSAW' && piece.edges ? (
-              <View style={[
-                styles.miniaturePieceContainer,
-                {
-                  width: touchTargetSize,
-                  height: touchTargetSize,
-                }
-              ]}>
+              <View
+                style={[
+                  styles.miniaturePieceContainer,
+                  {
+                    width: touchTargetSize,
+                    height: touchTargetSize,
+                  },
+                ]}
+              >
                 <JigsawPieceShape
                   width={miniatureSize}
                   height={miniatureSize}
@@ -175,13 +181,15 @@ const PieceItem: React.FC<PieceItemProps> = ({
                 />
               </View>
             ) : (
-              <View style={[
-                styles.miniaturePieceContainer,
-                {
-                  width: touchTargetSize,
-                  height: touchTargetSize,
-                }
-              ]}>
+              <View
+                style={[
+                  styles.miniaturePieceContainer,
+                  {
+                    width: touchTargetSize,
+                    height: touchTargetSize,
+                  },
+                ]}
+              >
                 {/* Simplified approach: render full image at small scale with overlay showing piece location */}
                 <View
                   style={[
@@ -204,35 +212,41 @@ const PieceItem: React.FC<PieceItemProps> = ({
                     ]}
                     resizeMode="cover"
                   />
-                  
+
                   {/* Add semi-transparent overlay with grid lines to show piece location */}
                   <View style={styles.pieceLocationOverlay}>
-                    <View style={[
-                      styles.gridOverlay,
-                      {
-                        borderLeftWidth: piece.col === 0 ? 2 : 1,
-                        borderTopWidth: piece.row === 0 ? 2 : 1,
-                        borderRightWidth: piece.col === boardCols - 1 ? 2 : 1,
-                        borderBottomWidth: piece.row === boardRows - 1 ? 2 : 1,
-                      }
-                    ]} />
+                    <View
+                      style={[
+                        styles.gridOverlay,
+                        {
+                          borderLeftWidth: piece.col === 0 ? 2 : 1,
+                          borderTopWidth: piece.row === 0 ? 2 : 1,
+                          borderRightWidth: piece.col === boardCols - 1 ? 2 : 1,
+                          borderBottomWidth:
+                            piece.row === boardRows - 1 ? 2 : 1,
+                        },
+                      ]}
+                    />
                   </View>
-                  
+
                   {/* Add piece number overlay */}
                   <View style={styles.pieceOverlay}>
-                    <Text style={[
-                      styles.pieceNumber,
-                      isMobile && styles.mobilePieceNumber
-                    ]}>{index + 1}</Text>
+                    <Text
+                      style={[
+                        styles.pieceNumber,
+                        isMobile && styles.mobilePieceNumber,
+                      ]}
+                    >
+                      {index + 1}
+                    </Text>
                   </View>
                 </View>
               </View>
             )}
           </TouchableOpacity>
-          <Text style={[
-            styles.pieceLabel,
-            isMobile && styles.mobilePieceLabel
-          ]}>
+          <Text
+            style={[styles.pieceLabel, isMobile && styles.mobilePieceLabel]}
+          >
             {piece.row}-{piece.col}
           </Text>
         </Animated.View>
@@ -245,7 +259,7 @@ export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
   sortingCriteria,
 }) => {
   const { currentPuzzle } = useGameStore();
-  
+
   // Mobile-responsive sizing
   const isMobile = isMobileDevice();
   const touchTargetSize = getMobileTouchTargetSize();
@@ -351,16 +365,10 @@ export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
   const { board } = currentPuzzle;
 
   return (
-    <View style={[
-      styles.container,
-      isMobile && styles.mobileContainer
-    ]}>
+    <View style={[styles.container, isMobile && styles.mobileContainer]}>
       <View style={styles.header}>
         <Text style={styles.title}>🧩 Puzzle Pieces Carousel</Text>
-        <Text style={[
-          styles.subtitle,
-          isMobile && styles.mobileSubtitle
-        ]}>
+        <Text style={[styles.subtitle, isMobile && styles.mobileSubtitle]}>
           {totalPieces} pieces remaining • Tap to bring to staging area • Drag
           up to move to puzzle
         </Text>
@@ -371,7 +379,7 @@ export const PieceOrganizer: React.FC<PieceOrganizerProps> = ({
         style={styles.scrollContainer}
         contentContainerStyle={[
           styles.scrollContent,
-          isMobile && styles.mobileScrollContent
+          isMobile && styles.mobileScrollContent,
         ]}
         showsHorizontalScrollIndicator={false}
         pagingEnabled={false}

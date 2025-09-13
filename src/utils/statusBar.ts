@@ -15,9 +15,11 @@ export interface StatusBarConfig {
  * @param screenType - The current screen type (game screens typically use dark backgrounds)
  * @returns StatusBar configuration optimized for the platform and screen
  */
-export function getStatusBarConfig(screenType: 'game' | 'normal'): StatusBarConfig {
+export function getStatusBarConfig(
+  screenType: 'game' | 'normal'
+): StatusBarConfig {
   const isGame = screenType === 'game';
-  
+
   if (Platform.OS === 'ios') {
     return {
       style: isGame ? 'light' : 'dark',
@@ -26,7 +28,7 @@ export function getStatusBarConfig(screenType: 'game' | 'normal'): StatusBarConf
       hidden: false,
     };
   }
-  
+
   // Android configuration
   return {
     style: isGame ? 'light' : 'dark',
@@ -44,7 +46,7 @@ export function getStatusBarHeight(): number {
   if (Platform.OS === 'ios') {
     return Constants.statusBarHeight || 20;
   }
-  
+
   // Android
   return StatusBar.currentHeight || 24;
 }
@@ -56,12 +58,12 @@ export function getStatusBarHeight(): number {
 export function hasNotch(): boolean {
   const { height, width } = Dimensions.get('window');
   const statusBarHeight = getStatusBarHeight();
-  
+
   if (Platform.OS === 'ios') {
     // iPhone X and newer have status bar height >= 44
     return statusBarHeight >= 44;
   }
-  
+
   // Android devices with notches typically have higher status bar
   return statusBarHeight > 24;
 }
@@ -73,7 +75,7 @@ export function hasNotch(): boolean {
 export function getSafeAreaPadding() {
   const statusBarHeight = getStatusBarHeight();
   const hasSpecialArea = hasNotch();
-  
+
   return {
     paddingTop: hasSpecialArea ? statusBarHeight + 8 : statusBarHeight + 4,
   };
@@ -86,10 +88,10 @@ export const DEVICE_SAFE_AREA_CONFIG = {
   // Extra padding for devices with special areas
   NOTCH_EXTRA_PADDING: 8,
   STANDARD_EXTRA_PADDING: 4,
-  
+
   // Minimum safe area values as fallbacks
   MIN_STATUS_BAR_HEIGHT: Platform.OS === 'ios' ? 20 : 24,
-  
+
   // Maximum values for sanity checking
   MAX_STATUS_BAR_HEIGHT: Platform.OS === 'ios' ? 60 : 48,
 };
@@ -100,10 +102,11 @@ export const DEVICE_SAFE_AREA_CONFIG = {
  * @returns Sanitized height within expected bounds
  */
 export function sanitizeStatusBarHeight(height: number): number {
-  const { MIN_STATUS_BAR_HEIGHT, MAX_STATUS_BAR_HEIGHT } = DEVICE_SAFE_AREA_CONFIG;
-  
+  const { MIN_STATUS_BAR_HEIGHT, MAX_STATUS_BAR_HEIGHT } =
+    DEVICE_SAFE_AREA_CONFIG;
+
   if (height < MIN_STATUS_BAR_HEIGHT) return MIN_STATUS_BAR_HEIGHT;
   if (height > MAX_STATUS_BAR_HEIGHT) return MAX_STATUS_BAR_HEIGHT;
-  
+
   return height;
 }

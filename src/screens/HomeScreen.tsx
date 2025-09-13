@@ -27,10 +27,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 }) => {
   const insets = useSafeAreaInsets();
   const safeAreaPadding = getSafeAreaPadding();
-  
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={[styles.header, { paddingTop: Math.max(insets.top, safeAreaPadding.paddingTop) }]}>
+      <View
+        style={[
+          styles.header,
+          { paddingTop: Math.max(insets.top, safeAreaPadding.paddingTop) },
+        ]}
+      >
         <View style={styles.titleContainer}>
           <Text style={styles.title}>🧩 PuzzlePals</Text>
           <Text style={styles.subtitle}>Choose your puzzle adventure!</Text>

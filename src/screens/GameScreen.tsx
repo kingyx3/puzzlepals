@@ -161,7 +161,12 @@ export const GameScreen: React.FC<GameScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       {/* Header with enhanced controls */}
-      <View style={[styles.header, { paddingTop: Math.max(insets.top, safeAreaPadding.paddingTop) }]}>
+      <View
+        style={[
+          styles.header,
+          { paddingTop: Math.max(insets.top, safeAreaPadding.paddingTop) },
+        ]}
+      >
         <TouchableOpacity
           style={styles.exitButton}
           onPress={handleExit}

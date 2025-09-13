@@ -29,15 +29,15 @@ function calculateImageCrop(
   // Calculate the size of each piece
   const pieceWidth = boardWidth / totalCols;
   const pieceHeight = boardHeight / totalRows;
-  
+
   // Scale the entire source image to match the board dimensions
   const scaledImageWidth = boardWidth;
   const scaledImageHeight = boardHeight;
-  
+
   // Calculate the offset to show only this piece's portion of the full image
   const offsetX = -piece.col * pieceWidth;
   const offsetY = -piece.row * pieceHeight;
-  
+
   return {
     width: scaledImageWidth,
     height: scaledImageHeight,
@@ -180,10 +180,12 @@ export const Piece: React.FC<PieceProps> = memo(
               pieceRow={piece.row}
             />
           ) : (
-            <View style={[
-              styles.imageContainer,
-              piece.placed && { borderRadius: 0 } // Remove border radius for placed pieces
-            ]}>
+            <View
+              style={[
+                styles.imageContainer,
+                piece.placed && { borderRadius: 0 }, // Remove border radius for placed pieces
+              ]}
+            >
               <Image
                 source={imageAsset}
                 style={[
@@ -224,10 +226,12 @@ export const Piece: React.FC<PieceProps> = memo(
               pieceRow={piece.row}
             />
           ) : (
-            <View style={[
-              styles.imageContainer,
-              piece.placed && { borderRadius: 0 } // Remove border radius for placed pieces
-            ]}>
+            <View
+              style={[
+                styles.imageContainer,
+                piece.placed && { borderRadius: 0 }, // Remove border radius for placed pieces
+              ]}
+            >
               <Image
                 source={imageAsset}
                 style={[
