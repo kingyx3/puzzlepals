@@ -1,10 +1,10 @@
 // Test mobile carousel responsiveness
 
-import { 
-  isMobileDevice, 
-  isSmallMobileDevice, 
+import {
+  isMobileDevice,
+  isSmallMobileDevice,
   getMobileTouchTargetSize,
-  getMobilePieceSize 
+  getMobilePieceSize,
 } from '../src/utils/device';
 
 // Mock Dimensions for testing
@@ -80,19 +80,19 @@ describe('Mobile Carousel Responsiveness', () => {
   it('should handle edge cases correctly', () => {
     // Test exactly at breakpoint
     const mockDimensions = require('react-native').Dimensions;
-    
+
     // Exactly at mobile breakpoint
     mockDimensions.get.mockReturnValue({ width: 768, height: 1024 });
     expect(isMobileDevice()).toBe(false);
-    
+
     // Just under mobile breakpoint
     mockDimensions.get.mockReturnValue({ width: 767, height: 1024 });
     expect(isMobileDevice()).toBe(true);
-    
+
     // Exactly at small mobile breakpoint
     mockDimensions.get.mockReturnValue({ width: 480, height: 800 });
     expect(isSmallMobileDevice()).toBe(false);
-    
+
     // Just under small mobile breakpoint
     mockDimensions.get.mockReturnValue({ width: 479, height: 800 });
     expect(isSmallMobileDevice()).toBe(true);

@@ -95,7 +95,7 @@ export function getMobilePieceSize(): number {
   if (isSmallMobileDevice()) {
     return 60; // Much larger for small phones
   } else if (isMobileDevice()) {
-    return 52; // Larger for tablets  
+    return 52; // Larger for tablets
   }
   return 44; // Default for desktop
 }
