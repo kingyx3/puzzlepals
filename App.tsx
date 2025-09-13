@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { Text, ActivityIndicator, StyleSheet, SafeAreaView } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { GameScreen } from './src/screens/GameScreen';
@@ -64,6 +64,13 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <StatusBar 
+        style={currentScreen === 'game' ? 'light' : 'dark'} 
+        backgroundColor="transparent" 
+        translucent={false}
+        hidden={false}
+      />
+      
       {currentScreen === 'home' && (
         <HomeScreen
           onSelectPuzzle={handleSelectPuzzle}
@@ -84,8 +91,6 @@ export default function App() {
       {currentScreen === 'settings' && (
         <SettingsScreen onExit={handleExitSettings} />
       )}
-
-      <StatusBar style="auto" />
     </GestureHandlerRootView>
   );
 }
@@ -93,13 +98,13 @@ export default function App() {
 // Loading screen shown while interstitial ad is playing
 function AdLoadingScreen() {
   return (
-    <View style={styles.adLoadingContainer}>
+    <SafeAreaView style={styles.adLoadingContainer}>
       <ActivityIndicator size="large" color="#007AFF" />
       <Text style={styles.adLoadingText}>Loading...</Text>
       <Text style={styles.adLoadingSubtext}>
         Ad will be skippable in a few seconds
       </Text>
-    </View>
+    </SafeAreaView>
   );
 }
 
