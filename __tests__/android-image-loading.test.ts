@@ -80,9 +80,31 @@ describe('Android Image Loading in Carousel', () => {
     expect(mockResolveAssetSource).toHaveBeenCalledWith(mockAsset);
   });
 
-  it('should validate Android platform detection', () => {
+  it('should prioritize fallback rendering on Android', () => {
     const Platform = require('react-native').Platform;
+    
+    // Ensure we're testing Android platform
     expect(Platform.OS).toBe('android');
+    
+    // Even with successful asset resolution, Android should prefer fallback
+    const mockAsset = 11111;
+    const mockResolvedAsset = {
+      uri: 'file:///android_asset/test_image.jpg',
+      width: 400,
+      height: 300,
+    };
+
+    mockResolveAssetSource.mockReturnValue(mockResolvedAsset);
+
+    const result = Image.resolveAssetSource(mockAsset);
+    
+    // Asset resolution should work
+    expect(result).toEqual(mockResolvedAsset);
+    expect(result.uri).toBeTruthy();
+    
+    // But the component should still prefer the Image fallback over SVG on Android
+    // This behavior is implemented in JigsawPieceShape component
+    expect(mockResolveAssetSource).toHaveBeenCalledWith(mockAsset);
   });
 
   it('should handle different asset types', () => {

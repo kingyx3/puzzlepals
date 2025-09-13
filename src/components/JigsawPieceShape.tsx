@@ -1,7 +1,7 @@
 // SVG component for rendering jigsaw piece shapes
 
 import React from 'react';
-import { View, Image, ImageSourcePropType, Text } from 'react-native';
+import { View, Image, ImageSourcePropType, Text, Platform } from 'react-native';
 import Svg, { Path, ClipPath, Defs, Image as SvgImage } from 'react-native-svg';
 import { EdgeShape } from '../types';
 
@@ -37,7 +37,7 @@ export const JigsawPieceShape: React.FC<JigsawPieceShapeProps> = ({
   pieceRow = 0,
   padding = 20, // Default padding matching createBoard
 }) => {
-  const [svgFailed, setSvgFailed] = React.useState(false);
+  const [useFallback, setUseFallback] = React.useState(false);
   const clipPath = generateJigsawPath(width, height, edges);
   const clipId = `jigsaw-clip-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -81,9 +81,20 @@ export const JigsawPieceShape: React.FC<JigsawPieceShapeProps> = ({
 
   const imageUri = getImageUri();
 
-  // If we can't get a proper URI or SVG failed, fall back to a regular Image component
-  if (!imageUri || svgFailed) {
-    console.warn('[JigsawPieceShape] Using fallback rendering - SVG failed or no URI');
+  // If we can't get a proper URI, use fallback immediately
+  // Also prioritize fallback on Android for carousel compatibility
+  React.useEffect(() => {
+    if (!imageUri) {
+      console.warn('[JigsawPieceShape] No image URI available, using fallback rendering');
+      setUseFallback(true);
+    } else if (Platform.OS === 'android') {
+      console.log('[JigsawPieceShape] Android detected, using fallback rendering for better compatibility');
+      setUseFallback(true);
+    }
+  }, [imageUri]);
+
+  // If we should use fallback rendering or can't get a proper URI
+  if (!imageUri || useFallback) {
     return (
       <View style={[style, { overflow: 'hidden' }]}>
         {imageUri ? (
@@ -98,7 +109,7 @@ export const JigsawPieceShape: React.FC<JigsawPieceShapeProps> = ({
             }}
           >
             <Image
-              source={typeof imageAsset === 'number' ? imageAsset : { uri: imageUri }}
+              source={typeof imageAsset === 'number' ? imageAsset : typeof imageUri === 'string' ? { uri: imageUri } : imageUri}
               style={{
                 width: scaledImageWidth,
                 height: scaledImageHeight,
@@ -168,13 +179,6 @@ export const JigsawPieceShape: React.FC<JigsawPieceShapeProps> = ({
           x={offsetX}
           y={offsetY}
           clipPath={`url(#${clipId})`}
-          onError={(error) => {
-            console.error('[JigsawPieceShape] SVG Image failed to load:', error);
-            setSvgFailed(true); // Trigger fallback on next render
-          }}
-          onLoad={() => {
-            console.log('[JigsawPieceShape] SVG Image loaded successfully');
-          }}
         />
 
         {/* Optional: Add stroke outline only for unplaced pieces */}
