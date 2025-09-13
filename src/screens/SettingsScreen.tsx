@@ -11,18 +11,22 @@ import {
   Switch,
   Alert,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   purchasePremium,
   isPremiumUser,
   restorePurchases,
 } from '../services/monetization';
 import { colors, spacing, typography, layout } from '../theme';
+import { getSafeAreaPadding } from '../utils/statusBar';
 
 interface SettingsScreenProps {
   onExit: () => void;
 }
 
 export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onExit }) => {
+  const insets = useSafeAreaInsets();
+  const safeAreaPadding = getSafeAreaPadding();
   const [isPremium, setIsPremium] = useState(isPremiumUser());
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [hapticsEnabled, setHapticsEnabled] = useState(true);
@@ -93,7 +97,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onExit }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: Math.max(insets.top, safeAreaPadding.paddingTop) }]}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={onExit}

@@ -9,10 +9,12 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PackCard } from '../components/PackCard';
 import { allPacks } from '../data/packs';
 import { PuzzleMeta } from '../types';
 import { colors, spacing, typography, layout } from '../theme';
+import { getSafeAreaPadding } from '../utils/statusBar';
 
 interface HomeScreenProps {
   onSelectPuzzle: (puzzle: PuzzleMeta) => void;
@@ -23,9 +25,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onSelectPuzzle,
   onOpenSettings,
 }) => {
+  const insets = useSafeAreaInsets();
+  const safeAreaPadding = getSafeAreaPadding();
+  
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: Math.max(insets.top, safeAreaPadding.paddingTop) }]}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>🧩 PuzzlePals</Text>
           <Text style={styles.subtitle}>Choose your puzzle adventure!</Text>
