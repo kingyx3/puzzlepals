@@ -211,6 +211,12 @@ const PieceItem: React.FC<PieceItemProps> = ({
                       },
                     ]}
                     resizeMode="cover"
+                    onError={(error) => {
+                      console.error('[PieceOrganizer] Image failed to load:', error.nativeEvent.error);
+                    }}
+                    onLoad={() => {
+                      console.log('[PieceOrganizer] Image loaded successfully');
+                    }}
                   />
 
                   {/* Add semi-transparent overlay with grid lines to show piece location */}
