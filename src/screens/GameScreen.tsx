@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   Dimensions,
   Alert,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PuzzleCanvas } from '../components/PuzzleCanvas';
@@ -179,13 +180,14 @@ export const GameScreen: React.FC<GameScreenProps> = ({
         </TouchableOpacity>
 
         <View style={styles.titleSection}>
-          <Text
-            style={styles.puzzleTitle}
+          <Image
+            source={puzzle.imageAsset}
+            style={styles.puzzleImage}
+            resizeMode="cover"
             accessible={true}
-            accessibilityRole="header"
-          >
-            {puzzle.titleKey}
-          </Text>
+            accessibilityRole="image"
+            accessibilityLabel={`Puzzle image: ${puzzle.titleKey}`}
+          />
           <Text
             style={styles.progressText}
             accessible={true}
@@ -375,6 +377,13 @@ const styles = StyleSheet.create({
     fontSize: typography.lg,
     fontWeight: typography.weight.bold,
     color: colors.onBackground,
+  },
+  puzzleImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: colors.primary,
   },
   progressText: {
     fontSize: typography.sm,
