@@ -19,6 +19,7 @@ interface JigsawPieceShapeProps {
   totalRows?: number;
   pieceCol?: number;
   pieceRow?: number;
+  padding?: number; // Add padding parameter
 }
 
 export const JigsawPieceShape: React.FC<JigsawPieceShapeProps> = ({
@@ -34,15 +35,18 @@ export const JigsawPieceShape: React.FC<JigsawPieceShapeProps> = ({
   totalRows = 2,
   pieceCol = 0,
   pieceRow = 0,
+  padding = 20, // Default padding matching createBoard
 }) => {
   const clipPath = generateJigsawPath(width, height, edges);
   const clipId = `jigsaw-clip-${Math.random().toString(36).substr(2, 9)}`;
 
-  // Calculate image cropping for jigsaw pieces
-  const scaledImageWidth = boardWidth;
-  const scaledImageHeight = boardHeight;
-  const offsetX = -pieceCol * (boardWidth / totalCols);
-  const offsetY = -pieceRow * (boardHeight / totalRows);
+  // Calculate image cropping for jigsaw pieces (must match logic in computeTargetRects)
+  const availableWidth = boardWidth - padding * 2;
+  const availableHeight = boardHeight - padding * 2;
+  const scaledImageWidth = availableWidth;
+  const scaledImageHeight = availableHeight;
+  const offsetX = -pieceCol * (availableWidth / totalCols);
+  const offsetY = -pieceRow * (availableHeight / totalRows);
 
   // Get proper URI for the asset
   const getImageUri = () => {
