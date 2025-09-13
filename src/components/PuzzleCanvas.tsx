@@ -165,6 +165,7 @@ export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({
             boardHeight={board.height}
             totalCols={board.cols}
             totalRows={board.rows}
+            padding={20} // Pass the default padding used in createBoard
           />
         ))}
       </View>

@@ -18,21 +18,27 @@ import { JigsawPieceShape } from './JigsawPieceShape';
 
 /**
  * Calculate image positioning and scaling for cropping to show only the piece's portion
+ * This must match the logic in computeTargetRects to ensure proper alignment
  */
 function calculateImageCrop(
   piece: PieceType,
   boardWidth: number,
   boardHeight: number,
   totalCols: number,
-  totalRows: number
+  totalRows: number,
+  padding: number = 20 // Default padding used in createBoard
 ) {
-  // Calculate the size of each piece
-  const pieceWidth = boardWidth / totalCols;
-  const pieceHeight = boardHeight / totalRows;
+  // Calculate available space (same logic as computeTargetRects)
+  const availableWidth = boardWidth - padding * 2;
+  const availableHeight = boardHeight - padding * 2;
 
-  // Scale the entire source image to match the board dimensions
-  const scaledImageWidth = boardWidth;
-  const scaledImageHeight = boardHeight;
+  // Calculate the size of each piece using available space
+  const pieceWidth = availableWidth / totalCols;
+  const pieceHeight = availableHeight / totalRows;
+
+  // Scale the entire source image to match the available space
+  const scaledImageWidth = availableWidth;
+  const scaledImageHeight = availableHeight;
 
   // Calculate the offset to show only this piece's portion of the full image
   const offsetX = -piece.col * pieceWidth;
@@ -59,6 +65,7 @@ interface PieceProps {
   boardHeight?: number;
   totalCols?: number;
   totalRows?: number;
+  padding?: number; // Add padding parameter
 }
 
 export const Piece: React.FC<PieceProps> = memo(
@@ -74,6 +81,7 @@ export const Piece: React.FC<PieceProps> = memo(
     boardHeight = 400,
     totalCols = 2,
     totalRows = 2,
+    padding = 20, // Default padding matching createBoard
   }) => {
     // Only re-initialize shared values when piece position changes or when piece is reset
     const translateX = useSharedValue(piece.x);
@@ -156,7 +164,8 @@ export const Piece: React.FC<PieceProps> = memo(
       boardWidth,
       boardHeight,
       totalCols,
-      totalRows
+      totalRows,
+      padding
     );
 
     if (disabled || piece.placed) {
@@ -178,6 +187,7 @@ export const Piece: React.FC<PieceProps> = memo(
               totalRows={totalRows}
               pieceCol={piece.col}
               pieceRow={piece.row}
+              padding={padding} // Pass padding for correct cropping
             />
           ) : (
             <View
@@ -224,6 +234,7 @@ export const Piece: React.FC<PieceProps> = memo(
               totalRows={totalRows}
               pieceCol={piece.col}
               pieceRow={piece.row}
+              padding={padding} // Pass padding for correct cropping
             />
           ) : (
             <View
