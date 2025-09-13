@@ -437,17 +437,23 @@ const styles = StyleSheet.create({
   progressContainer: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    margin: spacing.sm,
+    ...shadows.md,
   },
   progressBar: {
-    height: 8,
+    height: 12,
     backgroundColor: colors.outline,
-    borderRadius: 4,
+    borderRadius: borderRadius.sm,
     overflow: 'hidden',
+    ...shadows.sm,
   },
   progressFill: {
     height: '100%',
     backgroundColor: colors.success,
-    borderRadius: 4,
+    borderRadius: borderRadius.sm,
+    ...shadows.sm,
   },
   progressStats: {
     flexDirection: 'row',
@@ -457,8 +463,8 @@ const styles = StyleSheet.create({
   },
   progressStatsText: {
     fontSize: typography.sm,
-    color: colors.secondary,
-    fontWeight: typography.weight.medium,
+    color: colors.onSurface,
+    fontWeight: typography.weight.semibold,
   },
   sortingIndicator: {
     fontSize: typography.xs,
