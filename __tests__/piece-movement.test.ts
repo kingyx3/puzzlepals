@@ -17,12 +17,12 @@ describe('Piece Movement Improvements', () => {
     const { cols, rows } = difficultyToGrid(difficulty);
     const canvasWidth = 300;
     const canvasHeight = 300;
-    
+
     // Create target rectangles
     const targetRects = [];
     const pieceWidth = canvasWidth / cols;
     const pieceHeight = canvasHeight / rows;
-    
+
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         targetRects.push({
@@ -33,7 +33,7 @@ describe('Piece Movement Improvements', () => {
         });
       }
     }
-    
+
     // Create pieces
     const pieces = createPiecesFromRects(
       1, // mock image asset
@@ -44,14 +44,14 @@ describe('Piece Movement Improvements', () => {
       canvasHeight,
       difficulty
     );
-    
+
     // Check that all pieces are positioned off-screen (in carousel area)
-    Object.values(pieces).forEach(piece => {
+    Object.values(pieces).forEach((piece) => {
       // Pieces should be positioned outside the puzzle canvas
       expect(piece.x).toBeLessThan(0); // Off-screen to the left
       expect(piece.y).toBeGreaterThan(canvasHeight); // Below the canvas
       expect(piece.placed).toBe(false);
-      
+
       // Target positions should be on the canvas
       expect(piece.targetX).toBeGreaterThanOrEqual(0);
       expect(piece.targetY).toBeGreaterThanOrEqual(0);
@@ -65,12 +65,12 @@ describe('Piece Movement Improvements', () => {
     const { cols, rows } = difficultyToGrid(difficulty);
     const canvasWidth = 400;
     const canvasHeight = 400;
-    
+
     // Create target rectangles
     const targetRects = [];
     const pieceWidth = canvasWidth / cols;
     const pieceHeight = canvasHeight / rows;
-    
+
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         targetRects.push({
@@ -81,7 +81,7 @@ describe('Piece Movement Improvements', () => {
         });
       }
     }
-    
+
     // Create pieces
     const pieces = createPiecesFromRects(
       1,
@@ -92,16 +92,15 @@ describe('Piece Movement Improvements', () => {
       canvasHeight,
       difficulty
     );
-    
+
     // Verify no pieces are positioned within the puzzle board area
-    Object.values(pieces).forEach(piece => {
-      const isWithinPuzzleArea = (
-        piece.x >= 0 && 
-        piece.x < canvasWidth && 
-        piece.y >= 0 && 
-        piece.y < canvasHeight
-      );
-      
+    Object.values(pieces).forEach((piece) => {
+      const isWithinPuzzleArea =
+        piece.x >= 0 &&
+        piece.x < canvasWidth &&
+        piece.y >= 0 &&
+        piece.y < canvasHeight;
+
       expect(isWithinPuzzleArea).toBe(false);
     });
   });
@@ -111,12 +110,12 @@ describe('Piece Movement Improvements', () => {
     const { cols, rows } = difficultyToGrid(difficulty);
     const canvasWidth = 500;
     const canvasHeight = 500;
-    
+
     // Create target rectangles
     const targetRects = [];
     const pieceWidth = canvasWidth / cols;
     const pieceHeight = canvasHeight / rows;
-    
+
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         targetRects.push({
@@ -127,7 +126,7 @@ describe('Piece Movement Improvements', () => {
         });
       }
     }
-    
+
     // Create pieces
     const pieces = createPiecesFromRects(
       1,
@@ -138,9 +137,9 @@ describe('Piece Movement Improvements', () => {
       canvasHeight,
       difficulty
     );
-    
+
     // Check that target positions are valid
-    Object.values(pieces).forEach(piece => {
+    Object.values(pieces).forEach((piece) => {
       expect(piece.targetX).toBeGreaterThanOrEqual(0);
       expect(piece.targetY).toBeGreaterThanOrEqual(0);
       expect(piece.targetX + piece.width).toBeLessThanOrEqual(canvasWidth);
@@ -153,16 +152,16 @@ describe('Piece Movement Improvements', () => {
     const { cols, rows } = difficultyToGrid(difficulty);
     const canvasWidth = 300;
     const canvasHeight = 300;
-    
+
     // Should be 2x2 grid for AGES_3_5
     expect(cols).toBe(2);
     expect(rows).toBe(2);
-    
+
     // Create target rectangles
     const targetRects = [];
     const pieceWidth = canvasWidth / cols;
     const pieceHeight = canvasHeight / rows;
-    
+
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         targetRects.push({
@@ -173,7 +172,7 @@ describe('Piece Movement Improvements', () => {
         });
       }
     }
-    
+
     // Create pieces
     const pieces = createPiecesFromRects(
       1,
@@ -184,7 +183,7 @@ describe('Piece Movement Improvements', () => {
       canvasHeight,
       difficulty
     );
-    
+
     // Verify grid coordinates
     const expectedCoords = [
       { row: 0, col: 0 },
@@ -192,10 +191,10 @@ describe('Piece Movement Improvements', () => {
       { row: 1, col: 0 },
       { row: 1, col: 1 },
     ];
-    
-    Object.values(pieces).forEach(piece => {
+
+    Object.values(pieces).forEach((piece) => {
       const expectedCoord = expectedCoords.find(
-        coord => coord.row === piece.row && coord.col === piece.col
+        (coord) => coord.row === piece.row && coord.col === piece.col
       );
       expect(expectedCoord).toBeDefined();
     });

@@ -46,6 +46,7 @@ This is your personalized checklist of actions needed to deploy PuzzlePals to ap
   - Note down your Team ID for eas.json
 
 - [ ] **Configure Android credentials** (if targeting Android):
+
   ```bash
   eas credentials:configure -p android
   ```
@@ -140,7 +141,7 @@ Run these commands to make sure everything is ready:
 
 ```bash
 # Verify project works
-yarn test && yarn lint && npx tsc --noEmit
+npm test && npm run lint && npx tsc --noEmit
 
 # Check Expo setup
 npx expo whoami

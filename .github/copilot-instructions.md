@@ -20,7 +20,7 @@ PuzzlePals is a delightful, kid-friendly jigsaw puzzle app built with React Nati
 **Prerequisites:**
 
 - Node.js 20+ (20.19.4 confirmed working)
-- Yarn (preferred) or npm
+- npm (package manager)
 - Current repository only contains README.md with specifications
 
 **Step 1: Create the Expo Project** - NEVER CANCEL, takes 2-3 minutes:
@@ -34,7 +34,7 @@ npx create-expo-app@latest . --template blank-typescript
 **Step 2: Install Core Dependencies** - NEVER CANCEL, takes 2-3 minutes:
 
 ```bash
-yarn add zustand @tanstack/react-query @react-navigation/native @react-navigation/native-stack react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-screens expo-haptics expo-av react-native-mmkv i18next react-i18next react-native-localize react-native-svg
+npm install zustand @tanstack/react-query @react-navigation/native @react-navigation/native-stack react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-screens expo-haptics expo-av react-native-mmkv i18next react-i18next react-native-localize react-native-svg
 ```
 
 **Step 3: Install Expo SDK Compatible Versions** - CRITICAL for compatibility:
@@ -52,7 +52,7 @@ npx expo install react-dom react-native-web @expo/metro-runtime
 **Step 5: Install Development Dependencies**:
 
 ```bash
-yarn add -D jest @testing-library/react-native ts-jest @types/jest eslint prettier @typescript-eslint/eslint-plugin @typescript-eslint/parser react-test-renderer@19.0.0 @eslint/eslintrc
+npm install --save-dev jest @testing-library/react-native ts-jest @types/jest eslint prettier @typescript-eslint/eslint-plugin @typescript-eslint/parser react-test-renderer@19.0.0 @eslint/eslintrc
 ```
 
 **Step 6: Configure Development Tools**:
@@ -149,16 +149,16 @@ Update `package.json` scripts section:
 
 ### Testing
 
-- **Run all tests**: `yarn test` - takes 5-10 seconds
-- **Watch mode**: `yarn test:watch`
+- **Run all tests**: `npm test` - takes 5-10 seconds
+- **Watch mode**: `npm run test:watch`
 - **IMPORTANT**: Use `ts-jest` preset, NOT `jest-expo` (has compatibility issues)
 - Tests are fast, but set timeout to 30+ seconds to be safe
 
 ### Linting and Formatting
 
-- **Lint code**: `yarn lint` - takes 1-2 seconds, set timeout to 30+ seconds
-- **Fix lint issues**: `yarn lint:fix`
-- **Format code**: `yarn format` - takes 1-2 seconds
+- **Lint code**: `npm run lint` - takes 1-2 seconds, set timeout to 30+ seconds
+- **Fix lint issues**: `npm run lint:fix`
+- **Format code**: `npm run format` - takes 1-2 seconds
 - **ALWAYS** run these before committing changes
 
 ## Validation Scenarios
@@ -187,7 +187,7 @@ npx expo start --web --offline
 
 ```bash
 # Run tests to ensure framework works
-yarn test
+npm test
 # Should pass all tests (starts with 0 tests in empty project)
 ```
 
@@ -195,7 +195,7 @@ yarn test
 
 ```bash
 # Verify linting and formatting work
-yarn lint && yarn format
+npm run lint && npm run format
 # Should complete without errors
 ```
 
@@ -338,7 +338,7 @@ Quick reference for common operations:
 npx expo start --web --offline
 
 # Run tests before committing
-yarn test && yarn lint && yarn format
+npm test && npm run lint && npm run format
 
 # Install new dependency (Expo-compatible)
 npx expo install <package-name>

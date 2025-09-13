@@ -97,7 +97,12 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onExit }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={[styles.header, { paddingTop: Math.max(insets.top, safeAreaPadding.paddingTop) }]}>
+      <View
+        style={[
+          styles.header,
+          { paddingTop: Math.max(insets.top, safeAreaPadding.paddingTop) },
+        ]}
+      >
         <TouchableOpacity
           style={styles.backButton}
           onPress={onExit}

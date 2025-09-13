@@ -131,7 +131,7 @@ npx create-expo-app@latest . --template blank-typescript
 **Step 2: Install Core Dependencies**
 
 ```bash
-yarn add zustand @tanstack/react-query @react-navigation/native \
+npm install zustand @tanstack/react-query @react-navigation/native \
   @react-navigation/native-stack react-native-gesture-handler \
   react-native-reanimated react-native-safe-area-context \
   react-native-screens expo-haptics expo-av react-native-mmkv \
@@ -149,7 +149,7 @@ npx expo install react-native-gesture-handler@~2.24.0 \
 **Step 4: Install Development Dependencies**
 
 ```bash
-yarn add -D jest @testing-library/react-native ts-jest @types/jest \
+npm install --save-dev jest @testing-library/react-native ts-jest @types/jest \
   eslint prettier @typescript-eslint/eslint-plugin \
   @typescript-eslint/parser react-test-renderer@19.0.0 @eslint/eslintrc
 ```
@@ -161,8 +161,8 @@ yarn add -D jest @testing-library/react-native ts-jest @types/jest \
 npx expo start --web --offline
 
 # For iOS/Android (requires simulator/device)
-yarn ios    # iOS
-yarn android # Android
+npm run ios    # iOS
+npm run android # Android
 ```
 
 > **Note:** Expo config plugins for Reanimated + Gesture Handler are automatically configured with SDK >= 51
@@ -602,7 +602,7 @@ export const theme = {
 **Development Dependencies:**
 
 ```bash
-yarn add -D jest @testing-library/react-native jest-expo ts-jest @types/jest
+npm install --save-dev jest @testing-library/react-native jest-expo ts-jest @types/jest
 ```
 
 ### Testing Strategy

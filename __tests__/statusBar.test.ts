@@ -38,7 +38,7 @@ describe('StatusBar Utils - Comprehensive Device Support', () => {
     it('should return light style for game screens on iOS', () => {
       Platform.OS = 'ios';
       const config = getStatusBarConfig('game');
-      
+
       expect(config.style).toBe('light');
       expect(config.backgroundColor).toBe('transparent');
       expect(config.translucent).toBe(false);
@@ -48,7 +48,7 @@ describe('StatusBar Utils - Comprehensive Device Support', () => {
     it('should return dark style for normal screens on iOS', () => {
       Platform.OS = 'ios';
       const config = getStatusBarConfig('normal');
-      
+
       expect(config.style).toBe('dark');
       expect(config.backgroundColor).toBe('transparent');
       expect(config.translucent).toBe(false);
@@ -58,7 +58,7 @@ describe('StatusBar Utils - Comprehensive Device Support', () => {
     it('should return proper config for game screens on Android', () => {
       Platform.OS = 'android';
       const config = getStatusBarConfig('game');
-      
+
       expect(config.style).toBe('light');
       expect(config.backgroundColor).toBe('#000000');
       expect(config.translucent).toBe(false);
@@ -68,7 +68,7 @@ describe('StatusBar Utils - Comprehensive Device Support', () => {
     it('should return proper config for normal screens on Android', () => {
       Platform.OS = 'android';
       const config = getStatusBarConfig('normal');
-      
+
       expect(config.style).toBe('dark');
       expect(config.backgroundColor).toBe('#ffffff');
       expect(config.translucent).toBe(false);
@@ -95,7 +95,7 @@ describe('StatusBar Utils - Comprehensive Device Support', () => {
       jest.doMock('expo-constants', () => ({
         default: { statusBarHeight: undefined },
       }));
-      
+
       const height = getStatusBarHeight();
       expect(height).toBe(20); // iOS fallback
     });
@@ -113,7 +113,7 @@ describe('StatusBar Utils - Comprehensive Device Support', () => {
       jest.doMock('expo-constants', () => ({
         default: { statusBarHeight: 20 },
       }));
-      
+
       const hasNotchResult = hasNotch();
       expect(hasNotchResult).toBe(false); // Would be false if properly re-evaluated
     });
@@ -122,7 +122,7 @@ describe('StatusBar Utils - Comprehensive Device Support', () => {
       Platform.OS = 'android';
       const { StatusBar } = require('react-native');
       StatusBar.currentHeight = 30; // Higher than standard 24
-      
+
       const hasNotchResult = hasNotch();
       expect(hasNotchResult).toBe(true);
     });
@@ -132,7 +132,7 @@ describe('StatusBar Utils - Comprehensive Device Support', () => {
     it('should provide appropriate padding for devices', () => {
       Platform.OS = 'ios';
       const padding = getSafeAreaPadding();
-      
+
       // Should provide reasonable padding (at least status bar height)
       expect(padding.paddingTop).toBeGreaterThanOrEqual(20);
     });
@@ -141,9 +141,9 @@ describe('StatusBar Utils - Comprehensive Device Support', () => {
       Platform.OS = 'android';
       const { StatusBar } = require('react-native');
       StatusBar.currentHeight = 24; // Standard height
-      
+
       const padding = getSafeAreaPadding();
-      
+
       // Should be status bar height (24) + standard extra padding (4)
       expect(padding.paddingTop).toBe(28);
     });
@@ -171,8 +171,12 @@ describe('StatusBar Utils - Comprehensive Device Support', () => {
     it('should have proper configuration constants', () => {
       expect(DEVICE_SAFE_AREA_CONFIG.NOTCH_EXTRA_PADDING).toBe(8);
       expect(DEVICE_SAFE_AREA_CONFIG.STANDARD_EXTRA_PADDING).toBe(4);
-      expect(typeof DEVICE_SAFE_AREA_CONFIG.MIN_STATUS_BAR_HEIGHT).toBe('number');
-      expect(typeof DEVICE_SAFE_AREA_CONFIG.MAX_STATUS_BAR_HEIGHT).toBe('number');
+      expect(typeof DEVICE_SAFE_AREA_CONFIG.MIN_STATUS_BAR_HEIGHT).toBe(
+        'number'
+      );
+      expect(typeof DEVICE_SAFE_AREA_CONFIG.MAX_STATUS_BAR_HEIGHT).toBe(
+        'number'
+      );
     });
 
     it('should have platform-specific minimums', () => {
@@ -192,12 +196,12 @@ describe('StatusBar Utils - Comprehensive Device Support', () => {
         it(`should provide valid config for ${platform} ${screenType} screens`, () => {
           Platform.OS = platform as any;
           const config = getStatusBarConfig(screenType);
-          
+
           expect(['light', 'dark']).toContain(config.style);
           expect(typeof config.backgroundColor).toBe('string');
           expect(typeof config.translucent).toBe('boolean');
           expect(typeof config.hidden).toBe('boolean');
-          
+
           // Critical: translucent should be false to prevent overlap
           expect(config.translucent).toBe(false);
         });
@@ -210,7 +214,7 @@ describe('StatusBar Utils - Comprehensive Device Support', () => {
       Platform.OS = 'android';
       const { StatusBar } = require('react-native');
       StatusBar.currentHeight = undefined;
-      
+
       const height = getStatusBarHeight();
       expect(height).toBe(24); // Android fallback
     });
@@ -218,7 +222,7 @@ describe('StatusBar Utils - Comprehensive Device Support', () => {
     it('should handle extreme screen dimensions', () => {
       const { Dimensions } = require('react-native');
       Dimensions.get = jest.fn().mockReturnValue({ width: 100, height: 100 });
-      
+
       const hasNotchResult = hasNotch();
       expect(typeof hasNotchResult).toBe('boolean');
     });
@@ -226,7 +230,7 @@ describe('StatusBar Utils - Comprehensive Device Support', () => {
     it('should provide consistent padding calculations', () => {
       const padding1 = getSafeAreaPadding();
       const padding2 = getSafeAreaPadding();
-      
+
       expect(padding1.paddingTop).toBe(padding2.paddingTop);
       expect(padding1.paddingTop).toBeGreaterThan(0);
     });
