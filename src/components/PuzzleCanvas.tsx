@@ -130,6 +130,12 @@ export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({
                 { width: board.width, height: board.height },
               ]}
               resizeMode="cover"
+              onError={(error) => {
+                console.error('[PuzzleCanvas] Ghost image failed to load:', error.nativeEvent.error);
+              }}
+              onLoad={() => {
+                console.log('[PuzzleCanvas] Ghost image loaded successfully');
+              }}
             />
           </View>
         )}

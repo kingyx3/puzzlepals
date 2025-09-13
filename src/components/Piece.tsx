@@ -209,6 +209,12 @@ export const Piece: React.FC<PieceProps> = memo(
                   },
                 ]}
                 resizeMode="cover"
+                onError={(error) => {
+                  console.error('[Piece] Image failed to load (placed piece):', error.nativeEvent.error);
+                }}
+                onLoad={() => {
+                  console.log('[Piece] Image loaded successfully (placed piece)');
+                }}
               />
             </View>
           )}
@@ -255,6 +261,12 @@ export const Piece: React.FC<PieceProps> = memo(
                   },
                 ]}
                 resizeMode="cover"
+                onError={(error) => {
+                  console.error('[Piece] Image failed to load (draggable piece):', error.nativeEvent.error);
+                }}
+                onLoad={() => {
+                  console.log('[Piece] Image loaded successfully (draggable piece)');
+                }}
               />
             </View>
           )}
