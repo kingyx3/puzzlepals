@@ -106,7 +106,18 @@ export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({
   }
 
   const { board } = currentPuzzle;
-  const pieces = Object.values(board.pieces);
+  
+  // Fix for issue #71: Filter out pieces that are in the carousel staging area
+  // This prevents pieces from appearing both in the carousel AND on the puzzle canvas
+  // Only render pieces that are:
+  // 1. Already placed in their correct position (piece.placed), OR
+  // 2. Currently on the puzzle canvas area (piece.x >= 0 && piece.y <= board.height)
+  // 
+  // Pieces in carousel staging area have: piece.x < 0 OR piece.y > board.height
+  // and are handled by PieceOrganizer component instead
+  const pieces = Object.values(board.pieces).filter(piece => {
+    return piece.placed || (piece.x >= 0 && piece.y <= board.height);
+  });
 
   return (
     <View style={styles.container}>
