@@ -38,14 +38,12 @@ export const AchievementDisplay: React.FC<AchievementDisplayProps> = ({
     // For now, return simple English titles based on titleKey
     // TODO: Implement proper i18n when translation system is ready
     const titleMap: Record<string, string> = {
-      'achievements.first_puzzle': 'First Steps',
-      'achievements.puzzle_master': 'Puzzle Master',
-      'achievements.speed_demon': 'Speed Demon',
-      'achievements.streak_champion': 'Streak Champion',
-      'achievements.hint_free': 'No Hints Hero',
-      'achievements.difficulty_climber': 'Difficulty Climber',
-      'achievements.perfectionist': 'Perfectionist',
-      'achievements.explorer': 'Explorer',
+      'achievements.first_puzzle.title': 'First Steps',
+      'achievements.puzzle_master.title': 'Puzzle Master',
+      'achievements.speed_demon.title': 'Speed Demon',
+      'achievements.no_hints_hero.title': 'No Hints Hero',
+      'achievements.streak_master.title': 'Streak Champion',
+      'achievements.difficulty_explorer.title': 'Difficulty Climber',
     };
     return titleMap[achievement.titleKey] || achievement.titleKey;
   };
@@ -54,16 +52,12 @@ export const AchievementDisplay: React.FC<AchievementDisplayProps> = ({
     // For now, return simple English descriptions based on descriptionKey
     // TODO: Implement proper i18n when translation system is ready
     const descriptionMap: Record<string, string> = {
-      'achievements.first_puzzle_desc': 'Complete your first puzzle',
-      'achievements.puzzle_master_desc': 'Complete 100 puzzles',
-      'achievements.speed_demon_desc': 'Complete a puzzle in under 2 minutes',
-      'achievements.streak_champion_desc': 'Maintain a 7-day streak',
-      'achievements.hint_free_desc': 'Complete a puzzle without hints',
-      'achievements.difficulty_climber_desc':
-        'Complete puzzles on all difficulties',
-      'achievements.perfectionist_desc':
-        'Complete 10 puzzles with 100% accuracy',
-      'achievements.explorer_desc': 'Try all puzzle packs',
+      'achievements.first_puzzle.description': 'Complete your first puzzle',
+      'achievements.puzzle_master.description': 'Complete 100 puzzles',
+      'achievements.speed_demon.description': 'Complete a puzzle in under 2 minutes',
+      'achievements.no_hints_hero.description': 'Complete a puzzle without hints',
+      'achievements.streak_master.description': 'Maintain a 7-day streak',
+      'achievements.difficulty_explorer.description': 'Complete puzzles on all difficulties',
     };
     return (
       descriptionMap[achievement.descriptionKey] || achievement.descriptionKey
@@ -81,11 +75,16 @@ export const AchievementDisplay: React.FC<AchievementDisplayProps> = ({
           )
         );
         return fastestTime < 2 * 60 * 1000 ? 'Completed!' : 'Keep practicing!';
-      case 'streak_champion':
+      case 'streak_master':
         return `${playerStats.currentStreak} day streak`;
-      case 'hint_free':
+      case 'no_hints_hero':
         const hintsUsed = playerStats.totalHintsUsed;
         return hintsUsed === 0 ? 'No hints used!' : `${hintsUsed} hints used`;
+      case 'difficulty_explorer':
+        const completedDifficulties = Object.values(playerStats.difficultyStats).filter(
+          (stats) => stats.completed > 0
+        ).length;
+        return `${completedDifficulties}/5 difficulties`;
       default:
         return '';
     }
@@ -93,14 +92,12 @@ export const AchievementDisplay: React.FC<AchievementDisplayProps> = ({
 
   const getAchievementIcon = (achievementId: string, isUnlocked: boolean) => {
     const icons: Record<string, string> = {
-      first_puzzle: '🎯',
+      first_puzzle: '🧩',
       puzzle_master: '👑',
       speed_demon: '⚡',
-      streak_champion: '🔥',
-      hint_free: '🧠',
-      difficulty_climber: '🏔️',
-      perfectionist: '💎',
-      explorer: '🗺️',
+      no_hints_hero: '🎯',
+      streak_master: '🔥',
+      difficulty_explorer: '🗺️',
     };
 
     return isUnlocked ? icons[achievementId] || '🏆' : '🔒';
