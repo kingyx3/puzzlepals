@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PackCard } from '../components/PackCard';
 import { allPacks } from '../data/packs';
 import { PuzzleMeta } from '../types';
-import { colors, spacing, typography, layout } from '../theme';
+import { colors, spacing, typography, layout, shadows, borderRadius } from '../theme';
 import { getSafeAreaPadding } from '../utils/statusBar';
 
 interface HomeScreenProps {

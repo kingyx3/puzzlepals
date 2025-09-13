@@ -17,7 +17,7 @@ import {
   isPremiumUser,
   restorePurchases,
 } from '../services/monetization';
-import { colors, spacing, typography, layout } from '../theme';
+import { colors, spacing, typography, layout, shadows, borderRadius } from '../theme';
 import { getSafeAreaPadding } from '../utils/statusBar';
 
 interface SettingsScreenProps {

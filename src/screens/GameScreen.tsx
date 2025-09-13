@@ -25,7 +25,7 @@ import { ImagePreviewModal } from '../components/ImagePreviewModal';
 import { useGameStore } from '../stores/game';
 import { useAchievementStore } from '../stores/achievements';
 import { PuzzleMeta, Difficulty } from '../types';
-import { colors, spacing, typography, layout } from '../theme';
+import { colors, spacing, typography, layout, shadows, borderRadius } from '../theme';
 import {
   getAccessibilityProps,
   getProgressAccessibility,
