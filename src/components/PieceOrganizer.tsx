@@ -69,12 +69,13 @@ const PieceItem: React.FC<PieceItemProps> = ({
   const handlePress = () => {
     // Bring piece to front and move it to center of canvas for easy access
     bringToFront(piece.id);
-    // Move to center of the puzzle canvas rather than just offset
-    const canvasCenter = {
-      x: piece.targetX + piece.width * 2, // Position to the right of target for visibility
-      y: piece.targetY - 50, // Position slightly above target for better staging
+    // Move to a proper staging area that doesn't interfere with the puzzle
+    // Position pieces in the bottom area of the canvas, not off to the side
+    const stagingPosition = {
+      x: boardCols * piece.width * 0.5 - piece.width * 0.5, // Center horizontally in the puzzle area
+      y: boardRows * piece.height + 20, // Position below the puzzle grid with some padding
     };
-    movePiece(piece.id, canvasCenter.x, canvasCenter.y);
+    movePiece(piece.id, stagingPosition.x, stagingPosition.y);
   };
 
   const gestureHandler = useAnimatedGestureHandler<
@@ -110,8 +111,8 @@ const PieceItem: React.FC<PieceItemProps> = ({
 
         // Move piece to canvas staging area with better positioning
         runOnJS(bringToFront)(piece.id);
-        const stagingX = piece.targetX + piece.width * 1.5;
-        const stagingY = piece.targetY - 30;
+        const stagingX = boardCols * piece.width * 0.5 - piece.width * 0.5; // Center horizontally
+        const stagingY = boardRows * piece.height + 20; // Position below the puzzle grid
         runOnJS(movePiece)(piece.id, stagingX, stagingY);
       } else {
         // Return to original position with smooth animation
