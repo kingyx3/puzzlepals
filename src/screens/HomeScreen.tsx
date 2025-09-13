@@ -81,6 +81,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    backgroundColor: colors.surface,
+    ...shadows.md,
+    borderBottomLeftRadius: borderRadius.xl,
+    borderBottomRightRadius: borderRadius.xl,
   },
   titleContainer: {
     flex: 1,
@@ -91,36 +95,38 @@ const styles = StyleSheet.create({
     fontWeight: typography.weight.bold,
     color: colors.primary,
     marginBottom: spacing.xs,
+    textShadowColor: colors.primaryLight,
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   subtitle: {
     fontSize: typography.lg,
-    color: colors.secondary,
+    color: colors.textSecondary,
     textAlign: 'center',
+    fontWeight: typography.weight.medium,
   },
   settingsButton: {
     padding: spacing.sm,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.primary,
     borderRadius: layout.touchTargetLarge / 2,
-    minWidth: layout.touchTargetLarge, // Increased for kid-friendly design
-    minHeight: layout.touchTargetLarge, // Increased for kid-friendly design
+    minWidth: layout.touchTargetLarge,
+    minHeight: layout.touchTargetLarge,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 2,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    ...shadows.colored.primary,
   },
   settingsButtonText: {
     fontSize: typography.lg,
+    color: colors.onPrimary,
   },
   scrollView: {
     flex: 1,
   },
   content: {
     padding: spacing.md,
+    paddingTop: spacing.lg,
   },
   packCard: {
-    marginBottom: spacing.md,
+    marginBottom: layout.kidFriendlySpacing.sectionGap,
   },
 });

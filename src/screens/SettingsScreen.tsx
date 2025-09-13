@@ -249,20 +249,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.outline,
+    backgroundColor: colors.surface,
+    ...shadows.md,
+    borderBottomLeftRadius: borderRadius.lg,
+    borderBottomRightRadius: borderRadius.lg,
   },
   backButton: {
     padding: spacing.sm,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.primary,
     borderRadius: layout.touchTarget / 2,
     minWidth: layout.touchTarget,
     alignItems: 'center',
+    ...shadows.colored.primary,
   },
   backButtonText: {
     fontSize: typography.sm,
     fontWeight: typography.weight.medium,
-    color: colors.onSurface,
+    color: colors.onPrimary,
   },
   title: {
     flex: 1,
@@ -311,10 +314,11 @@ const styles = StyleSheet.create({
   premiumCard: {
     backgroundColor: colors.surface,
     padding: spacing.lg,
-    borderRadius: spacing.md,
+    borderRadius: borderRadius.xl,
     alignItems: 'center',
     borderWidth: 2,
     borderColor: colors.primary,
+    ...shadows.lg,
   },
   premiumTitle: {
     fontSize: typography.xl,
@@ -343,6 +347,7 @@ const styles = StyleSheet.create({
     borderRadius: layout.touchTarget / 2,
     minWidth: layout.touchTarget * 3,
     alignItems: 'center',
+    ...shadows.colored.primary,
   },
   purchaseButtonDisabled: {
     backgroundColor: colors.outline,
