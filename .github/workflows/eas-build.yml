@@ -16,16 +16,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: yarn
+          cache: npm
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
 
       - name: Run tests
-        run: yarn test
+        run: npm test
 
       - name: Lint code
-        run: yarn lint
+        run: npm run lint
 
       - name: Check types
         run: npx tsc --noEmit
@@ -48,10 +48,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: yarn
+          cache: npm
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
 
       - name: Setup Android SDK
         if: matrix.platform == 'android'
@@ -114,10 +114,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: yarn
+          cache: npm
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
 
       - name: Setup Expo
         uses: expo/expo-github-action@v8
