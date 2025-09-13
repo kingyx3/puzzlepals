@@ -24,7 +24,7 @@ interface MonetizationConfig {
 }
 
 let config: MonetizationConfig = {
-  adsEnabled: true,
+  adsEnabled: false,
   premiumPurchased: false,
   adFrequency: 1, // Show ad before every puzzle
   adTimeout: 30000, // 30 second timeout for blocking ads
