@@ -11,6 +11,7 @@ interface JigsawPieceShapeProps {
   edges: EdgeShape;
   imageAsset: ImageSourcePropType;
   style?: object;
+  placed?: boolean; // Whether the piece is placed to conditionally remove borders
   // Add cropping parameters
   boardWidth?: number;
   boardHeight?: number;
@@ -26,6 +27,7 @@ export const JigsawPieceShape: React.FC<JigsawPieceShapeProps> = ({
   edges,
   imageAsset,
   style,
+  placed = false,
   boardWidth = 400,
   boardHeight = 400,
   totalCols = 2,
@@ -75,13 +77,15 @@ export const JigsawPieceShape: React.FC<JigsawPieceShapeProps> = ({
           clipPath={`url(#${clipId})`}
         />
 
-        {/* Optional: Add stroke outline */}
-        <Path
-          d={clipPath}
-          fill="none"
-          stroke="rgba(0,0,0,0.2)"
-          strokeWidth="1"
-        />
+        {/* Optional: Add stroke outline only for unplaced pieces */}
+        {!placed && (
+          <Path
+            d={clipPath}
+            fill="none"
+            stroke="rgba(0,0,0,0.2)"
+            strokeWidth="1"
+          />
+        )}
       </Svg>
     </View>
   );

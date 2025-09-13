@@ -144,6 +144,8 @@ export const Piece: React.FC<PieceProps> = memo(
         height: piece.height,
         zIndex: piece.zIndex,
       },
+      // Remove border radius for placed pieces to avoid covering picture
+      piece.placed && styles.placedPiece,
       highlighted && styles.highlighted,
       animatedStyle,
     ];
@@ -168,6 +170,7 @@ export const Piece: React.FC<PieceProps> = memo(
               edges={piece.edges}
               imageAsset={imageAsset}
               style={{ opacity: piece.placed ? 1 : 0.8 }}
+              placed={piece.placed} // Pass placed status to remove stroke outline
               // Pass cropping info for jigsaw pieces
               boardWidth={boardWidth}
               boardHeight={boardHeight}
@@ -177,7 +180,10 @@ export const Piece: React.FC<PieceProps> = memo(
               pieceRow={piece.row}
             />
           ) : (
-            <View style={styles.imageContainer}>
+            <View style={[
+              styles.imageContainer,
+              piece.placed && { borderRadius: 0 } // Remove border radius for placed pieces
+            ]}>
               <Image
                 source={imageAsset}
                 style={[
@@ -208,6 +214,7 @@ export const Piece: React.FC<PieceProps> = memo(
               height={piece.height}
               edges={piece.edges}
               imageAsset={imageAsset}
+              placed={piece.placed} // Pass placed status to remove stroke outline
               // Pass cropping info for jigsaw pieces
               boardWidth={boardWidth}
               boardHeight={boardHeight}
@@ -217,7 +224,10 @@ export const Piece: React.FC<PieceProps> = memo(
               pieceRow={piece.row}
             />
           ) : (
-            <View style={styles.imageContainer}>
+            <View style={[
+              styles.imageContainer,
+              piece.placed && { borderRadius: 0 } // Remove border radius for placed pieces
+            ]}>
               <Image
                 source={imageAsset}
                 style={[
@@ -252,6 +262,11 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  placedPiece: {
+    borderRadius: 0, // Remove border radius for placed pieces to avoid covering picture
+    shadowOpacity: 0.1, // Reduce shadow for placed pieces
+    elevation: 2, // Lower elevation for placed pieces
+  },
   imageContainer: {
     width: '100%',
     height: '100%',
@@ -268,10 +283,9 @@ const styles = StyleSheet.create({
   },
   placedOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(76, 175, 80, 0.1)',
-    borderWidth: 2,
-    borderColor: '#4CAF50',
-    borderRadius: 4,
+    backgroundColor: 'rgba(76, 175, 80, 0.05)', // Much more transparent
+    borderWidth: 0, // Remove border completely
+    borderRadius: 0, // Remove border radius
   },
   highlighted: {
     borderWidth: 3,
