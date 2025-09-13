@@ -60,7 +60,7 @@ describe('Image Cropping Alignment', () => {
       const padding = 20;
       const totalCols = 4;
       const totalRows = 3;
-      
+
       // Create a test piece
       const testPiece: Piece = {
         id: 'test',
@@ -74,7 +74,7 @@ describe('Image Cropping Alignment', () => {
         height: 0,
         placed: false,
         zIndex: 1,
-        shape: 'SQUARE'
+        shape: 'SQUARE',
       };
 
       const fixedCrop = calculateImageCropFixed(
@@ -116,8 +116,16 @@ describe('Image Cropping Alignment', () => {
       const canvasHeight = 300;
       const padding = 20;
       const difficulty: Difficulty = 'AGES_6_8';
-      const board = createBoard(1, 3, 3, canvasWidth, canvasHeight, difficulty, padding);
-      
+      const board = createBoard(
+        1,
+        3,
+        3,
+        canvasWidth,
+        canvasHeight,
+        difficulty,
+        padding
+      );
+
       // For each piece, verify the cropping would align with target position
       Object.values(board.pieces).forEach((piece) => {
         const cropInfo = calculateImageCropFixed(
@@ -125,7 +133,7 @@ describe('Image Cropping Alignment', () => {
           canvasWidth,
           canvasHeight,
           3, // cols
-          3, // rows  
+          3, // rows
           padding
         );
 
@@ -181,23 +189,42 @@ describe('Image Cropping Alignment', () => {
       // Test that the incorrect current logic would produce wrong values
       const incorrectPieceWidth = canvasWidth / cols; // Current wrong logic
       const incorrectPieceHeight = canvasHeight / rows; // Current wrong logic
-      
+
       expect(targetRects[0].width).not.toBeCloseTo(incorrectPieceWidth);
       expect(targetRects[0].height).not.toBeCloseTo(incorrectPieceHeight);
     });
 
     it('should calculate consistent piece dimensions across all difficulty levels', () => {
-      const difficulties: Difficulty[] = ['AGES_3_5', 'AGES_6_8', 'MEDIUM', 'HARD'];
+      const difficulties: Difficulty[] = [
+        'AGES_3_5',
+        'AGES_6_8',
+        'MEDIUM',
+        'HARD',
+      ];
       const canvasWidth = 500;
       const canvasHeight = 400;
       const padding = 20;
 
       difficulties.forEach((difficulty) => {
-        const board = createBoard(1, 2, 2, canvasWidth, canvasHeight, difficulty, padding);
-        const targetRects = computeTargetRects(2, 2, canvasWidth, canvasHeight, padding);
-        
+        const board = createBoard(
+          1,
+          2,
+          2,
+          canvasWidth,
+          canvasHeight,
+          difficulty,
+          padding
+        );
+        const targetRects = computeTargetRects(
+          2,
+          2,
+          canvasWidth,
+          canvasHeight,
+          padding
+        );
+
         const pieces = Object.values(board.pieces);
-        
+
         // All pieces should have dimensions matching target rectangles
         pieces.forEach((piece, index) => {
           expect(piece.width).toBeCloseTo(targetRects[index].width);
@@ -221,7 +248,7 @@ describe('Image Cropping Alignment', () => {
       // For a piece at col=1, row=1 (non-zero to show offset difference)
       const pieceCol = 1;
       const pieceRow = 1;
-      
+
       // Correct cropping calculation should use available dimensions
       const correctPieceWidth = availableWidth / cols;
       const correctPieceHeight = availableHeight / rows;
@@ -251,10 +278,10 @@ describe('Image Cropping Alignment', () => {
       const totalCols = 4;
       const totalRows = 3;
       const padding = 20;
-      
+
       const availableWidth = boardWidth - padding * 2;
       const availableHeight = boardHeight - padding * 2;
-      
+
       for (let row = 0; row < totalRows; row++) {
         for (let col = 0; col < totalCols; col++) {
           // Calculate using corrected logic
@@ -266,7 +293,7 @@ describe('Image Cropping Alignment', () => {
           // Both square and jigsaw pieces should use the same cropping logic
           expect(correctOffsetX).toEqual(-col * (availableWidth / totalCols));
           expect(correctOffsetY).toEqual(-row * (availableHeight / totalRows));
-          
+
           // The scaled image should cover the available space, not the full canvas
           expect(availableWidth).toBeLessThan(boardWidth);
           expect(availableHeight).toBeLessThan(boardHeight);

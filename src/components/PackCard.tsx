@@ -38,10 +38,37 @@ export const PackCard: React.FC<PackCardProps> = ({
     }, 150);
   };
 
+  // Get pack-specific gradient colors
+  const getPackGradient = (packId: string) => {
+    switch (packId) {
+      case 'animals':
+        return colors.cardGradients.animals;
+      case 'vehicles':
+        return colors.cardGradients.vehicles;
+      case 'advanced':
+        return colors.cardGradients.advanced;
+      default:
+        return colors.cardGradients.nature;
+    }
+  };
+
+  const packGradient = getPackGradient(pack.id);
+
   return (
     <View style={[styles.container, style]}>
-      <View style={styles.header}>
-        <Image source={pack.coverAsset} style={styles.coverImage} />
+      {/* Header with enhanced visual appeal */}
+      <View
+        style={[
+          styles.header,
+          {
+            backgroundColor: packGradient[0],
+            borderBottomColor: packGradient[1],
+          },
+        ]}
+      >
+        <View style={styles.coverImageContainer}>
+          <Image source={pack.coverAsset} style={styles.coverImage} />
+        </View>
         <Text style={styles.title}>{pack.titleKey}</Text>
       </View>
 
@@ -64,14 +91,16 @@ export const PackCard: React.FC<PackCardProps> = ({
               role: 'button',
             })}
           >
-            <Image
-              source={puzzle.imageAsset}
-              style={styles.puzzleImage}
-              {...getAccessibilityProps({
-                label: `Preview image for ${puzzle.titleKey} puzzle`,
-                role: 'image',
-              })}
-            />
+            <View style={styles.puzzleImageContainer}>
+              <Image
+                source={puzzle.imageAsset}
+                style={styles.puzzleImage}
+                {...getAccessibilityProps({
+                  label: `Preview image for ${puzzle.titleKey} puzzle`,
+                  role: 'image',
+                })}
+              />
+            </View>
             <Text
               style={styles.puzzleTitle}
               accessible={true}
@@ -79,7 +108,14 @@ export const PackCard: React.FC<PackCardProps> = ({
             >
               {puzzle.titleKey}
             </Text>
-            <View style={styles.difficultyBadge}>
+            <View
+              style={[
+                styles.difficultyBadge,
+                {
+                  backgroundColor: getDifficultyColor(puzzle.defaultDifficulty),
+                },
+              ]}
+            >
               <Text style={styles.difficultyText}>
                 {getDifficultyLabel(puzzle.defaultDifficulty)}
               </Text>
@@ -116,82 +152,124 @@ function getDifficultyLabel(difficulty: string): string {
   }
 }
 
+function getDifficultyColor(difficulty: string): string {
+  switch (difficulty) {
+    case 'AGES_3_5':
+    case 'EASY':
+      return colors.success;
+    case 'AGES_6_8':
+    case 'MEDIUM':
+      return colors.secondary;
+    case 'AGES_9_10':
+    case 'HARD':
+      return colors.warning;
+    case 'AGES_11_PLUS':
+    case 'EXPERT':
+    case 'MASTER':
+      return colors.accent;
+    default:
+      return colors.success;
+  }
+}
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.surface,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
+    borderRadius: borderRadius.xl,
     marginVertical: spacing.sm,
-    ...shadows.md,
+    overflow: 'hidden',
+    ...shadows.lg,
+    borderWidth: 1,
+    borderColor: colors.outline,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: spacing.md,
+    padding: spacing.md,
+    borderBottomWidth: 3,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+  coverImageContainer: {
+    ...shadows.md,
+    borderRadius: borderRadius.md,
+    overflow: 'hidden',
   },
   coverImage: {
     width: 60,
     height: 60,
     borderRadius: borderRadius.md,
-    marginRight: spacing.md,
   },
   title: {
     fontSize: typography.xl,
     fontWeight: typography.weight.bold,
     color: colors.primary,
     flex: 1,
+    marginLeft: spacing.md,
+    textShadowColor: 'rgba(255, 255, 255, 0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   puzzlesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.sm,
+    gap: layout.kidFriendlySpacing.cardGap,
+    padding: spacing.md,
   },
   puzzleItem: {
-    backgroundColor: colors.surfaceVariant,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    minWidth: 120,
+    minHeight: layout.touchTargetXLarge + 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...shadows.md,
+    borderWidth: 2,
+    borderColor: colors.outline,
+    // Enhanced visual appeal
+    transform: [{ scale: 1 }],
+  },
+  puzzleItemPressed: {
+    backgroundColor: colors.primaryLight,
+    borderColor: colors.primary,
+    transform: [{ scale: 0.96 }],
+    ...shadows.xl,
+    shadowColor: colors.primary,
+    shadowOpacity: 0.3,
+  },
+  puzzleImageContainer: {
+    ...shadows.sm,
     borderRadius: borderRadius.md,
-    padding: spacing.md, // Increased from spacing.sm for better touch area
-    minWidth: 120, // Increased from 100 for better touch targets for kids
-    minHeight: layout.touchTargetLarge + 40, // Use larger touch target for kids
+    overflow: 'hidden',
+    marginBottom: spacing.sm,
+  },
+  puzzleImage: {
+    width: 70,
+    height: 70,
+    borderRadius: borderRadius.md,
+  },
+  puzzleTitle: {
+    fontSize: typography.md,
+    fontWeight: typography.weight.semibold,
+    color: colors.onSurface,
+    textAlign: 'center',
+    marginBottom: spacing.sm,
+    lineHeight: typography.md * typography.lineHeight.normal,
+  },
+  difficultyBadge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.round,
+    minHeight: 28,
     alignItems: 'center',
     justifyContent: 'center',
     ...shadows.sm,
-    // Added visual feedback for pressed state
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  puzzleItemPressed: {
-    backgroundColor: colors.primary + '20', // Lighter version of primary color
-    borderColor: colors.primary,
-    transform: [{ scale: 0.98 }], // Slight scale down for pressed effect
-    ...shadows.lg, // Enhanced shadow when pressed
-  },
-  puzzleImage: {
-    width: 70, // Increased from 60 for better visibility for kids
-    height: 70, // Increased from 60 for better visibility for kids
-    borderRadius: borderRadius.sm,
-    marginBottom: spacing.sm, // Increased from spacing.xs
-  },
-  puzzleTitle: {
-    fontSize: typography.md, // Increased from typography.sm for better readability
-    fontWeight: typography.weight.semibold, // Increased from medium for better emphasis
-    color: colors.onSurface,
-    textAlign: 'center',
-    marginBottom: spacing.sm, // Increased from spacing.xs
-    lineHeight: typography.md * typography.lineHeight.normal, // Added line height for better readability
-  },
-  difficultyBadge: {
-    backgroundColor: colors.secondary,
-    paddingHorizontal: spacing.sm, // Increased from spacing.xs for better touch area
-    paddingVertical: spacing.xs, // Increased from 2 for better visual balance
-    borderRadius: borderRadius.sm,
-    minHeight: 24, // Added minimum height for consistency
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   difficultyText: {
-    fontSize: typography.sm, // Increased from typography.xs for better readability
-    fontWeight: typography.weight.semibold, // Increased from medium for better emphasis
-    color: colors.onSecondary,
+    fontSize: typography.sm,
+    fontWeight: typography.weight.bold,
+    color: colors.onPrimary,
     textAlign: 'center',
   },
 });

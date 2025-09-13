@@ -25,7 +25,7 @@ import { ImagePreviewModal } from '../components/ImagePreviewModal';
 import { useGameStore } from '../stores/game';
 import { useAchievementStore } from '../stores/achievements';
 import { PuzzleMeta, Difficulty } from '../types';
-import { colors, spacing, typography, layout } from '../theme';
+import { colors, spacing, typography, layout, shadows, borderRadius } from '../theme';
 import {
   getAccessibilityProps,
   getProgressAccessibility,
@@ -358,15 +358,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.outline,
+    backgroundColor: colors.surface,
+    ...shadows.md,
+    borderBottomLeftRadius: borderRadius.lg,
+    borderBottomRightRadius: borderRadius.lg,
   },
   exitButton: {
     padding: spacing.sm,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.accent,
     borderRadius: layout.touchTarget / 2,
     minWidth: layout.touchTarget,
     alignItems: 'center',
+    ...shadows.colored.primary,
   },
   titleSection: {
     flex: 1,
@@ -409,6 +412,7 @@ const styles = StyleSheet.create({
     minWidth: layout.touchTarget,
     alignItems: 'center',
     marginLeft: spacing.xs,
+    ...shadows.colored.primary,
   },
   achievementButton: {
     padding: spacing.sm,
@@ -433,17 +437,23 @@ const styles = StyleSheet.create({
   progressContainer: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    margin: spacing.sm,
+    ...shadows.md,
   },
   progressBar: {
-    height: 8,
+    height: 12,
     backgroundColor: colors.outline,
-    borderRadius: 4,
+    borderRadius: borderRadius.sm,
     overflow: 'hidden',
+    ...shadows.sm,
   },
   progressFill: {
     height: '100%',
     backgroundColor: colors.success,
-    borderRadius: 4,
+    borderRadius: borderRadius.sm,
+    ...shadows.sm,
   },
   progressStats: {
     flexDirection: 'row',
@@ -453,8 +463,8 @@ const styles = StyleSheet.create({
   },
   progressStatsText: {
     fontSize: typography.sm,
-    color: colors.secondary,
-    fontWeight: typography.weight.medium,
+    color: colors.onSurface,
+    fontWeight: typography.weight.semibold,
   },
   sortingIndicator: {
     fontSize: typography.xs,
@@ -475,8 +485,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: colors.outline,
+    ...shadows.md,
+    borderTopLeftRadius: borderRadius.lg,
+    borderTopRightRadius: borderRadius.lg,
   },
   sortButton: {
     padding: spacing.md,
@@ -486,6 +497,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     marginRight: spacing.sm,
+    ...shadows.colored.primary,
   },
   sortButtonText: {
     fontSize: typography.md,
