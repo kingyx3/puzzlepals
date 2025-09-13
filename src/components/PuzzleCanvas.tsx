@@ -106,7 +106,10 @@ export const PuzzleCanvas: React.FC<PuzzleCanvasProps> = ({
   }
 
   const { board } = currentPuzzle;
-  const pieces = Object.values(board.pieces);
+  // Only render pieces that are either placed or in the staging area (not in carousel)
+  const pieces = Object.values(board.pieces).filter(
+    (piece) => piece.placed || (piece.x >= 0 && piece.y <= board.height)
+  );
 
   return (
     <View style={styles.container}>
