@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Text, ActivityIndicator, StyleSheet, SafeAreaView } from 'react-native';
+import { Text, ActivityIndicator, StyleSheet, SafeAreaView, Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { GameScreen } from './src/screens/GameScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
 import { PuzzleMeta, Difficulty } from './src/types';
 import { showAd } from './src/services/monetization';
+import { getStatusBarConfig, getSafeAreaPadding } from './src/utils/statusBar';
 
 type Screen = 'home' | 'game' | 'settings' | 'loading-ad';
 
@@ -63,42 +65,47 @@ export default function App() {
   };
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <StatusBar 
-        style={currentScreen === 'game' ? 'light' : 'dark'} 
-        backgroundColor="transparent" 
-        translucent={false}
-        hidden={false}
-      />
-      
-      {currentScreen === 'home' && (
-        <HomeScreen
-          onSelectPuzzle={handleSelectPuzzle}
-          onOpenSettings={handleOpenSettings}
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <StatusBar 
+          style={getStatusBarConfig(currentScreen === 'game' ? 'game' : 'normal').style}
+          backgroundColor={getStatusBarConfig(currentScreen === 'game' ? 'game' : 'normal').backgroundColor}
+          translucent={getStatusBarConfig(currentScreen === 'game' ? 'game' : 'normal').translucent}
+          hidden={getStatusBarConfig(currentScreen === 'game' ? 'game' : 'normal').hidden}
         />
-      )}
+        
+        {currentScreen === 'home' && (
+          <HomeScreen
+            onSelectPuzzle={handleSelectPuzzle}
+            onOpenSettings={handleOpenSettings}
+          />
+        )}
 
-      {currentScreen === 'loading-ad' && <AdLoadingScreen />}
+        {currentScreen === 'loading-ad' && <AdLoadingScreen />}
 
-      {currentScreen === 'game' && selectedPuzzle && (
-        <GameScreen
-          puzzle={selectedPuzzle}
-          difficulty={selectedDifficulty}
-          onExit={handleExitGame}
-        />
-      )}
+        {currentScreen === 'game' && selectedPuzzle && (
+          <GameScreen
+            puzzle={selectedPuzzle}
+            difficulty={selectedDifficulty}
+            onExit={handleExitGame}
+          />
+        )}
 
-      {currentScreen === 'settings' && (
-        <SettingsScreen onExit={handleExitSettings} />
-      )}
-    </GestureHandlerRootView>
+        {currentScreen === 'settings' && (
+          <SettingsScreen onExit={handleExitSettings} />
+        )}
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }
 
 // Loading screen shown while interstitial ad is playing
 function AdLoadingScreen() {
+  const insets = useSafeAreaInsets();
+  const safeAreaPadding = getSafeAreaPadding();
+  
   return (
-    <SafeAreaView style={styles.adLoadingContainer}>
+    <SafeAreaView style={[styles.adLoadingContainer, { paddingTop: Math.max(insets.top, safeAreaPadding.paddingTop) }]}>
       <ActivityIndicator size="large" color="#007AFF" />
       <Text style={styles.adLoadingText}>Loading...</Text>
       <Text style={styles.adLoadingSubtext}>

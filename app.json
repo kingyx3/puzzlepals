@@ -19,17 +19,22 @@
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to create custom puzzles from your photos.",
         "NSPhotoLibraryUsageDescription": "This app accesses your photo library to create custom puzzles.",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "UIStatusBarStyle": "UIStatusBarStyleDefault",
+        "UIViewControllerBasedStatusBarAppearance": true
       }
     },
     "android": {
-      "edgeToEdgeEnabled": true,
       "package": "com.puzzlepals.app",
       "permissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.CAMERA"
-      ]
+      ],
+      "statusBar": {
+        "barStyle": "dark-content",
+        "backgroundColor": "#ffffff"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

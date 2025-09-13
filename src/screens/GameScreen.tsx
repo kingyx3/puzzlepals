@@ -10,6 +10,7 @@ import {
   Dimensions,
   Alert,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PuzzleCanvas } from '../components/PuzzleCanvas';
 import {
   PieceSortingPanel,
@@ -28,6 +29,7 @@ import {
   getAccessibilityProps,
   getProgressAccessibility,
 } from '../utils/accessibility';
+import { getSafeAreaPadding } from '../utils/statusBar';
 
 interface GameScreenProps {
   puzzle: PuzzleMeta;
@@ -40,6 +42,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({
   difficulty,
   onExit,
 }) => {
+  const insets = useSafeAreaInsets();
+  const safeAreaPadding = getSafeAreaPadding();
   const { startPuzzle, currentPuzzle, resetPuzzle, exitPuzzle, useHint } =
     useGameStore();
   const { getRecommendedDifficulty } = useAchievementStore();
@@ -156,7 +160,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       {/* Header with enhanced controls */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: Math.max(insets.top, safeAreaPadding.paddingTop) }]}>
         <TouchableOpacity
           style={styles.exitButton}
           onPress={handleExit}
