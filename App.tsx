@@ -5,7 +5,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   SafeAreaView,
-  Platform,
+  View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import {
@@ -132,11 +132,15 @@ function AdLoadingScreen() {
         { paddingTop: Math.max(insets.top, safeAreaPadding.paddingTop) },
       ]}
     >
-      <ActivityIndicator size="large" color="#007AFF" />
-      <Text style={styles.adLoadingText}>Loading...</Text>
-      <Text style={styles.adLoadingSubtext}>
-        Ad will be skippable in a few seconds
-      </Text>
+      <View style={styles.loadingContent}>
+        {/* Animated puzzle piece icon */}
+        <Text style={styles.loadingIcon}>🧩</Text>
+        <ActivityIndicator size="large" color="#4F7FFF" />
+        <Text style={styles.adLoadingText}>Getting ready...</Text>
+        <Text style={styles.adLoadingSubtext}>
+          Your puzzle adventure is about to begin!
+        </Text>
+      </View>
     </SafeAreaView>
   );
 }
@@ -146,20 +150,40 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#FAFBFF', // Use new background color
     paddingHorizontal: 20,
   },
+  loadingContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    shadowColor: 'rgba(79, 127, 255, 0.15)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 12,
+    elevation: 6,
+    minWidth: 280,
+  },
+  loadingIcon: {
+    fontSize: 48,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
   adLoadingText: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '600',
-    color: '#333',
-    marginTop: 16,
+    color: '#1A1A1A',
+    marginTop: 20,
+    textAlign: 'center',
   },
   adLoadingSubtext: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: 16,
+    color: '#4A5568',
     marginTop: 8,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 22,
+    maxWidth: 240,
   },
 });

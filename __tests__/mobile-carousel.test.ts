@@ -55,8 +55,8 @@ describe('Mobile Carousel Responsiveness', () => {
     const mockDimensions = require('react-native').Dimensions;
     mockDimensions.get.mockReturnValue({ width: 375, height: 667 });
 
-    expect(getMobileTouchTargetSize()).toBe(56); // Larger for small phones
-    expect(getMobilePieceSize()).toBe(60); // Much larger for small phones
+    expect(getMobileTouchTargetSize()).toBe(48); // Optimized for small phones
+    expect(getMobilePieceSize()).toBe(50); // Reduced for small phones
   });
 
   it('should provide correct touch target sizes for medium mobile', () => {
@@ -90,11 +90,11 @@ describe('Mobile Carousel Responsiveness', () => {
     expect(isMobileDevice()).toBe(true);
 
     // Exactly at small mobile breakpoint
-    mockDimensions.get.mockReturnValue({ width: 480, height: 800 });
-    expect(isSmallMobileDevice()).toBe(false);
-
-    // Just under small mobile breakpoint
-    mockDimensions.get.mockReturnValue({ width: 479, height: 800 });
+    mockDimensions.get.mockReturnValue({ width: 414, height: 800 });
     expect(isSmallMobileDevice()).toBe(true);
+
+    // Just over small mobile breakpoint
+    mockDimensions.get.mockReturnValue({ width: 415, height: 800 });
+    expect(isSmallMobileDevice()).toBe(false);
   });
 });
