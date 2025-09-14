@@ -11,6 +11,9 @@
     "web:serve": "npx expo export --platform web && npx serve dist",
     "web:dev": "npx expo start --web --dev-client",
     "web:offline": "npx expo start --web --offline",
+    "vercel:dev": "vercel dev",
+    "vercel:build": "npm run web:build",
+    "vercel:deploy": "vercel --prod",
     "build": "npm run web:build",
     "test": "npx jest",
     "test:watch": "npx jest --watch",
@@ -57,7 +60,8 @@
     "prettier": "^3.6.2",
     "react-test-renderer": "19.0.0",
     "ts-jest": "^29.4.1",
-    "typescript": "~5.8.3"
+    "typescript": "~5.8.3",
+    "vercel": "^39.0.0"
   },
   "private": true
 }

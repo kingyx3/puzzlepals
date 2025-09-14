@@ -54,7 +54,7 @@ jobs:
           path: dist/
           retention-days: 30
 
-  deploy-web:
+  deploy-vercel:
     needs: build-web
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
@@ -68,9 +68,11 @@ jobs:
           name: web-build
           path: dist/
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/main'
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./
+          vercel-args: '--prod'
