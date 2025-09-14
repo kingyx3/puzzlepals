@@ -1,6 +1,11 @@
 // Device utilities for screen dimensions and safe area
 
 import { Dimensions, Platform } from 'react-native';
+import { isWeb, getWebOptimalCanvasSize, getWebTouchTargetSize } from './web';
+
+// Type declarations for web globals
+declare const navigator: any;
+declare const window: any;
 
 export interface ScreenDimensions {
   width: number;
@@ -24,6 +29,11 @@ export function getScreenDimensions(): ScreenDimensions {
  * Calculate optimal puzzle canvas size based on screen
  */
 export function getOptimalCanvasSize(): { width: number; height: number } {
+  // Use web-specific sizing if on web platform
+  if (isWeb()) {
+    return getWebOptimalCanvasSize();
+  }
+
   const screen = getScreenDimensions();
   const padding = 40; // Total padding around canvas
 
@@ -48,6 +58,10 @@ export function getOptimalCanvasSize(): { width: number; height: number } {
  * Check if device has haptic feedback support
  */
 export function hasHapticSupport(): boolean {
+  // Web generally doesn't support haptics (except for some newer APIs)
+  if (isWeb()) {
+    return typeof navigator !== 'undefined' && 'vibrate' in navigator;
+  }
   return Platform.OS === 'ios' || Platform.OS === 'android';
 }
 
@@ -55,7 +69,11 @@ export function hasHapticSupport(): boolean {
  * Check if device prefers reduced motion
  */
 export function prefersReducedMotion(): boolean {
-  // This would need platform-specific implementation
+  // Check for web accessibility preference
+  if (isWeb() && typeof window !== 'undefined' && window.matchMedia) {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+  // For native platforms, this would need platform-specific implementation
   // For now, return false as default
   return false;
 }
@@ -80,6 +98,11 @@ export function isSmallMobileDevice(): boolean {
  * Get mobile-optimized touch target size
  */
 export function getMobileTouchTargetSize(): number {
+  // Use web-specific sizing if on web platform
+  if (isWeb()) {
+    return getWebTouchTargetSize();
+  }
+
   if (isSmallMobileDevice()) {
     return 48; // Reduced for small phones but still accessible
   } else if (isMobileDevice()) {

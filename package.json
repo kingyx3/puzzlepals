@@ -7,6 +7,14 @@
     "android": "npx expo run:android",
     "ios": "npx expo run:ios",
     "web": "npx expo start --web",
+    "web:build": "npx expo export --platform web",
+    "web:serve": "npx expo export --platform web && npx serve dist",
+    "web:dev": "npx expo start --web --dev-client",
+    "web:offline": "npx expo start --web --offline",
+    "vercel:dev": "vercel dev",
+    "vercel:build": "npm run web:build",
+    "vercel:deploy": "vercel --prod",
+    "build": "npm run web:build",
     "test": "npx jest",
     "test:watch": "npx jest --watch",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
@@ -28,7 +36,7 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-i18next": "^15.7.2",
-    "react-native": "0.79.6",
+    "react-native": "0.79.5",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-localize": "^3.5.2",
     "react-native-mmkv": "^3.3.0",
@@ -52,7 +60,8 @@
     "prettier": "^3.6.2",
     "react-test-renderer": "19.0.0",
     "ts-jest": "^29.4.1",
-    "typescript": "~5.8.3"
+    "typescript": "~5.8.3",
+    "vercel": "^39.0.0"
   },
   "private": true
 }

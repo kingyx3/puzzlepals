@@ -45,3 +45,6 @@ google-service-account.json
 # EAS credentials (keep README.md)
 .eas/*
 !.eas/README.md
+
+# Vercel
+.vercel
