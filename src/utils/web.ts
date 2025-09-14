@@ -31,3 +31,21 @@ export function getWebOptimalCanvasSize(): { width: number; height: number } {
 
   return { width: size, height: size };
 }
+
+/**
+ * Get web-optimized touch target size
+ */
+export function getWebTouchTargetSize(): number {
+  if (!isWeb()) {
+    return 48; // Default mobile size
+  }
+
+  const screen = Dimensions.get('window');
+  const isDesktop = screen.width >= 1024;
+  
+  if (isDesktop) {
+    return 56; // Larger touch targets for desktop
+  } else {
+    return 48; // Standard mobile touch target size
+  }
+}

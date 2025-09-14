@@ -3,6 +3,10 @@
 import { Dimensions, Platform } from 'react-native';
 import { isWeb, getWebOptimalCanvasSize, getWebTouchTargetSize } from './web';
 
+// Type declarations for web globals
+declare const navigator: any;
+declare const window: any;
+
 export interface ScreenDimensions {
   width: number;
   height: number;
