@@ -7,8 +7,11 @@ import {
   ViewStyle,
   TextStyle,
   TouchableOpacityProps,
+  GestureResponderEvent,
+  Platform,
 } from 'react-native';
-import { colors, shadows, borderRadius, typography, spacing } from '../theme';
+import { colors, shadows, borderRadius, typography, spacing, layout } from '../theme';
+import { isSmallMobileDevice } from '../utils/device';
 
 interface AnimatedButtonProps extends TouchableOpacityProps {
   title: string;
@@ -31,31 +34,64 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
 }) => {
   const [isPressed, setIsPressed] = useState(false);
 
-  const getButtonStyle = () => {
-    const baseStyle = [styles.button, styles[size]];
+  const getButtonStyle = (): ViewStyle[] => {
+    const baseStyles: ViewStyle[] = [styles.button];
     
+    // Add size-specific styles
+    if (size === 'small') {
+      baseStyles.push(styles.small);
+    } else if (size === 'medium') {
+      baseStyles.push(styles.medium);
+    } else if (size === 'large') {
+      baseStyles.push(styles.large);
+    }
+    
+    // Add variant and state styles
     if (disabled) {
-      baseStyle.push(styles.disabled);
+      baseStyles.push(styles.disabled);
     } else {
-      baseStyle.push(styles[variant]);
+      if (variant === 'primary') {
+        baseStyles.push(styles.primary);
+      } else if (variant === 'secondary') {
+        baseStyles.push(styles.secondary);
+      } else if (variant === 'tertiary') {
+        baseStyles.push(styles.tertiary);
+      }
+      
       if (isPressed) {
-        baseStyle.push(styles.pressed);
+        baseStyles.push(styles.pressed);
       }
     }
     
-    return baseStyle;
+    return baseStyles;
   };
 
-  const getTextStyle = () => {
-    const baseStyle = [styles.text, styles[`${size}Text`]];
+  const getTextStyle = (): TextStyle[] => {
+    const baseStyles: TextStyle[] = [styles.text];
     
-    if (disabled) {
-      baseStyle.push(styles.disabledText);
-    } else {
-      baseStyle.push(styles[`${variant}Text`]);
+    // Add size-specific text styles
+    if (size === 'small') {
+      baseStyles.push(styles.smallText);
+    } else if (size === 'medium') {
+      baseStyles.push(styles.mediumText);
+    } else if (size === 'large') {
+      baseStyles.push(styles.largeText);
     }
     
-    return baseStyle;
+    // Add variant text styles
+    if (disabled) {
+      baseStyles.push(styles.disabledText);
+    } else {
+      if (variant === 'primary') {
+        baseStyles.push(styles.primaryText);
+      } else if (variant === 'secondary') {
+        baseStyles.push(styles.secondaryText);
+      } else if (variant === 'tertiary') {
+        baseStyles.push(styles.tertiaryText);
+      }
+    }
+    
+    return baseStyles;
   };
 
   const handlePressIn = () => {
@@ -68,9 +104,9 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     setIsPressed(false);
   };
 
-  const handlePress = () => {
+  const handlePress = (event: GestureResponderEvent) => {
     if (!disabled && onPress) {
-      onPress();
+      onPress(event);
     }
   };
 
@@ -91,69 +127,97 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
     borderRadius: borderRadius.lg,
     transform: [{ scale: 1 }],
+    // Enhanced touch area for better accessibility
+    minWidth: layout.touchTarget,
   },
   
-  // Sizes
+  // Sizes - responsive design for web, mobile, tablets
   small: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    minHeight: 40,
+    paddingHorizontal: isSmallMobileDevice() ? spacing.lg : spacing.md,
+    paddingVertical: isSmallMobileDevice() ? spacing.md : spacing.sm,
+    minHeight: isSmallMobileDevice() ? 48 : 40,
   },
   medium: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    minHeight: 48,
+    paddingHorizontal: isSmallMobileDevice() ? spacing.xl : spacing.lg,
+    paddingVertical: isSmallMobileDevice() ? spacing.lg : spacing.md,
+    minHeight: layout.touchTarget,
   },
   large: {
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.lg,
-    minHeight: 56,
+    paddingHorizontal: isSmallMobileDevice() ? spacing.xxl : spacing.xl,
+    paddingVertical: isSmallMobileDevice() ? spacing.xl : spacing.lg,
+    minHeight: layout.touchTargetLarge,
   },
   
-  // Variants
+  // Variants with proper shadow application
   primary: {
     backgroundColor: colors.primary,
-    ...shadows.colored.primary,
+    shadowColor: shadows.colored.primary.shadowColor,
+    shadowOffset: shadows.colored.primary.shadowOffset,
+    shadowOpacity: shadows.colored.primary.shadowOpacity,
+    shadowRadius: shadows.colored.primary.shadowRadius,
+    elevation: shadows.colored.primary.elevation,
   },
   secondary: {
     backgroundColor: colors.secondary,
-    ...shadows.colored.secondary,
+    shadowColor: shadows.colored.secondary.shadowColor,
+    shadowOffset: shadows.colored.secondary.shadowOffset,
+    shadowOpacity: shadows.colored.secondary.shadowOpacity,
+    shadowRadius: shadows.colored.secondary.shadowRadius,
+    elevation: shadows.colored.secondary.elevation,
   },
   tertiary: {
     backgroundColor: colors.tertiary,
-    ...shadows.colored.success,
+    shadowColor: shadows.colored.success.shadowColor,
+    shadowOffset: shadows.colored.success.shadowOffset,
+    shadowOpacity: shadows.colored.success.shadowOpacity,
+    shadowRadius: shadows.colored.success.shadowRadius,
+    elevation: shadows.colored.success.elevation,
   },
   
-  // States
+  // States with proper alignment and transform
   pressed: {
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    borderRadius: borderRadius.lg,
     transform: [{ scale: 0.97 }],
-    ...shadows.md,
+    shadowColor: shadows.md.shadowColor,
+    shadowOffset: shadows.md.shadowOffset,
+    shadowOpacity: shadows.md.shadowOpacity,
+    shadowRadius: shadows.md.shadowRadius,
+    elevation: shadows.md.elevation,
   },
   disabled: {
     backgroundColor: colors.disabled,
-    ...shadows.none,
+    shadowColor: shadows.none.shadowColor,
+    shadowOffset: shadows.none.shadowOffset,
+    shadowOpacity: shadows.none.shadowOpacity,
+    shadowRadius: shadows.none.shadowRadius,
+    elevation: shadows.none.elevation,
   },
   
-  // Text styles
+  // Text styles with proper typography and responsive sizing
   text: {
     fontWeight: typography.weight.semibold,
-    textAlign: 'center',
+    textAlign: 'center' as const,
+    // Enhanced text legibility for kids
+    letterSpacing: 0.5,
+    lineHeight: Platform.OS === 'web' ? undefined : undefined, // Let React Native handle line height
   },
   smallText: {
-    fontSize: typography.sm,
+    fontSize: isSmallMobileDevice() ? typography.md : typography.sm,
   },
   mediumText: {
-    fontSize: typography.md,
+    fontSize: isSmallMobileDevice() ? typography.lg : typography.md,
   },
   largeText: {
-    fontSize: typography.lg,
+    fontSize: isSmallMobileDevice() ? typography.xl : typography.lg,
   },
   
-  // Text variants
+  // Text variants with proper colors
   primaryText: {
     color: colors.onPrimary,
   },
