@@ -22,6 +22,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify Expo dependencies
+        run: npx expo install --check
+
       - name: Run lints
         run: npm run lint
 
@@ -43,6 +46,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Verify Expo dependencies
+        run: npx expo install --check
 
       - name: Build web app
         run: npm run web:build
