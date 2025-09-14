@@ -1,6 +1,6 @@
 // Home screen showing puzzle packs
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import { allPacks } from '../data/packs';
 import { PuzzleMeta } from '../types';
 import { colors, spacing, typography, layout, shadows, borderRadius } from '../theme';
 import { getSafeAreaPadding } from '../utils/statusBar';
+import { isSmallMobileDevice } from '../utils/device';
 
 interface HomeScreenProps {
   onSelectPuzzle: (puzzle: PuzzleMeta) => void;
@@ -25,8 +26,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onSelectPuzzle,
   onOpenSettings,
 }) => {
+  const [isSettingsPressed, setIsSettingsPressed] = useState(false);
   const insets = useSafeAreaInsets();
   const safeAreaPadding = getSafeAreaPadding();
+
+  const handleSettingsPress = () => {
+    setIsSettingsPressed(true);
+    // Add slight delay for visual feedback
+    setTimeout(() => {
+      onOpenSettings();
+      setIsSettingsPressed(false);
+    }, 100);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -41,8 +52,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           <Text style={styles.subtitle}>Choose your puzzle adventure!</Text>
         </View>
         <TouchableOpacity
-          style={styles.settingsButton}
-          onPress={onOpenSettings}
+          style={[
+            styles.settingsButton,
+            isSettingsPressed && styles.settingsButtonPressed,
+          ]}
+          onPress={handleSettingsPress}
+          onPressIn={() => setIsSettingsPressed(true)}
+          onPressOut={() => setIsSettingsPressed(false)}
+          activeOpacity={0.9}
           accessible={true}
           accessibilityRole="button"
           accessibilityLabel="Open settings"
@@ -78,53 +95,65 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: spacing.lg,
+    paddingBottom: spacing.xl,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: colors.surface,
-    ...shadows.md,
+    ...shadows.lg,
     borderBottomLeftRadius: borderRadius.xl,
     borderBottomRightRadius: borderRadius.xl,
+    // Add subtle gradient effect
+    position: 'relative',
   },
   titleContainer: {
     flex: 1,
     alignItems: 'center',
   },
   title: {
-    fontSize: typography.xxxl,
-    fontWeight: typography.weight.bold,
+    fontSize: isSmallMobileDevice() ? typography.xxl : typography.display, // Smaller on mobile
+    fontWeight: typography.weight.heavy,
     color: colors.primary,
-    marginBottom: spacing.xs,
-    textShadowColor: colors.primaryLight,
+    marginBottom: spacing.sm,
+    textShadowColor: colors.primaryUltraLight,
     textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
+    textShadowRadius: 6,
+    letterSpacing: typography.letterSpacing.tight,
   },
   subtitle: {
-    fontSize: typography.lg,
+    fontSize: isSmallMobileDevice() ? typography.md : typography.xl,
     color: colors.textSecondary,
     textAlign: 'center',
     fontWeight: typography.weight.medium,
+    lineHeight: typography.lineHeight.relaxed * (isSmallMobileDevice() ? typography.md : typography.xl),
+    letterSpacing: typography.letterSpacing.normal,
   },
   settingsButton: {
-    padding: spacing.sm,
+    padding: isSmallMobileDevice() ? spacing.sm : spacing.md,
     backgroundColor: colors.primary,
-    borderRadius: layout.touchTargetLarge / 2,
-    minWidth: layout.touchTargetLarge,
-    minHeight: layout.touchTargetLarge,
+    borderRadius: (isSmallMobileDevice() ? layout.touchTarget : layout.touchTargetLarge) / 2,
+    minWidth: isSmallMobileDevice() ? layout.touchTarget : layout.touchTargetLarge,
+    minHeight: isSmallMobileDevice() ? layout.touchTarget : layout.touchTargetLarge,
     alignItems: 'center',
     justifyContent: 'center',
     ...shadows.colored.primary,
+    // Add hover/press states for web
+    transform: [{ scale: 1 }],
+  },
+  settingsButtonPressed: {
+    backgroundColor: colors.primaryDark,
+    transform: [{ scale: 0.96 }],
   },
   settingsButtonText: {
-    fontSize: typography.lg,
+    fontSize: isSmallMobileDevice() ? typography.lg : typography.xl,
     color: colors.onPrimary,
   },
   scrollView: {
     flex: 1,
   },
   content: {
-    padding: spacing.md,
-    paddingTop: spacing.lg,
+    padding: spacing.lg,
+    paddingTop: spacing.xl,
   },
   packCard: {
     marginBottom: layout.kidFriendlySpacing.sectionGap,
