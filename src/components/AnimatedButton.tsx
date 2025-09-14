@@ -137,18 +137,18 @@ const styles = StyleSheet.create({
   
   // Sizes - responsive design for web, mobile, tablets
   small: {
-    paddingHorizontal: isSmallMobileDevice() ? spacing.lg : spacing.md,
-    paddingVertical: isSmallMobileDevice() ? spacing.md : spacing.sm,
-    minHeight: isSmallMobileDevice() ? 48 : 40,
+    paddingHorizontal: isSmallMobileDevice() ? spacing.md : spacing.md,
+    paddingVertical: isSmallMobileDevice() ? spacing.sm : spacing.sm,
+    minHeight: isSmallMobileDevice() ? 40 : 40,
   },
   medium: {
-    paddingHorizontal: isSmallMobileDevice() ? spacing.xl : spacing.lg,
-    paddingVertical: isSmallMobileDevice() ? spacing.lg : spacing.md,
+    paddingHorizontal: isSmallMobileDevice() ? spacing.lg : spacing.lg,
+    paddingVertical: isSmallMobileDevice() ? spacing.md : spacing.md,
     minHeight: layout.touchTarget,
   },
   large: {
-    paddingHorizontal: isSmallMobileDevice() ? spacing.xxl : spacing.xl,
-    paddingVertical: isSmallMobileDevice() ? spacing.xl : spacing.lg,
+    paddingHorizontal: isSmallMobileDevice() ? spacing.xl : spacing.xl,
+    paddingVertical: isSmallMobileDevice() ? spacing.lg : spacing.lg,
     minHeight: layout.touchTargetLarge,
   },
   

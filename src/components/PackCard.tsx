@@ -14,6 +14,7 @@ import {
   getAccessibilityProps,
   getPuzzleAccessibilityLabel,
 } from '../utils/accessibility';
+import { isSmallMobileDevice } from '../utils/device';
 
 interface PackCardProps {
   pack: PuzzlePack;
@@ -202,12 +203,12 @@ const styles = StyleSheet.create({
     padding: 4, // White padding around image
   },
   coverImage: {
-    width: 72, // Larger cover image
-    height: 72,
+    width: isSmallMobileDevice() ? 48 : 72, // Smaller on mobile
+    height: isSmallMobileDevice() ? 48 : 72,
     borderRadius: borderRadius.md,
   },
   title: {
-    fontSize: typography.xxl,
+    fontSize: isSmallMobileDevice() ? typography.lg : typography.xxl,
     fontWeight: typography.weight.bold,
     color: colors.primary,
     flex: 1,
@@ -220,16 +221,16 @@ const styles = StyleSheet.create({
   puzzlesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.md,
-    padding: spacing.lg,
+    gap: isSmallMobileDevice() ? spacing.sm : spacing.md,
+    padding: isSmallMobileDevice() ? spacing.md : spacing.lg,
     backgroundColor: colors.backgroundSecondary,
   },
   puzzleItem: {
     backgroundColor: colors.surface,
     borderRadius: borderRadius.xl,
-    padding: spacing.lg,
-    minWidth: 140, // Larger puzzle cards
-    minHeight: 180,
+    padding: isSmallMobileDevice() ? spacing.md : spacing.lg,
+    minWidth: isSmallMobileDevice() ? 120 : 140, // Smaller on mobile
+    minHeight: isSmallMobileDevice() ? 150 : 180, // Smaller on mobile
     alignItems: 'center',
     justifyContent: 'space-between',
     ...shadows.md,
@@ -255,25 +256,25 @@ const styles = StyleSheet.create({
     padding: 3,
   },
   puzzleImage: {
-    width: 80, // Larger puzzle images
-    height: 80,
+    width: isSmallMobileDevice() ? 60 : 80, // Smaller on mobile
+    height: isSmallMobileDevice() ? 60 : 80,
     borderRadius: borderRadius.md,
   },
   puzzleTitle: {
-    fontSize: typography.md,
+    fontSize: isSmallMobileDevice() ? typography.sm : typography.md,
     fontWeight: typography.weight.semibold,
     color: colors.textPrimary,
     textAlign: 'center',
     marginBottom: spacing.sm,
-    lineHeight: typography.md * typography.lineHeight.normal,
-    minHeight: typography.md * typography.lineHeight.normal * 2, // Ensure consistent height
+    lineHeight: (isSmallMobileDevice() ? typography.sm : typography.md) * typography.lineHeight.normal,
+    minHeight: (isSmallMobileDevice() ? typography.sm : typography.md) * typography.lineHeight.normal * 2, // Ensure consistent height
   },
   difficultyBadge: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingHorizontal: isSmallMobileDevice() ? spacing.sm : spacing.md,
+    paddingVertical: isSmallMobileDevice() ? 4 : spacing.sm,
     borderRadius: borderRadius.round,
-    minHeight: 32,
-    minWidth: 60,
+    minHeight: isSmallMobileDevice() ? 28 : 32,
+    minWidth: isSmallMobileDevice() ? 50 : 60,
     alignItems: 'center',
     justifyContent: 'center',
     ...shadows.sm,

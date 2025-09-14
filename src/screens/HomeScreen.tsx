@@ -15,6 +15,7 @@ import { allPacks } from '../data/packs';
 import { PuzzleMeta } from '../types';
 import { colors, spacing, typography, layout, shadows, borderRadius } from '../theme';
 import { getSafeAreaPadding } from '../utils/statusBar';
+import { isSmallMobileDevice } from '../utils/device';
 
 interface HomeScreenProps {
   onSelectPuzzle: (puzzle: PuzzleMeta) => void;
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: typography.display, // Use the new display size
+    fontSize: isSmallMobileDevice() ? typography.xxl : typography.display, // Smaller on mobile
     fontWeight: typography.weight.heavy,
     color: colors.primary,
     marginBottom: spacing.sm,
@@ -120,19 +121,19 @@ const styles = StyleSheet.create({
     letterSpacing: typography.letterSpacing.tight,
   },
   subtitle: {
-    fontSize: typography.xl,
+    fontSize: isSmallMobileDevice() ? typography.md : typography.xl,
     color: colors.textSecondary,
     textAlign: 'center',
     fontWeight: typography.weight.medium,
-    lineHeight: typography.lineHeight.relaxed * typography.xl,
+    lineHeight: typography.lineHeight.relaxed * (isSmallMobileDevice() ? typography.md : typography.xl),
     letterSpacing: typography.letterSpacing.normal,
   },
   settingsButton: {
-    padding: spacing.md,
+    padding: isSmallMobileDevice() ? spacing.sm : spacing.md,
     backgroundColor: colors.primary,
-    borderRadius: layout.touchTargetLarge / 2,
-    minWidth: layout.touchTargetLarge,
-    minHeight: layout.touchTargetLarge,
+    borderRadius: (isSmallMobileDevice() ? layout.touchTarget : layout.touchTargetLarge) / 2,
+    minWidth: isSmallMobileDevice() ? layout.touchTarget : layout.touchTargetLarge,
+    minHeight: isSmallMobileDevice() ? layout.touchTarget : layout.touchTargetLarge,
     alignItems: 'center',
     justifyContent: 'center',
     ...shadows.colored.primary,
@@ -144,7 +145,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.96 }],
   },
   settingsButtonText: {
-    fontSize: typography.xl,
+    fontSize: isSmallMobileDevice() ? typography.lg : typography.xl,
     color: colors.onPrimary,
   },
   scrollView: {

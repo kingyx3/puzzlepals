@@ -73,7 +73,7 @@ export function isMobileDevice(): boolean {
  */
 export function isSmallMobileDevice(): boolean {
   const { width } = getScreenDimensions();
-  return width < 480; // Small phones
+  return width <= 414; // Include iPhone Pro Max and smaller
 }
 
 /**
@@ -81,7 +81,7 @@ export function isSmallMobileDevice(): boolean {
  */
 export function getMobileTouchTargetSize(): number {
   if (isSmallMobileDevice()) {
-    return 56; // Larger for small phones
+    return 48; // Reduced for small phones but still accessible
   } else if (isMobileDevice()) {
     return 52; // Medium for tablets
   }
@@ -93,7 +93,7 @@ export function getMobileTouchTargetSize(): number {
  */
 export function getMobilePieceSize(): number {
   if (isSmallMobileDevice()) {
-    return 60; // Much larger for small phones
+    return 50; // Reduced for small phones
   } else if (isMobileDevice()) {
     return 52; // Larger for tablets
   }
